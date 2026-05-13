@@ -111,9 +111,9 @@ export default function CustomerTable({
   });
 
   return (
-    <Card className="rounded-2xl border w-full bg-white shadow-sm">
+    <Card className="rounded-2xl h-full border w-full bg-white shadow-sm">
       <CardHeader className="flex w-full flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
+        <div className="px-4">
           <CardTitle className="text-2xl font-bold">
             Customers
           </CardTitle>
@@ -294,10 +294,10 @@ export default function CustomerTable({
 
 interface ActionButtonProps {
   icon: React.ReactNode;
-  label: string;
+  // Removed 'label' as per user request for icon-only buttons
 }
 
-function ActionButton({ icon, label }: ActionButtonProps) {
+function ActionButton({ icon }: ActionButtonProps) {
   return (
     <Button
       variant="outline"
@@ -305,7 +305,7 @@ function ActionButton({ icon, label }: ActionButtonProps) {
       className="gap-2 rounded-xl border-green-200 text-green-700 hover:bg-green-50 hover:text-green-700"
     >
       {icon}
-      {label}
+      {/* label is no longer rendered */}
     </Button>
   );
 }

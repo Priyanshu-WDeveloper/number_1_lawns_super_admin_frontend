@@ -123,7 +123,6 @@ const Login: React.FC = () => {
 
                         <div className="mt-2 relative">
                           <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-
                           <input
                             type="email"
                             placeholder="example@mail.com"
@@ -131,7 +130,7 @@ const Login: React.FC = () => {
                             onChange={(e) => setEmail(e.target.value)}
                             className="w-full h-14 rounded-xl border border-gray-200 pl-12 pr-4 outline-none focus:ring-2 focus:ring-green-500"
                             required
-                            autoComplete="email"
+                            autoComplete="on"
                           />
                         </div>
                       </div>
