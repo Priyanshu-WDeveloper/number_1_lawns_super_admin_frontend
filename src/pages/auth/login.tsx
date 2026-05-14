@@ -19,6 +19,9 @@ const Login: React.FC = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
+      if (password.length < 8) {
+        alert('Password must be atleast 8 characters');
+      }
       await login(email, password);
       toast.success('Welcome back!');
       navigate('/dashboard');
@@ -30,7 +33,7 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="max-h-min bg-[#eef5df] flex flex-col px-6 pt-6 pb-3">
+    <div className="max-h-full bg-[#eef5df] flex flex-col px-6 pt-6 pb-3">
       <div className="flex-1 flex items-center justify-center">
         <div className="w-full max-w-8xl bg-[#f8f8f4] rounded-[28px] shadow-xl overflow-hidden flex flex-col">
           <div className="flex-1 overflow-y-auto">
@@ -255,7 +258,7 @@ const Login: React.FC = () => {
       {/* Bottom Footer */}
       <div className="w-full px-10 pt-5">
         <div className="flex flex-wrap items-center justify-center gap-4 text-[15px] text-[#6d6d6d]">
-          <span>© 2024 Green Grass. All rights reserved.</span>
+          <span>© 2026 No. 1 Lawns. All rights reserved.</span>
 
           <span className="text-[#bdbdbd]">|</span>
 

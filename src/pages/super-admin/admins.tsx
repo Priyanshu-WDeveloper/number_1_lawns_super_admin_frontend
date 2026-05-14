@@ -1,5 +1,6 @@
 import React from 'react';
 import { SuperAdminLayout } from '@/components/layout/SuperAdminLayout';
+import { useSidebar } from '@/components/ui/sidebar';
 import {
   Shield,
   Plus,
@@ -7,6 +8,7 @@ import {
   MoreHorizontal,
   Bell,
   ChevronDown,
+  PanelLeftIcon,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -48,6 +50,8 @@ const admins = [
 ];
 
 const SuperAdminAdminsPage: React.FC = () => {
+  // const { toggleSidebar } = useSidebar();
+
   return (
     <SuperAdminLayout>
       <main className="flex-1 w-full overflow-y-auto px-4 pt-5 pb-5">
@@ -63,6 +67,12 @@ const SuperAdminAdminsPage: React.FC = () => {
             </div>
 
             <div className="flex pb-4 items-center gap-2.5">
+              <button
+                // onClick={toggleSidebar}
+                className="flex h-10 w-10 items-center justify-center rounded-lg border border-[#ececec] bg-white shadow-sm md:hidden"
+              >
+                <PanelLeftIcon className="h-4 w-4 text-[#151515]" />
+              </button>
               <button className="relative flex h-10 w-10 items-center justify-center rounded-full border border-[#e5e5e5] bg-white">
                 <Bell className="h-4 w-4" />
                 <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-green-600 text-[9px] text-white">

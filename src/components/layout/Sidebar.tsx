@@ -1,12 +1,12 @@
 import { useLocation } from 'react-router-dom';
 
-import {
-  Briefcase,
-  FileText,
-  Home,
-  ShoppingCart,
-  UserSquare2,
-} from 'lucide-react';
+import { FileText, LogOutIcon } from 'lucide-react';
+
+import Dashboard from '@/assets/dashboard.png';
+import Customer from '@/assets/customer.png';
+import Employee from '@/assets/employee.png';
+import Job from '@/assets/job.png';
+import Invoices from '@/assets/invoices.png';
 
 import {
   Sidebar,
@@ -24,27 +24,27 @@ import { PanelLeftIcon } from 'lucide-react';
 const items = [
   {
     title: 'Dashboard',
-    icon: Home,
+    icon: Dashboard,
     url: '/dashboard',
   },
   {
     title: 'Customer Management',
-    icon: ShoppingCart,
+    icon: Customer,
     url: '/customers',
   },
   {
     title: 'Employee Management',
-    icon: UserSquare2,
+    icon: Employee,
     url: '/employees',
   },
   {
     title: 'Job Management',
-    icon: Briefcase,
+    icon: Job,
     url: '/jobs',
   },
   {
     title: 'Invoice',
-    icon: FileText,
+    icon: Invoices,
     url: '/invoices',
   },
 ];
@@ -86,7 +86,11 @@ export function DashboardSidebar() {
                   className="h-14 rounded-2xl text-base text-white hover:bg-[#2a7d20] hover:text-blue-50 data-[active=true]:bg-[#2a7d20] data-[active=true]:text-white"
                 >
                   <a href={item.url}>
-                    <item.icon className="h-5 w-5" />
+                    <img
+                      src={item.icon}
+                      alt={item.title}
+                      className="h-5 w-5 invert"
+                    />{' '}
                     <span>{item.title}</span>
                   </a>
                 </SidebarMenuButton>
@@ -97,17 +101,29 @@ export function DashboardSidebar() {
       </SidebarContent>
 
       <SidebarFooter className="bg-[#0b4308] p-4">
-        <div className="rounded-2xl bg-white/10 p-4 backdrop-blur">
+        <button
+          className="w-full rounded-2xl bg-white/10 p-4 text-left backdrop-blur transition hover:bg-white/20"
+          onClick={() => {
+            // logout logic
+            console.log('Logout');
+          }}
+        >
           <div className="flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white">
-              <span className="font-bold text-[#0b4308]">A</span>
+              <span className="font-bold text-[#0b4308]">
+                <LogOutIcon />
+              </span>
             </div>
+
             <div>
-              <h4 className="font-semibold text-white text-base">Admin</h4>
-              <p className="text-sm text-white/70">Super Administrator</p>
+              <h4 className="text-base font-semibold text-white">
+                Logout (Admin)
+              </h4>
+
+              <p className="text-sm text-white/70">Administrator</p>
             </div>
           </div>
-        </div>
+        </button>
       </SidebarFooter>
     </Sidebar>
   );

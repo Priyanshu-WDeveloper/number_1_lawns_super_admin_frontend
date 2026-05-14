@@ -36,7 +36,7 @@ export default function CreateEmployeePage() {
 
           <div className="bg-card rounded-xl border shadow-sm">
             <div className="px-6 py-5 border-b">
-              <h2 className="text-xl font-semibold">Create New Employee</h2>
+              <h2 className="text-xl font-semibold">Add Employee</h2>
               <p className="text-sm text-muted-foreground mt-1">
                 Add a new employee to the system
               </p>

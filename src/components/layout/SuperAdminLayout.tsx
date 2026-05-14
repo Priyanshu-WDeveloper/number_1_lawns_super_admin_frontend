@@ -1,7 +1,8 @@
-'use client';
-
 import React from 'react';
-import { SidebarProvider } from '@/components/ui/sidebar';
+import {
+  SidebarProvider,
+  SidebarTrigger,
+} from '@/components/ui/sidebar';
 import { SuperAdminSidebar } from '@/components/layout/super-admin-sidebar';
 
 interface SuperAdminLayoutProps {
@@ -20,6 +21,10 @@ export function SuperAdminLayout({
             <SuperAdminSidebar />
           </div>
           <main className="flex-1 overflow-y-auto px-4">
+            {/* Mobile menu toggle */}
+            <div className="md:hidden pt-4">
+              <SidebarTrigger className="h-10 w-10 rounded-lg bg-white border border-[#ececec] shadow-sm" />
+            </div>
             {children}
           </main>
         </div>

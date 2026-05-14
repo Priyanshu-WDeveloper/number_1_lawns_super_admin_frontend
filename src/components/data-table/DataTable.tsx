@@ -81,8 +81,8 @@ export function ActionButton({
   return (
     <Button
       variant={variant}
-      size="sm"
-      className={`gap-2 rounded-xl ${className}`}
+      size="icon-sm"
+      className={`gap-2 rounded-full ${className}`}
       onClick={onClick}
     >
       {icon}
@@ -201,9 +201,7 @@ export default function DataTable<T extends DataTableData>({
     <Card className="rounded-2xl h-full w-full bg-white shadow-sm">
       <CardHeader className="flex w-full flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="px-4">
-          <CardTitle className="text-2xl font-bold">
-            {title}
-          </CardTitle>
+          <CardTitle className="text-2xl">{title}</CardTitle>
           <CardDescription>{description}</CardDescription>
         </div>
         {addButtonLabel && onAddClick && (

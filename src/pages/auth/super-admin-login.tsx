@@ -66,7 +66,8 @@ const SuperAdminLogin: React.FC = () => {
                     </h2>
 
                     <p className="mt-5 text-xl text-gray-700 max-w-md leading-9">
-                      Access the control panel to manage all administrators
+                      Access the control panel to manage all
+                      administrators
                     </p>
 
                     {/* Divider */}
@@ -86,7 +87,8 @@ const SuperAdminLogin: React.FC = () => {
                         </div>
 
                         <p className="text-gray-700 leading-7">
-                          Secure access to manage all admin users and system settings.
+                          Secure access to manage all admin users and
+                          system settings.
                         </p>
                       </div>
                     </div>
@@ -106,7 +108,8 @@ const SuperAdminLogin: React.FC = () => {
                       </h2>
 
                       <p className="text-gray-500 mt-3 text-lg">
-                        Enter your credentials to access the control panel
+                        Enter your credentials to access the control
+                        panel
                       </p>
                     </div>
 
@@ -253,7 +256,7 @@ const SuperAdminLogin: React.FC = () => {
       {/* Bottom Footer */}
       <div className="w-full px-10 pt-5">
         <div className="flex flex-wrap items-center justify-center gap-4 text-[15px] text-[#6d6d6d]">
-          <span>© 2024 Green Grass. All rights reserved.</span>
+          <span>© 2026 No. 1 Lawns. All rights reserved.</span>
 
           <span className="text-[#bdbdbd]">|</span>
 

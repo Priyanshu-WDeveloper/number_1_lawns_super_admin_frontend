@@ -36,7 +36,7 @@ export default function CreateCustomerPage() {
 
           <div className="bg-card rounded-xl border shadow-sm">
             <div className="px-6 py-5 border-b">
-              <h2 className="text-xl font-semibold">Create New Customer</h2>
+              <h2 className="text-xl font-semibold">Add Customer</h2>
               <p className="text-sm text-muted-foreground mt-1">
                 Add a new customer to the system
               </p>

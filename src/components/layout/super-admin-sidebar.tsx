@@ -5,6 +5,7 @@ import {
   Users,
   CreditCard,
   Shield,
+  LogOutIcon,
 } from 'lucide-react';
 
 import {
@@ -51,7 +52,9 @@ export function SuperAdminSidebar() {
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white">
               <Shield className="h-5 w-5 text-[#0b4308]" />
             </div>
-            <h2 className="text-xl font-bold text-white">Super Admin</h2>
+            <h2 className="text-xl font-bold text-white">
+              Super Admin
+            </h2>
           </div>
           {/* Mobile menu button */}
           <button
@@ -71,7 +74,7 @@ export function SuperAdminSidebar() {
                 <SidebarMenuButton
                   onClick={() => navigate(item.url)}
                   isActive={location.pathname === item.url}
-                  className="h-12 rounded-xl text-sm text-white hover:bg-[#2a7d20] data-[active=true]:bg-[#2a7d20] data-[active=true]:text-white"
+                  className="h-14 rounded-2xl text-base text-white hover:bg-[#2a7d20] data-[active=true]:bg-[#2a7d20] data-[active=true]:text-white"
                 >
                   <item.icon className="h-5 w-5" />
                   <span>{item.title}</span>
@@ -86,10 +89,12 @@ export function SuperAdminSidebar() {
         <div className="rounded-xl bg-white/10 p-4 backdrop-blur">
           <div className="flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white">
-              <Shield className="h-5 w-5 text-[#0b4308]" />
+              <LogOutIcon />
             </div>
             <div>
-              <h4 className="font-semibold text-white text-sm">Super Admin</h4>
+              <h4 className="font-semibold text-white text-sm">
+                Logout (Super Admin)
+              </h4>
               <p className="text-xs text-white/70">Control Panel</p>
             </div>
           </div>

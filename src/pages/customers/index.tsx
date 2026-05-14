@@ -1,5 +1,3 @@
-'use client';
-
 // Removed unused imports: React, Button, Card, Input, Select
 // import * as React from 'react';
 // import { Button } from '@/components/ui/button';
@@ -10,9 +8,9 @@
 import {
   Bell,
   ChevronDown,
-  Eye, // Imported directly here as it's used in the cell renderer
+  Eye,
+  LucideTrash2,
   Pencil,
-  Trash, // Imported directly here as it's used in the cell renderer
 } from 'lucide-react';
 
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'; // Added import for Avatar components
@@ -150,7 +148,8 @@ const customerColumns: ColumnDef<Customer>[] = [
           }
         /> */}
         <ActionButton
-          icon={<Trash className="h-4 w-4" />}
+          className="bg-red-600 text-white"
+          icon={<LucideTrash2 className="h-3 w-3" />}
           onClick={() =>
             console.log('Deleting access for job ID:', row.id)
           }

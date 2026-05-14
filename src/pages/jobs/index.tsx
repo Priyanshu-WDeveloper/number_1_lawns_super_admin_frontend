@@ -146,7 +146,8 @@ const JobColumns: ColumnDef<Job>[] = [
           onClick={() => console.log('Editing job with ID:', row.id)}
         />
         <ActionButton
-          icon={<Trash className="h-4 w-4" />}
+          className="bg-red-600 text-white"
+          icon={<Trash className="h-4 w-4 " />}
           onClick={() =>
             console.log('Deleting access for job ID:', row.id)
           }
