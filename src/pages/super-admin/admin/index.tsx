@@ -8,11 +8,12 @@ import {
   Bell,
   ChevronDown,
   Eye,
-  Pencil,
   LucideTrash2,
-  MoreVertical,
-  LogIn,
-  UserX,
+  Pencil,
+  // LucideTrash2,
+  // MoreVertical,
+  // LogIn,
+  // UserX,
 } from 'lucide-react';
 // import { Button } from '@/components/ui/button';
 // import { Badge } from '@/components/ui/badge';
@@ -24,12 +25,12 @@ import DataTable, {
 } from '../../../components/data-table/DataTable';
 import type { IAdmins } from '../../../types/admins.types';
 import { useGetAdminUsersQuery } from '../../../store/api';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '../../../components/ui/dropdown-menu';
+// import {
+//   DropdownMenu,
+//   DropdownMenuContent,
+//   DropdownMenuItem,
+//   DropdownMenuTrigger,
+// } from '../../../components/ui/dropdown-menu';
 
 // interface IAdmins {
 //   id: number;
@@ -198,11 +199,11 @@ const SuperAdminAdminsPage: React.FC = () => {
             onClick={() => navigate(`/super-admin/admin/${row._id}`)}
           />
 
-          {/* <ActionButton
+          <ActionButton
             className="hover:text-white hover:bg-red-600"
             icon={<LucideTrash2 className="h-3 w-3" />}
-          /> */}
-          <ActionButton
+          />
+          {/* <ActionButton
             icon={
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -210,13 +211,11 @@ const SuperAdminAdminsPage: React.FC = () => {
                     icon={<MoreVertical className="h-4 w-4" />}
                   />
                 </DropdownMenuTrigger>
-
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem>
                     <LogIn className="mr-2 h-4 w-4" />
                     Login as Admin
                   </DropdownMenuItem>
-
                   <DropdownMenuItem className="text-red-500 focus:text-red-500">
                     <UserX className="mr-2 h-4 w-4" />
                     Set Inactive
@@ -224,7 +223,7 @@ const SuperAdminAdminsPage: React.FC = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
             }
-          />
+          /> */}
         </div>
       ),
     },
