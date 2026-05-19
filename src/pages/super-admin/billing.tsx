@@ -1,18 +1,15 @@
 import React from 'react';
 import { SuperAdminLayout } from '@/components/layout/SuperAdminLayout';
+import { Navbar } from '@/components/layout/Navbar';
 import {
   CreditCard,
   DollarSign,
   TrendingUp,
   Calendar,
   Download,
-  Bell,
-  ChevronDown,
-  PanelLeftIcon,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 const billingStats = [
   {
@@ -81,48 +78,15 @@ const recentInvoices = [
 ];
 
 const SuperAdminBillingPage: React.FC = () => {
-  // const { toggleSidebar } = useSidebar();
-
   return (
     <SuperAdminLayout>
       <main className="flex-1 w-full overflow-y-auto px-4 pt-5 pb-5">
         <div className="min-h-full w-full">
-          <div className="mb-3 px-4 flex flex-col-reverse items-center justify-between sm:flex-row">
-            <div className="pb-4">
-              <h2 className="text-[24px] font-bold text-[#151515]">
-                Billing & Payments
-              </h2>
-              <p className="mt-1 text-[13px] text-[#777]">
-                Monitor revenue and manage invoices
-              </p>
-            </div>
-
-            <div className="flex pb-4 items-center gap-2.5">
-              <button
-                // onClick={toggleSidebar}
-                className="flex h-10 w-10 items-center justify-center rounded-lg border border-[#ececec] bg-white shadow-sm md:hidden"
-              >
-                <PanelLeftIcon className="h-4 w-4 text-[#151515]" />
-              </button>
-              <button className="relative flex h-10 w-10 items-center justify-center rounded-full border border-[#e5e5e5] bg-white">
-                <Bell className="h-4 w-4" />
-                <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-green-600 text-[9px] text-white">
-                  3
-                </span>
-              </button>
-              <div className="flex items-center gap-2 rounded-xl border border-[#ececec] bg-white px-3 py-1.5 shadow-sm">
-                <Avatar className="h-8 w-8">
-                  <AvatarFallback className="text-xs bg-green-600 text-white">
-                    SA
-                  </AvatarFallback>
-                </Avatar>
-                <span className="text-sm font-semibold">
-                  Super Admin
-                </span>
-                <ChevronDown className="h-4 w-4 text-gray-500" />
-              </div>
-            </div>
-          </div>
+          <Navbar
+            title="Billing & Payments"
+            subtitle="Monitor revenue and manage invoices"
+            superAccess
+          />
 
           <div className="mb-1 flex justify-end">
             <Button className="rounded-xl gap-2">

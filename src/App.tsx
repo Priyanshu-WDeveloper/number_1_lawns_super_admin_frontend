@@ -10,15 +10,7 @@ const App: React.FC = () => {
     <Provider store={store}>
       <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <AppRoutes />
-        <Toaster
-          position="top-right"
-          // toastOptions={{
-          //   style: {
-          //     background: '#22c55e',
-          //     color: '#fff',
-          //   },
-          // }}
-        />
+        <Toaster position="top-right" />
       </BrowserRouter>
     </Provider>
   );

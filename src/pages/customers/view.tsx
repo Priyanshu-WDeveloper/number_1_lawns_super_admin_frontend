@@ -23,6 +23,7 @@ import { AppLayout } from '@/components/layout/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { ROUTES } from '@/constants';
 
 interface CustomerData {
   name: string;
@@ -108,7 +109,7 @@ export default function CustomerViewPage() {
             {/* Back Button */}
             <Button
               variant="ghost"
-              onClick={() => navigate('/customers')}
+              onClick={() => navigate(ROUTES.CUSTOMERS)}
               className="mb-4 text-[#777] hover:text-[#16610E] hover:bg-[#edf8e7]"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />

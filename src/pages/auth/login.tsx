@@ -7,7 +7,8 @@ import { Button } from '../../components/ui/button';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import z from 'zod';
-import { useLoginMutation } from '../../store/api';
+import { useLoginMutation } from '../../API/api';
+import { ROUTES } from '../../constants';
 
 const loginSchema = z.object({
   email: z
@@ -50,7 +51,7 @@ const Login: React.FC = () => {
         toast.success('Welcome back Admin!');
         localStorage.setItem('token', res.token);
         localStorage.setItem('role', res.user.role.toString());
-        navigate('/dashboard');
+        navigate(ROUTES.DASHBOARD);
       }
     } catch (error) {
       console.error(error);
@@ -216,7 +217,9 @@ const Login: React.FC = () => {
                         <button
                           type="button"
                           className="text-green-700 font-medium hover:underline"
-                          onClick={() => navigate('/forgot-password')}
+                          onClick={() =>
+                            navigate(ROUTES.FORGOT_PASSWORD)
+                          }
                         >
                           Forgot password?
                         </button>

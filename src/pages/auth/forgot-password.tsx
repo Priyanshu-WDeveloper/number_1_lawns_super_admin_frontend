@@ -7,6 +7,7 @@ import { Leaf, Mail, ArrowLeft, Lock } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { InputWithIcon } from '../../components/forms/input-with-icon';
 import { Button } from '../../components/ui/button';
+import { ROUTES } from '../../constants';
 
 const forgotPasswordSchema = z.object({
   email: z
@@ -40,7 +41,7 @@ const ForgotPassword: React.FC = () => {
 
       await new Promise((resolve) => setTimeout(resolve, 1000));
       toast.success('Password reset link sent to your email!');
-      navigate('/login');
+      navigate(ROUTES.LOGIN);
     } catch (error) {
       toast.error('Failed to send reset link. Please try again.');
     } finally {
@@ -123,7 +124,7 @@ const ForgotPassword: React.FC = () => {
                 <div>
                   <div className="w-full max-w-2xl bg-white rounded-[28px] shadow-lg border border-gray-100 p-8">
                     <button
-                      onClick={() => navigate('/login')}
+                      onClick={() => navigate(ROUTES.LOGIN)}
                       className="flex items-center gap-2 text-green-700 hover:text-green-800 mb-6 transition-colors"
                     >
                       <ArrowLeft className="h-5 w-5" />

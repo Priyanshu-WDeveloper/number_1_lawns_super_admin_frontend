@@ -1,22 +1,19 @@
-// Removed unused imports: React, Button, Card, Input, Select
-// import * as React from 'react';
-// import { Button } from '@/components/ui/button';
-// import { Input } from '@/components/ui/input';
-// import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-// import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Ellipsis, Eye, Pencil } from 'lucide-react';
 
-import { Eye, LucideTrash2, Pencil } from 'lucide-react';
-
-// Corrected import for DataTable and its types
-// Using type-only import for ColumnDef due to verbatimModuleSyntax
 import type { ColumnDef } from '@/components/data-table/DataTable';
-// Removed DataTableData from import as it's unused
 import DataTable, {
   ActionButton,
-} from '@/components/data-table/DataTable'; // ActionButton is now imported directly from DataTable
+} from '@/components/data-table/DataTable';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Navbar } from '@/components/layout/Navbar';
 import { useNavigate } from 'react-router-dom';
+import { ROUTES } from '@/constants';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '../../components/ui/dropdown-menu';
 
 // Define the structure for Customer data
 interface Customer {
@@ -127,59 +124,13 @@ export default function CustomerManagementPage() {
       accessorKey: 'actions',
       header: 'Actions',
       cell: (row: Customer) => (
-        //       <div className="flex flex-wrap gap-2">
-        //         <ActionButton
-        //           icon={<Eye className="h-4 w-4" />}
-        //           onClick={() => navigate(`/customers/${row.id}`)}
-        //         />
-        //         <ActionButton
-        //           icon={<Pencil className="h-4 w-4" />}
-        //           onClick={() => console.log('Edit customer:', row.id)}
-        //         />
-        //         {/* <ActionButton
-        //           className="hover:text-white hover:bg-red-600"
-        //           icon={<LucideTrash2 className="h-3 w-3" />}
-        //           onClick={() =>
-        //             console.log('Deleting access for job ID:', row.id)
-        //           }
-        //         /> */}
-        //         <ActionButton
-        //           variant="outline"
-        //           className="
-        //   group
-        //   h-9 w-9
-        //   rounded-full
-        //   border border-red-100
-        //   bg-red-50/60
-        //   text-red-500
-        //   transition-all duration-200
-        //   hover:scale-105
-        //   hover:border-red-500
-        //   hover:bg-red-600
-        //   hover:text-white
-        //   hover:shadow-lg hover:shadow-red-200
-        //   active:scale-95
-        // "
-        //           icon={
-        //             <LucideTrash2
-        //               className="
-        //       h-4 w-4
-        //       transition-transform duration-200
-        //       group-hover:rotate-6
-        //       group-hover:scale-110
-        //     "
-        //             />
-        //           }
-        //           onClick={() =>
-        //             console.log('Deleting access for job ID:', row.id)
-        //           }
-        //         />
-        //       </div>
         <div className="flex flex-wrap gap-2">
           <ActionButton
             intent="view"
             icon={<Eye className="h-4 w-4" />}
-            onClick={() => navigate(`/customers/${row.id}`)}
+            onClick={() =>
+              navigate(ROUTES.CUSTOMERS_VIEW.replace(':id', row.id))
+            }
           />
 
           <ActionButton
@@ -188,13 +139,32 @@ export default function CustomerManagementPage() {
             onClick={() => console.log('Edit customer:', row.id)}
           />
 
-          <ActionButton
+          {/* <ActionButton
             intent="delete"
             icon={<LucideTrash2 className="h-4 w-4" />}
             onClick={() =>
               console.log('Deleting access for job ID:', row.id)
             }
-          />
+          /> */}
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <ActionButton
+                icon={<Ellipsis className="h-3.5 w-3.5" />}
+                className="h-8 w-8 rounded-full border border-[#e5e7eb] bg-white text-[#6b7280] hover:bg-[#f3f4f6] hover:text-[#374151] shadow-none"
+              />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {row.status === 'Active' ? (
+                <DropdownMenuItem className="text-red-500 focus:text-red-500">
+                  Set Inactive
+                </DropdownMenuItem>
+              ) : (
+                <DropdownMenuItem className="text-green-600 focus:text-green-600">
+                  Set Active
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       ),
     },
@@ -223,7 +193,7 @@ export default function CustomerManagementPage() {
               filterField="status"
               filterOptions={['Active', 'Inactive']}
               addButtonLabel="Add Customer"
-              onAddClick={() => navigate('/customers/create')}
+              onAddClick={() => navigate(ROUTES.CUSTOMERS_CREATE)}
             />
           </div>
         </div>

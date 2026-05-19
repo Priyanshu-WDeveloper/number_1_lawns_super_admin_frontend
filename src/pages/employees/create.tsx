@@ -20,6 +20,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useEmployeeStore } from '@/store/employeeStore';
 import type { EmployeeDocument } from '@/store/employeeStore';
+import { ROUTES } from '@/constants';
 
 const employeeSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -27,7 +28,6 @@ const employeeSchema = z.object({
     .string()
     .min(1, 'Email is required')
     .email('Invalid email address'),
-  // phone: z.e164().min(1, 'Phone is required'),
   phone: z
     .string()
     .regex(/^\+?[1-9]\d{7,14}$/, 'Invalid phone number'),
@@ -86,7 +86,6 @@ export default function CreateEmployeePage() {
     handleSubmit,
     trigger,
     watch,
-    // setValue,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(employeeSchema),
@@ -173,15 +172,8 @@ export default function CreateEmployeePage() {
       documents: employeeDocs,
     });
 
-    navigate('/employees');
+    navigate(ROUTES.EMPLOYEES);
   };
-
-  // const handlePhoneChange = (
-  //   e: React.ChangeEvent<HTMLInputElement>,
-  // ) => {
-  //   const value = e.target.value.replace(/[^\d\s\-\+\(\)]/g, '');
-  //   setValue('phone', value, { shouldValidate: true });
-  // };
 
   const renderStepContent = () => {
     switch (currentStep) {
@@ -258,7 +250,6 @@ export default function CreateEmployeePage() {
                     type="tel"
                     placeholder="Enter phone number"
                     {...register('phone')}
-                    // onChange={handlePhoneChange}`
                     className="h-12 border-[#e5e5e5] rounded-xl bg-[#fafaf8] focus:bg-white focus:border-[#16610E] focus:ring-[#16610E] transition-all"
                   />
                   {errors.phone && (
@@ -400,7 +391,7 @@ export default function CreateEmployeePage() {
         <div className="max-w-4xl mx-auto">
           <Button
             variant="ghost"
-            onClick={() => navigate('/employees')}
+            onClick={() => navigate(ROUTES.EMPLOYEES)}
             className="mb-6 text-[#777] hover:text-[#16610E] hover:bg-[#edf8e7] gap-2"
           >
             <ArrowLeft className="h-4 w-4" />

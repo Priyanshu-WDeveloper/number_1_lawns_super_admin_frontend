@@ -23,7 +23,6 @@ import {
 import { PanelLeftIcon } from 'lucide-react';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import toast from 'react-hot-toast';
-// import { useLogoutMutation } from '../../store/api';
 import { ROUTES } from '../../constants';
 import { localLogout } from '../../lib/auth';
 
@@ -31,27 +30,27 @@ const items = [
   {
     title: 'Dashboard',
     icon: Dashboard,
-    url: '/dashboard',
+    url: ROUTES.DASHBOARD,
   },
   {
     title: 'Customer Management',
     icon: Customer,
-    url: '/customers',
+    url: ROUTES.CUSTOMERS,
   },
   {
     title: 'Employee Management',
     icon: Employee,
-    url: '/employees',
+    url: ROUTES.EMPLOYEES,
   },
   {
     title: 'Job Management',
     icon: Job,
-    url: '/jobs',
+    url: ROUTES.JOBS,
   },
   {
     title: 'Invoice',
     icon: Invoices,
-    url: '/invoices',
+    url: ROUTES.INVOICES,
   },
 ];
 
@@ -60,17 +59,9 @@ export function DashboardSidebar() {
   const location = useLocation();
   const navigate = useNavigate();
   const { toggleSidebar } = useSidebar();
-  // const [logout] = useLogoutMutation();
-
-  // const handleLogout = () => {
-  //   logout();
-  //   navigate('/login');
-  //   setShowLogoutDialog(false);
-  // };
 
   const handleLogout = async () => {
     try {
-      // await logout().unwrap();
       localLogout();
       toast.success('Logged out');
       setShowLogoutDialog(false);

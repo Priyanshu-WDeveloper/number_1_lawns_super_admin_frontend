@@ -2,20 +2,16 @@ import * as React from 'react';
 import {
   Search,
   Filter,
+  Plus,
   ChevronLeft,
   ChevronRight,
-  Plus,
+  Calendar,
+  ChevronsUpDown,
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Select,
   SelectContent,
@@ -23,23 +19,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Skeleton } from '@/components/ui/skeleton';
+import { cn } from '@/lib/utils';
 
-// Exporting generic types
 export type DataTableData = Record<string, any>;
 
-// Interface for defining table columns
 export interface ColumnDef<T extends DataTableData> {
-  accessorKey: string; // Key to access data in the row object
-  header: string; // Header text for the column
-  // Optional: Custom cell renderer
+  accessorKey: string;
+  header: string;
   cell?: (row: T) => React.ReactNode;
-  // Optional: Field to apply filter on (e.g., 'status')
   filterField?: string;
-  // Optional: Filter options if needed for specific columns
   filterOptions?: string[];
+  sortable?: boolean;
 }
 
-// Props for the generic DataTable component
 interface DataTableProps<T extends DataTableData> {
   data: T[];
   columns: ColumnDef<T>[];
@@ -48,46 +41,23 @@ interface DataTableProps<T extends DataTableData> {
   addButtonLabel?: string;
   onAddClick?: () => void;
   searchPlaceholder?: string;
-  filterField?: string; // Field to apply filter on (e.g., 'status')
-  filterOptions?: string[]; // Options for the filter dropdown (e.g., ['All', 'Active', 'Inactive'])
-  // Optional: Custom filter logic if default filtering isn't sufficient
+  filterField?: string;
+  filterOptions?: string[];
   customFilterFn?: (
     row: T,
     searchTerm: string,
     filterValue: string,
   ) => boolean;
+  loading?: boolean;
+  pagination?: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+  onPageChange?: (page: number) => void;
+  onLimitChange?: (limit: number) => void;
 }
-
-// Defining ActionButton and PaginationButton locally within DataTable.tsx
-// This simplifies imports and avoids potential circular dependencies or export issues.
-
-/* -------------------------- */
-/* Reusable Action Button */
-/* -------------------------- */
-// interface ActionButtonProps {
-//   icon: React.ReactNode;
-//   onClick?: () => void;
-//   variant?: 'outline' | 'default';
-//   className?: string;
-// }
-
-// export function ActionButton({
-//   icon,
-//   onClick,
-//   variant = 'outline',
-//   className = '',
-// }: ActionButtonProps) {
-//   return (
-//     <Button
-//       variant={variant}
-//       size="icon-sm"
-//       className={`gap-2 rounded-full ${className}`}
-//       onClick={onClick}
-//     >
-//       {icon}
-//     </Button>
-//   );
-// }
 
 interface ActionButtonProps extends React.ComponentProps<
   typeof Button
@@ -98,8 +68,6 @@ interface ActionButtonProps extends React.ComponentProps<
   intent?: 'default' | 'view' | 'edit' | 'delete';
   className?: string;
 }
-
-import { cn } from '@/lib/utils';
 
 export function ActionButton({
   icon,
@@ -134,9 +102,6 @@ export function ActionButton({
   );
 }
 
-/* -------------------------- */
-/* Reusable Pagination Button */
-/* -------------------------- */
 interface PaginationButtonProps {
   label?: string;
   icon?: React.ReactNode;
@@ -154,7 +119,7 @@ export function PaginationButton({
     <Button
       variant={active ? 'default' : 'outline'}
       size="icon"
-      className={`h-9 w-9 rounded-lg ${active ? '' : 'bg-white'}`}
+      className={`h-8 w-8 rounded-lg text-sm ${active ? 'border-[#16610E] bg-[#edf8e7] text-[#16610E]' : 'border-[#e5e7eb] bg-white text-[#6b7280] hover:bg-[#f9fafb]'}`}
       onClick={onClick}
     >
       {icon || label}
@@ -162,20 +127,38 @@ export function PaginationButton({
   );
 }
 
+const PAGE_SIZES = [10, 25, 50, 100] as const;
+
+const getVisiblePages = (
+  current: number,
+  total: number,
+): (number | string)[] => {
+  if (total <= 7)
+    return Array.from({ length: total }, (_, i) => i + 1);
+  if (current <= 3) return [1, 2, 3, 4, '...', total];
+  if (current >= total - 2)
+    return [1, '...', total - 3, total - 2, total - 1, total];
+  return [1, '...', current - 1, current, current + 1, '...', total];
+};
+
 export default function DataTable<T extends DataTableData>({
   data,
   columns,
-  title,
-  description,
+  title: _title,
+  description: _description,
   addButtonLabel = 'Add Item',
   onAddClick,
   searchPlaceholder = 'Search...',
   filterField,
   filterOptions,
   customFilterFn,
+  loading = false,
+  pagination,
+  onPageChange,
+  onLimitChange,
 }: DataTableProps<T>) {
   const [search, setSearch] = React.useState('');
-  const [filterValue, setFilterValue] = React.useState<string>('All'); // Default filter value
+  const [filterValue, setFilterValue] = React.useState<string>('All');
 
   const handleFilterChange = (value: string) => {
     setFilterValue(value);
@@ -183,7 +166,6 @@ export default function DataTable<T extends DataTableData>({
 
   const filteredData = React.useMemo(() => {
     return data.filter((row) => {
-      // Search filtering
       const matchesSearch =
         !search ||
         columns.some((col) => {
@@ -192,12 +174,11 @@ export default function DataTable<T extends DataTableData>({
             return value.toLowerCase().includes(search.toLowerCase());
           }
           if (typeof value === 'number') {
-            return String(value).includes(search); // Allow searching numbers too
+            return String(value).includes(search);
           }
           return false;
         });
 
-      // Filter filtering
       const matchesFilter =
         !filterField ||
         !filterValue ||
@@ -206,7 +187,6 @@ export default function DataTable<T extends DataTableData>({
           row[filterField]?.toLowerCase() ===
             filterValue?.toLowerCase());
 
-      // Custom filter function if provided
       if (customFilterFn) {
         return customFilterFn(row, search, filterValue);
       }
@@ -222,7 +202,6 @@ export default function DataTable<T extends DataTableData>({
     customFilterFn,
   ]);
 
-  // Function to render a cell based on column definition
   const renderCell = (row: T, column: ColumnDef<T>) => {
     if (column.cell) {
       return column.cell(row);
@@ -233,108 +212,120 @@ export default function DataTable<T extends DataTableData>({
     }
 
     if (typeof value === 'number') {
-      // Format numbers, e.g., to 2 decimal places
-      return value.toFixed(2);
+      return value;
     }
 
-    // Return string as-is - CSS will handle ellipsis truncation
     return String(value);
   };
 
+  const renderSkeletonRow = () => (
+    <tr className="border-b border-[#f3f4f6]">
+      {columns.map((column, i) => (
+        <td key={column.accessorKey} className="px-4 py-2.5">
+          <Skeleton
+            className={cn(
+              'h-4',
+              i === 0 && 'w-16',
+              i === columns.length - 1 && 'w-24',
+              i !== 0 && i !== columns.length - 1 && 'w-28',
+            )}
+          />
+        </td>
+      ))}
+    </tr>
+  );
+
   return (
-    <Card className="rounded-2xl w-full min-h-[70vh] bg-white shadow-sm">
-      {/* <Card className="flex h-full min-h-[calc(100vh-180px)] w-full flex-col rounded-2xl bg-white shadow-sm"> */}
-      <CardHeader className="flex w-full flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div className="px-4">
-          <CardTitle className="text-2xl">{title}</CardTitle>
-          <CardDescription>{description}</CardDescription>
-        </div>
-        {addButtonLabel && onAddClick && (
-          <>
-            <Button
-              className="h-10 rounded-xl p-5"
-              onClick={onAddClick}
-            >
-              <Plus className="h-7 w-7 mr-2" />
-              {addButtonLabel}
-            </Button>
-          </>
-        )}
-      </CardHeader>
-      <CardContent className="space-y-6">
-        {/* Top Filters */}
-        <div className=" flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          {searchPlaceholder && (
-            <div className="relative w-full max-w-sm">
-              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                placeholder={searchPlaceholder}
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-          )}
+    <Card className="rounded-2xl w-full bg-white shadow-sm flex flex-col h-full">
+      <CardContent className="px-6 flex-1 flex flex-col ">
+        {/* Filter Row */}
+        <div className="flex items-center justify-between gap-3 mb-3">
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#9ca3af]" />
+            <Input
+              placeholder={searchPlaceholder}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-10 pr-12 rounded-xl border-[#e5e7eb] bg-white h-10"
+            />
+            <kbd className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-mono text-[#9ca3af] bg-[#f3f4f6] rounded px-1.5 py-0.5 pointer-events-none border border-[#e5e7eb]">
+              ⌘K
+            </kbd>
+          </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 shrink-0">
             {filterField && filterOptions && (
-              <>
-                <Button variant="outline" className="rounded-xl">
-                  <Filter className="mr-2 h-4 w-4" />
-                  Filter
-                </Button>
+              <Select
+                value={filterValue}
+                onValueChange={handleFilterChange}
+              >
+                <SelectTrigger className="w-[140px] rounded-xl h-10 border-[#e5e7eb]">
+                  <SelectValue placeholder={`All ${filterField}`} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="All">All</SelectItem>
+                  {filterOptions.map((option) => (
+                    <SelectItem
+                      key={option}
+                      value={option.toLowerCase()}
+                    >
+                      {option}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
 
-                <Select
-                  value={filterValue}
-                  onValueChange={handleFilterChange}
-                >
-                  <SelectTrigger className="w-[160px] rounded-xl">
-                    <SelectValue placeholder={`All ${filterField}`} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="All">All</SelectItem>
-                    {filterOptions.map((option) => (
-                      <SelectItem
-                        key={option}
-                        value={option.toLowerCase()}
-                      >
-                        {option}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </>
+            {addButtonLabel && onAddClick && (
+              <Button
+                className="h-10 rounded-xl bg-[#16610E] text-white hover:bg-[#1a7a12] px-5"
+                onClick={onAddClick}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                {addButtonLabel}
+              </Button>
             )}
           </div>
         </div>
+
         {/* Table */}
-        <div className="rounded-2xl border min-h-[calc(100vh-400px)]">
-          {/* <table className="w-full min-h-[calc(100vh-400px)] "> */}
-          <table className="w-full">
-            <thead className="bg-muted/40">
-              <tr className="border-b text-left">
+        <div className="rounded-xl border border-[#f3f4f6] overflow-auto flex-1 min-h-0">
+          <table className="w-full min-w-[900px]">
+            <thead className="bg-[#f9fafb]">
+              <tr className="border-b border-[#f3f4f6]">
                 {columns.map((column) => (
                   <th
                     key={column.accessorKey}
-                    className="px-3 py-4 text-sm font-semibold text-muted-foreground"
+                    className="px-4 py-2.5 text-[12px] font-medium text-[#6b7280] uppercase tracking-wider text-left whitespace-nowrap"
                   >
-                    {column.header}
+                    <div className="flex items-center gap-1">
+                      {column.header}
+                      {column.sortable !== false && (
+                        <ChevronsUpDown className="h-3 w-3 text-[#d1d5db]" />
+                      )}
+                    </div>
                   </th>
                 ))}
               </tr>
             </thead>
 
             <tbody>
-              {filteredData.length > 0 ? (
+              {loading ? (
+                Array.from({ length: 5 }).map((_, i) => (
+                  <React.Fragment key={i}>
+                    {renderSkeletonRow()}
+                  </React.Fragment>
+                ))
+              ) : filteredData.length > 0 ? (
                 filteredData.map((row: T, rowIndex) => (
                   <tr
-                    key={row.id || rowIndex} // Use 'id' if available, otherwise index
-                    className="border-b transition-colors hover:bg-muted/30"
+                    key={row.id || rowIndex}
+                    className="border-b border-[#f3f4f6] transition-colors hover:bg-[#f9fafb]"
                   >
                     {columns.map((column) => (
                       <td
                         key={column.accessorKey}
-                        className="truncate px-4 py-4 text-sm"
+                        className="px-4 py-2.5 text-sm text-[#374151] whitespace-nowrap"
                       >
                         {renderCell(row, column)}
                       </td>
@@ -345,14 +336,13 @@ export default function DataTable<T extends DataTableData>({
                 <tr>
                   <td
                     colSpan={columns.length}
-                    className="h-[300px] text-center"
+                    className="h-[240px] text-center"
                   >
                     <div className="flex flex-col items-center justify-center gap-2">
-                      <p className="text-lg font-medium text-muted-foreground">
+                      <p className="text-lg font-medium text-[#6b7280]">
                         No matching results
                       </p>
-
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-sm text-[#9ca3af]">
                         Try adjusting your search or filters
                       </p>
                     </div>
@@ -362,23 +352,58 @@ export default function DataTable<T extends DataTableData>({
             </tbody>
           </table>
         </div>
-        {/* Footer - Pagination is handled by Button components imported from Buttons.tsx */}
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <p className="text-sm text-muted-foreground">
-            Showing 1 to {filteredData.length} of {data.length}{' '}
-            entries
-          </p>
 
-          <div className="flex items-center gap-2">
-            <PaginationButton icon={<ChevronLeft />} />
-            <PaginationButton label="1" active />
-            <PaginationButton label="2" />
-            <PaginationButton label="3" />
-            <span className="px-2 text-muted-foreground">...</span>
-            <PaginationButton label="5" />
-            <PaginationButton icon={<ChevronRight />} />
+        {/* Pagination */}
+        {pagination && pagination.total > 8 && (
+          <div className="flex items-center justify-end gap-3 px-6 pt-2 pb-0 border-t border-[#f3f4f6]">
+            <p className="text-[13px] text-[#6b7280] whitespace-nowrap">
+              {pagination.total} results
+            </p>
+
+            <div className="flex items-center gap-1">
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-8 w-8 rounded-lg border-[#e5e7eb] text-[#6b7280]"
+                disabled={pagination.page === 1}
+                onClick={() => onPageChange?.(pagination.page - 1)}
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+
+              {getVisiblePages(
+                pagination.page,
+                pagination.totalPages,
+              ).map((p, i) =>
+                p === '...' ? (
+                  <span
+                    key={`ellipsis-${i}`}
+                    className="px-2 text-[#9ca3af]"
+                  >
+                    ...
+                  </span>
+                ) : (
+                  <PaginationButton
+                    key={p}
+                    label={String(p)}
+                    active={p === pagination.page}
+                    onClick={() => onPageChange?.(p as number)}
+                  />
+                ),
+              )}
+
+              <Button
+                variant="outline"
+                size="icon"
+                className="h-8 w-8 rounded-lg border-[#e5e7eb] text-[#6b7280]"
+                disabled={pagination.page === pagination.totalPages}
+                onClick={() => onPageChange?.(pagination.page + 1)}
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
-        </div>
+        )}
       </CardContent>
     </Card>
   );

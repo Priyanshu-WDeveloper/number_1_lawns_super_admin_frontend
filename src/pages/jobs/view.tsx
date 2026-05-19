@@ -10,6 +10,7 @@ import {
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { ROUTES } from '@/constants';
 
 interface JobData {
   jobId: string;
@@ -165,7 +166,7 @@ export default function JobViewPage() {
             {/* Back Button */}
             <Button
               variant="ghost"
-              onClick={() => navigate('/jobs')}
+              onClick={() => navigate(ROUTES.JOBS)}
               className="mb-4 text-[#777] hover:text-[#16610E] hover:bg-[#edf8e7]"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />

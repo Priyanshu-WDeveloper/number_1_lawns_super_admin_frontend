@@ -16,13 +16,19 @@ import { AppLayout } from '@/components/layout/AppLayout';
 import { Stepper } from '@/components/ui/stepper';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { AddressPicker } from '@/components/forms/address-picker';
+import { LocationModeToggle } from '@/components/forms/location-mode-toggle';
+import { MockMapPicker } from '@/components/forms/mock-map-picker';
+import { ManualCoordinates } from '@/components/forms/manual-coordinates';
+import { ROUTES } from '@/constants';
 
 const customerSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   email: z.string().min(1, 'Email is required').email('Invalid email address'),
   phone: z.string().min(1, 'Phone is required').regex(/^\d+$/, 'Phone must be numeric'),
   location: z.string().optional(),
+  latitude: z.number().optional(),
+  longitude: z.number().optional(),
+  locationMode: z.enum(['map', 'manual']),
   address: z.string().min(1, 'Address is required'),
   postalCode: z.string().regex(/^\d+$/, 'Postal code must be numeric').or(z.literal('')),
   city: z.string().optional(),
@@ -37,6 +43,9 @@ const initialFormData: FormData = {
   email: '',
   phone: '',
   location: '',
+  latitude: undefined,
+  longitude: undefined,
+  locationMode: 'map',
   address: '',
   postalCode: '',
   city: '',
@@ -106,8 +115,14 @@ export default function CreateCustomerPage() {
   };
 
   const onSubmit = (data: FormData) => {
-    console.log('Creating customer:', data);
-    navigate('/customers');
+    const payload = {
+      ...data,
+      location: data.latitude && data.longitude
+        ? { type: 'Point' as const, coordinates: [data.longitude, data.latitude] }
+        : data.location,
+    };
+    console.log('Creating customer:', payload);
+    navigate(ROUTES.CUSTOMERS);
   };
 
   const renderStepContent = () => {
@@ -183,23 +198,36 @@ export default function CreateCustomerPage() {
       case 2:
         return (
           <div className="space-y-6">
-            {/* Location Section */}
             <div>
               <h4 className="text-sm font-medium text-[#777] mb-4 uppercase tracking-wide">
                 Address Information
               </h4>
               <div className="space-y-5">
-                <AddressPicker
-                  label="Search Location"
-                  value={formValues.location || ''}
-                  onChange={(value) => setValue('location', value)}
-                  required
+                <LocationModeToggle
+                  value={formValues.locationMode || 'map'}
+                  onChange={(mode) => setValue('locationMode', mode)}
                 />
-                {errors.location && (
-                  <p className="text-sm text-red-500 -mt-3">
-                    {errors.location.message}
-                  </p>
+
+                {formValues.locationMode === 'map' ? (
+                  <MockMapPicker
+                    latitude={formValues.latitude || 0}
+                    longitude={formValues.longitude || 0}
+                    onPick={(lat, lng) => {
+                      setValue('latitude', lat);
+                      setValue('longitude', lng);
+                    }}
+                  />
+                ) : (
+                  <ManualCoordinates
+                    latitude={formValues.latitude || 0}
+                    longitude={formValues.longitude || 0}
+                    onChange={(lat, lng) => {
+                      setValue('latitude', lat);
+                      setValue('longitude', lng);
+                    }}
+                  />
                 )}
+
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-[#151515]">
                     Street Address{' '}
@@ -339,7 +367,7 @@ export default function CreateCustomerPage() {
           {/* Back Button */}
           <Button
             variant="ghost"
-            onClick={() => navigate('/customers')}
+            onClick={() => navigate(ROUTES.CUSTOMERS)}
             className="mb-6 text-[#777] hover:text-[#16610E] hover:bg-[#edf8e7] gap-2"
           >
             <ArrowLeft className="h-4 w-4" />

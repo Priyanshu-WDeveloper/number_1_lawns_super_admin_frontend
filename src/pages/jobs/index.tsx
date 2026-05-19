@@ -7,6 +7,7 @@ import DataTable, {
 } from '@/components/data-table/DataTable';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Navbar } from '@/components/layout/Navbar';
+import { ROUTES } from '@/constants';
 
 // Define the structure for Job data
 interface Job {
@@ -170,7 +171,7 @@ export default function JobManagementPage() {
             filterField="status"
             filterOptions={['Active', 'Inactive']}
             addButtonLabel="Add Job"
-            onAddClick={() => navigate('/jobs/create')}
+            onAddClick={() => navigate(ROUTES.JOBS_CREATE)}
           />
         </div>
       </main>

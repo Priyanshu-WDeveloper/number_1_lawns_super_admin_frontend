@@ -15,7 +15,8 @@ import { Button } from '../../components/ui/button';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import z from 'zod';
-import { useSuperLoginMutation } from '../../store/api';
+import { useSuperLoginMutation } from '../../API/api';
+import { ROUTES } from '../../constants';
 
 const loginSchema = z.object({
   email: z
@@ -66,7 +67,7 @@ const SuperAdminLogin: React.FC = () => {
         toast.success('Welcome back Super Admin!');
         localStorage.setItem('token', res.token);
         localStorage.setItem('role', res.user.role.toString());
-        navigate('/super-admin/dashboard');
+        navigate(ROUTES.SUPER_ADMIN_DASHBOARD);
       }
     } catch (error) {
       toast.error('Login failed. Please check your credentials.');

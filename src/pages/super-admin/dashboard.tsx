@@ -1,68 +1,24 @@
-import React from 'react';
 import { SuperAdminLayout } from '@/components/layout/SuperAdminLayout';
+import { Navbar } from '@/components/layout/Navbar';
 import {
   Users,
   Shield,
   BarChart3,
   Settings,
-  Bell,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-// import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { useNavigate } from 'react-router-dom';
-import AccountDropdown from '../../components/account-dropdown';
 
-const SuperAdminDashboardPage: React.FC = () => {
-  const navigate = useNavigate();
-  // const { / } = useSidebar();
+const SuperAdminDashboardPage = () => {
 
   return (
     <SuperAdminLayout>
       <main className="flex-1 w-full overflow-y-auto px-4 pt-5 pb-5">
         <div className="min-h-full w-full">
-          <div className="mb-3 px-4 flex flex-col-reverse items-center justify-between sm:flex-row">
-            <div className="pb-4">
-              <h2 className="text-[24px] font-bold text-[#151515]">
-                Super Admin Dashboard
-              </h2>
-              <p className="mt-1 text-[13px] text-[#777]">
-                Overview of system administration
-              </p>
-            </div>
-            <div className="flex pb-4 items-center gap-2.5">
-              {/* <button
-                // onClick={toggleSidebar}
-                className="flex h-10 w-10 items-center justify-center rounded-lg border border-[#ececec] bg-white shadow-sm md:hidden"
-              >
-                <PanelLeftIcon className="h-4 w-4 text-[#151515]" />
-              </button> */}
-              <button className="relative flex h-10 w-10 items-center justify-center rounded-full border border-[#e5e5e5] bg-white">
-                <Bell
-                  className="h-4 w-4"
-                  onClick={() =>
-                    navigate('super-admin/notifications')
-                  }
-                />
-                <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-green-600 text-[9px] text-white">
-                  3
-                </span>
-              </button>
-              {/* <div className="flex items-center gap-2 rounded-xl border border-[#ececec] bg-white px-3 py-1.5 shadow-sm">
-                <Avatar className="h-8 w-8">
-                  <AvatarFallback className="text-xs bg-green-600 text-white">
-                    SA
-                  </AvatarFallback>
-                </Avatar>
-                <span className="text-sm font-semibold">
-                  Super Admin
-                </span>
-                <ChevronDown className="h-4 w-4 text-gray-500" />
-              </div> */}
-              <div className="flex items-center justify-end p-6">
-                <AccountDropdown superAccess={true} />
-              </div>
-            </div>
-          </div>
+          <Navbar
+            title="Super Admin Dashboard"
+            subtitle="Overview of system administration"
+            superAccess
+          />
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
             <div className="bg-white rounded-[20px] border border-[#ececec] p-5 shadow-sm">

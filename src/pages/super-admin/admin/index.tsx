@@ -1,284 +1,253 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { SuperAdminLayout } from '@/components/layout/SuperAdminLayout';
-import {
-  // Shield,
-  // Plus,
-  // Search,
-  // MoreHorizontal,
-  Bell,
-  ChevronDown,
-  Eye,
-  LucideTrash2,
-  Pencil,
-  // LucideTrash2,
-  // MoreVertical,
-  // LogIn,
-  // UserX,
-} from 'lucide-react';
-// import { Button } from '@/components/ui/button';
-// import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Navbar } from '@/components/layout/Navbar';
+import { Eye, Pencil, Ellipsis } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import DataTable, {
   ActionButton,
   type ColumnDef,
 } from '../../../components/data-table/DataTable';
 import type { IAdmins } from '../../../types/admins.types';
-import { useGetAdminUsersQuery } from '../../../store/api';
-// import {
-//   DropdownMenu,
-//   DropdownMenuContent,
-//   DropdownMenuItem,
-//   DropdownMenuTrigger,
-// } from '../../../components/ui/dropdown-menu';
+import toast from 'react-hot-toast';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '../../../components/ui/dropdown-menu';
+import { ROUTES } from '@/constants';
+import {
+  useGetAdminUsersQuery,
+  useUpdateAdminUserMutation,
+} from '../../../API/api';
 
-// interface IAdmins {
-//   id: number;
-//   adminId: string;
-//   name: string;
-//   email: string;
-//   status: 'Active' | 'Inactive' | 'Expired';
-//   validity: string;
-//   createdAt: string;
-// }
-
-// const admins: IAdmins[] = [
-//   {
-//     id: 1,
-//     adminId: 'ADM-001',
-//     name: 'John Smith',
-//     email: 'john@no1lawns.com',
-//     status: 'Active',
-//     validity: '2026-12-31',
-//     createdAt: '2024-01-15',
-//   },
-//   {
-//     id: 2,
-//     adminId: 'ADM-002',
-//     name: 'Sarah Johnson',
-//     email: 'sarah@no1lawns.com',
-//     status: 'Active',
-//     validity: '2026-10-20',
-//     createdAt: '2024-02-20',
-//   },
-//   {
-//     id: 3,
-//     adminId: 'ADM-003',
-//     name: 'Mike Brown',
-//     email: 'mike@no1lawns.com',
-//     status: 'Inactive',
-//     validity: '2025-08-10',
-//     createdAt: '2023-11-05',
-//   },
-//   {
-//     id: 4,
-//     adminId: 'ADM-004',
-//     name: 'Emily Davis',
-//     email: 'emily@no1lawns.com',
-//     status: 'Expired',
-//     validity: '2024-05-01',
-//     createdAt: '2024-03-10',
-//   },
-// ];
 const SuperAdminAdminsPage: React.FC = () => {
-  // const { toggleSidebar } = useSidebar();
   const navigate = useNavigate();
-
-  // const adminsColumns: ColumnDef<IAdmins>[] = [
-  //   // {
-  //   //   accessorKey: 'id',
-  //   //   header: 'ID',
-  //   // },
-  //   {
-  //     accessorKey: 'id',
-  //     header: 'Admin ID',
-  //   },
-  //   {
-  //     accessorKey: 'name',
-  //     header: 'Name',
-  //   },
-  //   {
-  //     accessorKey: 'email',
-  //     header: 'Email',
-  //   },
-  //   {
-  //     accessorKey: 'status',
-  //     header: 'Status',
-  //     filterField: 'status',
-  //     filterOptions: ['Active', 'Inactive', 'Expired'],
-  //   },
-  //   {
-  //     accessorKey: 'validity',
-  //     header: 'Validity',
-  //   },
-  //   {
-  //     accessorKey: 'createdAt',
-  //     header: 'Joined',
-  //   },
-
-  //   // {
-  //   //   accessorKey: 'balance',
-  //   //   header: 'Balance',
-  //   //   cell: (row: IAdmins) => (
-  //   //     <span
-  //   //       className={
-  //   //         row.balance < 0 ? 'text-red-500' : 'text-green-600'
-  //   //       }
-  //   //     >
-  //   //       ${row.balance.toFixed(2)}
-  //   //     </span>
-  //   //   ),
-  //   // },
-  //   {
-  //     accessorKey: 'actions',
-  //     header: 'Actions',
-  //     cell: (row: IAdmins) => (
-  //       <div className="flex flex-wrap gap-2">
-  //         <ActionButton
-  //           icon={<Eye className="h-4 w-4" />}
-  //           onClick={() => navigate(`/admins/${row._id}`)}
-  //         />
-  //         <ActionButton
-  //           icon={<Pencil className="h-4 w-4" />}
-  //           onClick={() => console.log('Edit admin:', row._id)}
-  //         />
-  //         <ActionButton
-  //           className="hover:text-white hover:bg-red-600"
-  //           icon={<LucideTrash2 className="h-3 w-3" />}
-  //           onClick={() =>
-  //             console.log('Deleting access for job ID:', row._id)
-  //           }
-  //         />
-  //       </div>
-  //     ),
-  //   },
-  // ];
-  const { data } = useGetAdminUsersQuery({
-    page: 1,
-    limit: 10,
-  });
+  const [updateAdminUser] = useUpdateAdminUserMutation();
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(8);
+  const { data, isLoading } = useGetAdminUsersQuery({ page, limit });
   console.log(
     '\n===================== 🟢 data =====================',
   );
   console.log(data);
   console.log('=================================================\n');
+  const statusConfig: Record<
+    string,
+    { color: string; label: string }
+  > = {
+    active: { color: '#22c55e', label: 'Active' },
+    inactive: { color: '#ef4444', label: 'Inactive' },
+    expired: { color: '#f59e0b', label: 'Expired' },
+  };
+
   const adminsColumns: ColumnDef<IAdmins>[] = [
     {
       accessorKey: 'adminId',
       header: 'Admin ID',
+      cell: (row: IAdmins) => (
+        <span className="text-[#6b7280]">{row.adminId}</span>
+      ),
     },
     {
       accessorKey: 'fullName',
       header: 'Name',
-    },
-    {
-      accessorKey: 'email',
-      header: 'Email',
+      cell: (row: IAdmins) => (
+        <div className="flex items-center gap-3">
+          <div
+            className="flex h-7 w-7 items-center justify-center rounded-full text-xs font-semibold"
+            style={
+              row.fullName
+                ? {
+                    backgroundColor: `hsl(${(row.fullName.charCodeAt(0) * 137.5) % 360}, 60%, 90%)`,
+                    color: `hsl(${(row.fullName.charCodeAt(0) * 137.5) % 360}, 60%, 35%)`,
+                  }
+                : { backgroundColor: '#edf8e7', color: '#16610E' }
+            }
+          >
+            {row.fullName
+              ? row.fullName.charAt(0).toUpperCase()
+              : 'A'}
+          </div>
+          <div>
+            <span className="font-medium text-[#151515]">
+              {row.fullName || '-'}
+            </span>
+            <p className="text-xs text-[#6b7280]">{row.email}</p>
+          </div>
+        </div>
+      ),
     },
     {
       accessorKey: 'status',
       header: 'Status',
-      filterField: 'status',
-      filterOptions: ['active', 'inactive', 'expired'],
+      cell: (row: IAdmins) => {
+        const cfg = statusConfig[row.status] || statusConfig.active;
+        return (
+          <span className="inline-flex items-center gap-1.5 text-xs font-medium">
+            <span
+              className="h-2 w-2 rounded-full"
+              style={{ backgroundColor: cfg.color }}
+            />
+            <span style={{ color: cfg.color }}>{cfg.label}</span>
+          </span>
+        );
+      },
+    },
+    {
+      accessorKey: 'phoneNumber',
+      header: 'Phone',
+      cell: (row: IAdmins) => (
+        <span className="text-[#6b7280]">
+          {row.countryCode} {row.phoneNumber}
+        </span>
+      ),
     },
     {
       accessorKey: 'createdAt',
       header: 'Joined',
-      cell: (row: IAdmins) =>
-        new Date(row.createdAt).toLocaleDateString(),
+      cell: (row: IAdmins) => (
+        <span className="text-[#6b7280]">
+          {new Date(row.createdAt).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+          })}
+        </span>
+      ),
+    },
+    {
+      accessorKey: 'updatedAt',
+      header: 'Updated At',
+      cell: (row: IAdmins) => (
+        <span className="text-[#6b7280]">
+          {new Date(row.updatedAt).toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+          })}
+        </span>
+      ),
     },
     {
       accessorKey: 'actions',
       header: 'Actions',
       cell: (row: IAdmins) => (
-        <div className="flex flex-wrap gap-2">
-          <ActionButton icon={<Eye className="h-4 w-4" />} />
-
+        <div className="flex items-center gap-1">
           <ActionButton
-            icon={<Pencil className="h-4 w-4" />}
-            onClick={() => navigate(`/super-admin/admin/${row._id}`)}
-          />
-
-          <ActionButton
-            className="hover:text-white hover:bg-red-600"
-            icon={<LucideTrash2 className="h-3 w-3" />}
-          />
-          {/* <ActionButton
-            icon={
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <ActionButton
-                    icon={<MoreVertical className="h-4 w-4" />}
-                  />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem>
-                    <LogIn className="mr-2 h-4 w-4" />
-                    Login as Admin
-                  </DropdownMenuItem>
-                  <DropdownMenuItem className="text-red-500 focus:text-red-500">
-                    <UserX className="mr-2 h-4 w-4" />
-                    Set Inactive
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+            icon={<Eye className="h-3.5 w-3.5" />}
+            className="h-8 w-8 rounded-full border border-[#e5e7eb] bg-white text-[#6b7280] hover:bg-[#f3f4f6] hover:text-[#374151] shadow-none"
+            onClick={() =>
+              navigate(
+                ROUTES.ADMIN_VIEW.replace(':id', String(row._id)),
+                { state: { admin: row } },
+              )
             }
-          /> */}
+          />
+          <ActionButton
+            icon={<Pencil className="h-3.5 w-3.5" />}
+            className="h-8 w-8 rounded-full border border-[#e5e7eb] bg-white text-[#6b7280] hover:bg-[#f3f4f6] hover:text-[#374151] shadow-none"
+            onClick={() =>
+              navigate(
+                ROUTES.ADMIN_EDIT.replace(':id', String(row._id)),
+                { state: { admin: row } },
+              )
+            }
+          />
+          <DropdownMenu>
+            <DropdownMenuTrigger>
+              <ActionButton
+                icon={<Ellipsis className="h-3.5 w-3.5" />}
+                className="h-8 w-8 rounded-full border border-[#e5e7eb] bg-white text-[#6b7280] hover:bg-[#f3f4f6] hover:text-[#374151] shadow-none"
+              />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onClick={() => {
+                  toast.success('Login as Admin — frontend only');
+                }}
+              >
+                Login as Admin
+              </DropdownMenuItem>
+              {row.status === 'active' ? (
+                <DropdownMenuItem
+                  className="text-red-500 focus:text-red-500"
+                  onClick={async () => {
+                    try {
+                      await updateAdminUser({
+                        id: row._id,
+                        status: 'inactive',
+                      }).unwrap();
+                    } catch {
+                      toast.error('Failed to update status');
+                    }
+                  }}
+                >
+                  Set Inactive
+                </DropdownMenuItem>
+              ) : (
+                <DropdownMenuItem
+                  className="text-green-600 focus:text-green-600"
+                  onClick={async () => {
+                    try {
+                      await updateAdminUser({
+                        id: row._id,
+                        status: 'active',
+                      }).unwrap();
+                    } catch {
+                      toast.error('Failed to update status');
+                    }
+                  }}
+                >
+                  Set Active
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       ),
     },
   ];
 
-  // if (isLoading) {
-  //   return <div>Loading...</div>;
-  // }
   return (
     <SuperAdminLayout>
       <div className="flex h-full flex-col">
-        <div className="flex-1 w-full overflow-y-auto px-4 py-5">
-          <div className="flex w-full flex-col">
-            <div className="mb-1 p-1 flex items-center justify-between">
-              <div className=" px-3">
-                <h2 className="text-[24px] font-bold text-[#151515]">
-                  Admin Users
-                </h2>
-                <p className="mt-1 text-[13px] text-[#777]">
-                  Manage admin accounts and permissions
-                </p>
-              </div>
-
-              <div className="flex items-center gap-2.5">
-                <button className="relative flex h-10 w-10 items-center justify-center rounded-full border border-[#e5e5e5] bg-white">
-                  <Bell className="h-4 w-4" />
-                  <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-green-600 text-[9px] text-white">
-                    3
-                  </span>
-                </button>
-                <div className="flex items-center gap-2 rounded-xl border border-[#ececec] bg-white px-3 py-1.5 shadow-sm">
-                  <Avatar className="h-8 w-8">
-                    <AvatarFallback className="text-xs">
-                      A
-                    </AvatarFallback>
-                  </Avatar>
-                  <span className="text-sm font-semibold">Admin</span>
-                  <ChevronDown className="h-4 w-4 text-gray-500" />
-                </div>
-              </div>
-            </div>
-            {/* <DataTable<IAdmins> */}
-            {/* /TODO: Fix this */}
-            <DataTable<IAdmins>
-              data={data?.admins || []}
-              columns={adminsColumns}
-              title="Admins"
-              description="Manage all your admins in one place."
-              searchPlaceholder="Search admins..."
-              filterField="status"
-              filterOptions={['Active', 'Inactive', 'Expired']}
-              addButtonLabel="Add admin"
-              // onAddClick={() => navigate('/admins/create')}
-              onAddClick={() => navigate(`/super-admin/admin/create`)}
+        <div className="flex-1 w-full px-4 py-4 min-h-0">
+          <div className="flex w-full flex-col h-full">
+            <Navbar
+              title="Admin Users"
+              subtitle="Manage admin accounts and permissions"
+              superAccess
             />
+            <div className="flex-1 min-h-0 mt-4">
+              <DataTable<IAdmins>
+                data={data?.admins || []}
+                columns={adminsColumns}
+                loading={isLoading}
+                title=""
+                description=""
+                searchPlaceholder="Search admins by name, email or ID..."
+                filterField="status"
+                filterOptions={['Active', 'Inactive', 'Expired']}
+                addButtonLabel="Add admin"
+                onAddClick={() => navigate(ROUTES.ADMIN_CREATE)}
+                pagination={
+                  data
+                    ? {
+                        page: data.page,
+                        limit: data.limit,
+                        total: data.total,
+                        totalPages: data.totalPages,
+                      }
+                    : undefined
+                }
+                onPageChange={setPage}
+                onLimitChange={(newLimit) => {
+                  setLimit(newLimit);
+                  setPage(1);
+                }}
+              />
+            </div>
           </div>
         </div>
       </div>

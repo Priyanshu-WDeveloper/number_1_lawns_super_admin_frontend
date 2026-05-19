@@ -34,7 +34,7 @@ const items = [
     url: '/super-admin/dashboard',
   },
   {
-    title: 'Admin Users',
+    title: 'Admins',
     icon: Users,
     url: '/super-admin/admins',
   },
@@ -50,17 +50,9 @@ export function SuperAdminSidebar() {
   const location = useLocation();
   const navigate = useNavigate();
   const { toggleSidebar } = useSidebar();
-  // const [logout] = useLogoutMutation();
-
-  // const handleLogout = () => {
-  //   logout();
-  //   navigate('/login');
-  //   setShowLogoutDialog(false);
-  // };
 
   const handleLogout = async () => {
     try {
-      // await logout().unwrap();
       localLogout();
       toast.success('Logged out');
       setShowLogoutDialog(false);

@@ -26,6 +26,7 @@ import InvoiceManagementPage from '../pages/invoices';
 import SuperAdminAdminsPage from '../pages/super-admin/admin';
 import AdminCreatePage from '../pages/super-admin/admin/create';
 import AdminViewPage from '../pages/super-admin/admin/view';
+import AdminEditPage from '../pages/super-admin/admin/edit';
 
 const AppRoutes: React.FC = () => {
   return (
@@ -184,6 +185,14 @@ const AppRoutes: React.FC = () => {
         element={
           <SuperAdminRoute redirectTo={ROUTES.SUPER_ADMIN_LOGIN}>
             <AdminViewPage />
+          </SuperAdminRoute>
+        }
+      />
+      <Route
+        path={ROUTES.ADMIN_EDIT}
+        element={
+          <SuperAdminRoute redirectTo={ROUTES.SUPER_ADMIN_LOGIN}>
+            <AdminEditPage />
           </SuperAdminRoute>
         }
       />

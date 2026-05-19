@@ -24,12 +24,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { AddressPicker } from '@/components/forms/address-picker';
+import { LocationModeToggle } from '@/components/forms/location-mode-toggle';
+import { MockMapPicker } from '@/components/forms/mock-map-picker';
+import { ManualCoordinates } from '@/components/forms/manual-coordinates';
+import { ROUTES } from '@/constants';
 
 const jobSchema = z.object({
   customer: z.string().min(1, 'Customer is required'),
   employee: z.string().min(1, 'Employee is required'),
   jobAddress: z.string(),
+  latitude: z.number().optional(),
+  longitude: z.number().optional(),
+  locationMode: z.enum(['map', 'manual']),
   // address: z.string(),
   // city: z.string(),
   // state: z.string(),
@@ -52,6 +58,9 @@ const initialFormData: FormData = {
   customer: '',
   employee: '',
   jobAddress: '',
+  latitude: undefined,
+  longitude: undefined,
+  locationMode: 'map',
   // address: '',
   // city: '',
   // state: '',
@@ -133,8 +142,14 @@ export default function CreateJobPage() {
   };
 
   const onSubmit = (data: FormData) => {
-    console.log('Creating job:', data);
-    navigate('/jobs');
+    const payload = {
+      ...data,
+      location: data.latitude && data.longitude
+        ? { type: 'Point' as const, coordinates: [data.longitude, data.latitude] }
+        : undefined,
+    };
+    console.log('Creating job:', payload);
+    navigate(ROUTES.JOBS);
   };
 
   const renderStepContent = () => {
@@ -214,22 +229,34 @@ export default function CreateJobPage() {
       case 2:
         return (
           <div className="space-y-6">
-            {/* Location Section */}
             <div>
               <h4 className="text-sm font-medium text-[#777] mb-4 uppercase tracking-wide">
                 Job Location
               </h4>
               <div className="space-y-5">
-                <AddressPicker
-                  label="Job Location"
-                  value={formValues.jobAddress || ''}
-                  onChange={(value) => setValue('jobAddress', value)}
-                  required
+                <LocationModeToggle
+                  value={formValues.locationMode || 'map'}
+                  onChange={(mode) => setValue('locationMode', mode)}
                 />
-                {errors.jobAddress && (
-                  <p className="text-sm text-red-500 -mt-3">
-                    {errors.jobAddress.message}
-                  </p>
+
+                {formValues.locationMode === 'map' ? (
+                  <MockMapPicker
+                    latitude={formValues.latitude || 0}
+                    longitude={formValues.longitude || 0}
+                    onPick={(lat, lng) => {
+                      setValue('latitude', lat);
+                      setValue('longitude', lng);
+                    }}
+                  />
+                ) : (
+                  <ManualCoordinates
+                    latitude={formValues.latitude || 0}
+                    longitude={formValues.longitude || 0}
+                    onChange={(lat, lng) => {
+                      setValue('latitude', lat);
+                      setValue('longitude', lng);
+                    }}
+                  />
                 )}
               </div>
             </div>
@@ -441,7 +468,7 @@ export default function CreateJobPage() {
           {/* Back Button */}
           <Button
             variant="ghost"
-            onClick={() => navigate('/jobs')}
+            onClick={() => navigate(ROUTES.JOBS)}
             className="mb-6 text-[#777] hover:text-[#16610E] hover:bg-[#edf8e7] gap-2"
           >
             <ArrowLeft className="h-4 w-4" />

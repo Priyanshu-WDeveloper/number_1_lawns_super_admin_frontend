@@ -8,6 +8,7 @@ import { AppLayout } from '@/components/layout/AppLayout';
 import { Navbar } from '@/components/layout/Navbar';
 import { useNavigate } from 'react-router-dom';
 import { useEmployeeStore } from '@/store/employeeStore';
+import { ROUTES } from '@/constants';
 
 interface EmployeeRow {
   id: string;
@@ -114,7 +115,7 @@ export default function EmployeeManagementPage() {
           <ActionButton
             intent="view"
             icon={<Eye className="h-4 w-4" />}
-            onClick={() => navigate(`/employees/${row.id}`)}
+            onClick={() => navigate(ROUTES.EMPLOYEES_VIEW.replace(':id', row.id))}
           />
           <ActionButton
             intent="edit"
@@ -145,7 +146,7 @@ export default function EmployeeManagementPage() {
             filterField="status"
             filterOptions={['Active', 'Inactive']}
             addButtonLabel="Add Employee"
-            onAddClick={() => navigate('/employees/create')}
+            onAddClick={() => navigate(ROUTES.EMPLOYEES_CREATE)}
           />
         </div>
       </main>

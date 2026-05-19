@@ -14,11 +14,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-// import { Separator } from '@/components/ui/separator';
 import { useNavigate } from 'react-router-dom';
 import { Avatar, AvatarFallback } from './ui/avatar';
 import { useAuthStore } from '@/store/authStore';
-// import { useLogoutMutation } from '../store/api';
 import toast from 'react-hot-toast';
 import { ConfirmDialog } from './ui/confirm-dialog';
 import { useState } from 'react';
@@ -32,18 +30,10 @@ export default function AccountDropdown({
 }) {
   const navigate = useNavigate();
   const { user } = useAuthStore();
-  // const [logout] = useLogoutMutation();
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
-
-  // const handleLogout = () => {
-  //   logout();
-  //   navigate('/login');
-  //   setShowLogoutDialog(false);
-  // };
 
   const handleLogout = async () => {
     try {
-      // await logout().unwrap();
       localLogout();
       toast.success('Logged out');
       setShowLogoutDialog(false);
@@ -116,8 +106,6 @@ export default function AccountDropdown({
             </span>
           </div>
         </div>
-        {/* 
-        <Separator /> */}
 
         {/* Menu Items */}
         <div className="py-1">
@@ -132,14 +120,10 @@ export default function AccountDropdown({
           </DropdownMenuItem>
         </div>
 
-        {/* <Separator /> */}
-
         <DropdownMenuItem className="flex cursor-pointer items-center gap-3 px-4 py-3 text-sm">
           <Mail className="h-4 w-4 text-slate-700" />
           Support
         </DropdownMenuItem>
-
-        {/* <Separator /> */}
 
         <DropdownMenuItem
           onClick={() => setShowLogoutDialog(true)}

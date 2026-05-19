@@ -7,8 +7,6 @@ import type {
   GetAdminsParams,
   GetAdminsResponse,
 } from '../types/api.types';
-import type { IAdmins } from '../types/admins.types';
-// import type { IAdmins } from '../types/admins.types';
 
 export const api = createApi({
   reducerPath: 'api',
@@ -224,15 +222,9 @@ export const api = createApi({
     }),
 
     // Super Admin - Admin Users endpoints
-    // IAdmins[],
-    //
-    getAdminUsers: builder.query<
-      GetAdminsResponse,
-      GetAdminsParams,
-      IAdmins[]
-    >({
+    getAdminUsers: builder.query<GetAdminsResponse, GetAdminsParams>({
       query: ({ page = 1, limit = 10, search, status, sort }) => ({
-        url: 'superadmins/admins',
+        url: '/superadmins/admins',
 
         params: {
           page,
@@ -244,9 +236,10 @@ export const api = createApi({
       }),
 
       providesTags: ['Admins'],
+      refetchOnMountOrArgChange: true,
     }),
     getAdminUserById: builder.query({
-      query: (id) => `/super-admin/admins/${id}`,
+      query: (id) => `/superadmins/edit-admin/${id}`,
       providesTags: (_result, _error, id) => [{ type: 'Admins', id }],
     }),
     createAdminUser: builder.mutation({
@@ -259,13 +252,11 @@ export const api = createApi({
     }),
     updateAdminUser: builder.mutation({
       query: ({ id, ...admin }) => ({
-        url: `/super-admin/admins/${id}`,
-        method: 'PATCH',
+        url: `/superadmins/edit-admin/${id}`,
+        method: 'PUT',
         body: admin,
       }),
-      invalidatesTags: (_result, _error, { id }) => [
-        { type: 'Admins', id },
-      ],
+      invalidatesTags: ['Admins'],
     }),
     deleteAdminUser: builder.mutation({
       query: (id) => ({

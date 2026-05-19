@@ -16,6 +16,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { useEmployeeStore } from '@/store/employeeStore';
 import type { EmployeeDocument, Employee } from '@/store/employeeStore';
+import { ROUTES } from '@/constants';
 
 const getFileIcon = (type: string) => {
   if (type.startsWith('image/')) {
@@ -103,7 +104,7 @@ export default function EmployeeViewPage() {
           <div className="mx-auto">
             <Button
               variant="ghost"
-              onClick={() => navigate('/employees')}
+              onClick={() => navigate(ROUTES.EMPLOYEES)}
               className="mb-4 text-[#777] hover:text-[#16610E] hover:bg-[#edf8e7]"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />

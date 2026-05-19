@@ -1,20 +1,23 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import z from 'zod';
-import { Mail, MapPin, Check } from 'lucide-react';
 import toast from 'react-hot-toast';
-
 import { SuperAdminLayout } from '@/components/layout/SuperAdminLayout';
 import { Navbar } from '@/components/layout/Navbar';
 import { ROUTES } from '@/constants';
-import { useCreateAdminUserMutation } from '../../../API/api';
+import {
+  useGetAdminUserByIdQuery,
+  useUpdateAdminUserMutation,
+} from '../../../API/api';
 import { AdminFormStepper } from '../../../components/admin/admin-form-stepper';
 import { AdminFormStep } from '../../../components/admin/admin-form-step';
 import { AdminReviewCard } from '../../../components/admin/admin-review-card';
+import Loader from '../../../components/loader';
+import type { IAdmins } from '../../../types/admins.types';
 
-const createAdminSchema = z.object({
+const editAdminSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
   lastName: z.string().min(1, 'Last name is required'),
   email: z
@@ -29,12 +32,7 @@ const createAdminSchema = z.object({
   address: z.string().min(1, 'Address is required'),
   city: z.string().min(1, 'City is required'),
   state: z.string().min(1, 'State is required'),
-  postalCode: z
-    .string()
-    .min(1, 'Postal code is required')
-    .min(3)
-    .max(10)
-    .regex(/^\d+$/, 'Invalid postal code'),
+  postalCode: z.string().min(1, 'Postal code is required'),
   country: z.string().min(1, 'Country is required'),
   location: z.string(),
   latitude: z.number(),
@@ -42,50 +40,44 @@ const createAdminSchema = z.object({
   locationMode: z.enum(['map', 'manual']),
 });
 
-type CreateAdminFormData = z.infer<typeof createAdminSchema>;
-
-const initialFormData: CreateAdminFormData = {
-  firstName: '',
-  lastName: '',
-  email: '',
-  phoneNumber: '',
-  countryCode: '+64',
-  address: '',
-  city: '',
-  state: '',
-  postalCode: '',
-  country: '',
-  location: '',
-  latitude: 40.7128,
-  longitude: -74.006,
-  locationMode: 'map',
-};
+type EditAdminFormData = z.infer<typeof editAdminSchema>;
 
 const steps = [
   {
     id: 1,
     title: 'Basic Info',
     description: 'Admin contact details',
-    icon: <Mail className="h-4 w-4" />,
+    icon: null,
   },
   {
     id: 2,
     title: 'Location',
     description: 'Address information',
-    icon: <MapPin className="h-4 w-4" />,
+    icon: null,
   },
   {
     id: 3,
     title: 'Review',
     description: 'Verify details',
-    icon: <Check className="h-4 w-4" />,
+    icon: null,
   },
 ];
 
-export default function CreateAdminPage() {
+export default function AdminEditPage() {
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
+  const passedAdmin = location.state?.admin as IAdmins | undefined;
+
   const [currentStep, setCurrentStep] = useState(1);
-  const [createAdmin, { isLoading }] = useCreateAdminUserMutation();
+  const [updateAdmin, { isLoading: isUpdating }] =
+    useUpdateAdminUserMutation();
+
+  const { data, isLoading: isLoadingAdmin } =
+    useGetAdminUserByIdQuery(id, {
+      skip: !!passedAdmin,
+    });
+  const admin = passedAdmin ?? data?.admin;
 
   const {
     register,
@@ -94,16 +86,35 @@ export default function CreateAdminPage() {
     watch,
     setValue,
     formState: { errors },
-  } = useForm<CreateAdminFormData>({
+  } = useForm<EditAdminFormData>({
     mode: 'all',
-    resolver: zodResolver(createAdminSchema),
-    defaultValues: initialFormData,
+    resolver: zodResolver(editAdminSchema),
+    values: admin
+      ? {
+          firstName: admin.firstName,
+          lastName: admin.lastName,
+          email: admin.email,
+          phoneNumber: admin.phoneNumber,
+          countryCode: admin.countryCode,
+          address: admin.address,
+          city: admin.city,
+          state: admin.state,
+          postalCode: admin.postalCode,
+          country: admin.country,
+          location: admin.location?.coordinates
+            ? `${admin.location.coordinates[1]}, ${admin.location.coordinates[0]}`
+            : '',
+          latitude: admin.location?.coordinates?.[1] || 0,
+          longitude: admin.location?.coordinates?.[0] || 0,
+          locationMode: admin.location?.coordinates?.[0] && admin.location?.coordinates?.[1] ? 'map' : 'manual',
+        }
+      : undefined,
   });
 
   const formValues = watch();
 
   const handleNext = async () => {
-    let fieldsToValidate: (keyof CreateAdminFormData)[] = [];
+    let fieldsToValidate: (keyof EditAdminFormData)[] = [];
 
     if (currentStep === 1) {
       fieldsToValidate = [
@@ -137,9 +148,10 @@ export default function CreateAdminPage() {
     }
   };
 
-  const onSubmit = async (data: CreateAdminFormData) => {
+  const onSubmit = async (data: EditAdminFormData) => {
     try {
-      await createAdmin({
+      await updateAdmin({
+        id,
         firstName: data.firstName,
         lastName: data.lastName,
         email: data.email,
@@ -156,12 +168,30 @@ export default function CreateAdminPage() {
         },
       }).unwrap();
 
-      toast.success('Admin created successfully');
+      toast.success('Admin updated successfully');
       navigate(ROUTES.SUPER_ADMIN_ADMINS);
     } catch (error: any) {
-      toast.error(error?.data?.message || 'Failed to create admin');
+      toast.error(error?.data?.message || 'Failed to update admin');
     }
   };
+
+  if (isLoadingAdmin) {
+    return (
+      <SuperAdminLayout>
+        <Loader />
+      </SuperAdminLayout>
+    );
+  }
+
+  if (!admin) {
+    return (
+      <SuperAdminLayout>
+        <div className="flex h-full items-center justify-center">
+          <p className="text-[#777]">Admin not found</p>
+        </div>
+      </SuperAdminLayout>
+    );
+  }
 
   const renderStepContent = () => {
     if (currentStep === 3) {
@@ -194,28 +224,28 @@ export default function CreateAdminPage() {
     <SuperAdminLayout>
       <div className="flex h-full flex-col">
         <div className="flex-1 w-full overflow-y-auto p-10">
-          <Navbar
-            title="Create Admin"
-            subtitle="Add a new administrator account"
-            showWelcome={false}
-            superAccess
-          />
+        <Navbar
+          title="Edit Admin"
+          subtitle="Update administrator account details"
+          showWelcome={false}
+          superAccess
+        />
 
-          <AdminFormStepper
-            steps={steps}
-            currentStep={currentStep}
-            onStepClick={setCurrentStep}
-            onPrevious={handlePrevious}
-            onNext={handleNext}
-            onSubmit={handleSubmit(onSubmit)}
-            isSubmitting={isLoading}
-            isLastStep={currentStep === steps.length}
-            isFirstStep={currentStep === 1}
-          >
-            {renderStepContent()}
-          </AdminFormStepper>
-        </div>
+        <AdminFormStepper
+          steps={steps}
+          currentStep={currentStep}
+          onStepClick={setCurrentStep}
+          onPrevious={handlePrevious}
+          onNext={handleNext}
+          onSubmit={handleSubmit(onSubmit)}
+          isSubmitting={isUpdating}
+          isLastStep={currentStep === steps.length}
+          isFirstStep={currentStep === 1}
+        >
+          {renderStepContent()}
+        </AdminFormStepper>
       </div>
+    </div>
     </SuperAdminLayout>
   );
 }

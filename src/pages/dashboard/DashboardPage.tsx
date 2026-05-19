@@ -20,29 +20,29 @@ import {
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
-import { AppLayout } from '../../components/layout/AppLayout'; // Corrected import path
+import { AppLayout } from '../../components/layout/AppLayout';
 import { Navbar } from '@/components/layout/Navbar';
 import { useNavigate } from 'react-router-dom';
-// import AccountDropdown from '../../components/account-dropdown';
+import { ROUTES } from '@/constants';
 
 const stats = [
   {
     title: 'Total Customers',
     value: '245',
     icon: Users,
-    url: '/customers',
+    url: ROUTES.CUSTOMERS,
   },
   {
     title: 'Total Employees',
     value: '158',
     icon: UserSquare2,
-    url: '/employees',
+    url: ROUTES.EMPLOYEES,
   },
   {
     title: 'Total Jobs',
     value: '89',
     icon: Briefcase,
-    url: '/jobs',
+    url: ROUTES.JOBS,
   },
   {
     title: 'Total Invoices',

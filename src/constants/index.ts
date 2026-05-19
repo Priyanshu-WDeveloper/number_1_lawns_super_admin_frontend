@@ -24,42 +24,13 @@ export const ROUTES = {
   SUPER_ADMIN_ADMINS: '/super-admin/admins',
   ADMIN_CREATE: '/super-admin/admin/create',
   ADMIN_VIEW: '/super-admin/admin/:id',
+  ADMIN_EDIT: '/super-admin/admin/:id/edit',
   SUPER_ADMIN_BILLING: '/super-admin/billing',
   SUPER_ADMIN_NOTIFICATIONS: '/super-admin/notifications',
-
-  //Notification
 
   // Default redirects
   DEFAULT_REDIRECT: '/dashboard',
   SUPER_ADMIN_DEFAULT_REDIRECT: '/super-admin/dashboard',
-} as const;
-
-// API Endpoints
-export const API_ENDPOINTS = {
-  // Auth
-  LOGIN: '/api/auth/login',
-  LOGOUT: '/api/auth/logout',
-
-  // Customers
-  CUSTOMERS: '/api/customers',
-  CUSTOMER_BY_ID: (id: string) => `/api/customers/${id}`,
-
-  // Employees
-  EMPLOYEES: '/api/employees',
-  EMPLOYEE_BY_ID: (id: string) => `/api/employees/${id}`,
-
-  // Jobs
-  JOBS: '/api/jobs',
-  JOB_BY_ID: (id: string) => `/api/jobs/${id}`,
-
-  // Invoices
-  INVOICES: '/api/invoices',
-  INVOICE_BY_ID: (id: string) => `/api/invoices/${id}`,
-
-  // Super Admin
-  ADMIN_USERS: '/api/super-admin/admins',
-  ADMIN_USER_BY_ID: (id: string) => `/api/super-admin/admins/${id}`,
-  BILLING: '/api/super-admin/billing',
 } as const;
 
 export const ROLES = {
