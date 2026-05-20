@@ -357,7 +357,7 @@ export default function DataTable<T extends DataTableData>({
 
   return (
     <Card className="rounded-2xl w-full bg-white shadow-sm flex flex-col flex-1">
-      <CardContent className="px-6 flex-1 flex flex-col ">
+      <CardContent className="px-6 flex-1 flex flex-col  ">
         {/* Filter Row */}
         <div className="flex items-center justify-between gap-3 mb-3">
           <div className="relative flex-1 max-w-md">

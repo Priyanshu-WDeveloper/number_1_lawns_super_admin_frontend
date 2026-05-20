@@ -10,6 +10,7 @@ export const ROUTES = {
   CUSTOMERS: '/customers',
   CUSTOMERS_CREATE: '/customers/create',
   CUSTOMERS_VIEW: '/customers/:id',
+  CUSTOMERS_EDIT: '/customers/edit/:id',
   EMPLOYEES: '/employees',
   EMPLOYEES_CREATE: '/employees/create',
   EMPLOYEES_VIEW: '/employees/:id',
@@ -38,6 +39,21 @@ export const ROLES = {
   ADMIN: 2,
 } as const;
 
+export const API_ROUTES = {
+  ADMINS: {
+    LIST: '/admins',
+    DETAILS: (id: string) => `/admins/${id}`,
+
+    CUSTOMERS: {
+      LIST: '/admins/customers',
+      CREATE: '/admins/customers',
+      DETAILS: (id: string) => `/admins/customers/${id}`,
+      UPDATE: (id: string) => `/admins/customers/${id}`,
+      DELETE: (id: string) => `/admins/customers/${id}`,
+      STATUS: (id: string) => `/admins/customers/${id}/status`,
+    },
+  },
+} as const;
 // UI Constants
 export const UI = {
   SIDEBAR_WIDTH: '19rem',

@@ -27,6 +27,7 @@ import SuperAdminAdminsPage from '../pages/super-admin/admin';
 import AdminCreatePage from '../pages/super-admin/admin/create';
 import AdminViewPage from '../pages/super-admin/admin/view';
 import AdminEditPage from '../pages/super-admin/admin/edit';
+import CustomerEditPage from '../pages/customers/edit';
 
 const AppRoutes: React.FC = () => {
   return (
@@ -87,6 +88,14 @@ const AppRoutes: React.FC = () => {
         element={
           <ProtectedRoute redirectTo={ROUTES.LOGIN}>
             <CustomerViewPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={ROUTES.CUSTOMERS_EDIT}
+        element={
+          <ProtectedRoute redirectTo={ROUTES.LOGIN}>
+            <CustomerEditPage />
           </ProtectedRoute>
         }
       />

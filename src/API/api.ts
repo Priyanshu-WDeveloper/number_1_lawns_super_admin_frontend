@@ -5,10 +5,14 @@ import {
 import { getDeviceToken, getDeviceType } from '../lib/device';
 import { getToken } from '../lib/auth';
 import type {
+  CustomersResponse,
   GetAdminsParams,
   GetAdminsResponse,
+  GetCustomersParams,
 } from '../types/api.types';
 import { setAuth, clearAuth } from '../store/authSlice';
+import { API_ROUTES } from '../constants';
+import type { ICustomer } from '../types';
 
 export const api = createApi({
   reducerPath: 'api',
@@ -110,19 +114,31 @@ export const api = createApi({
     }),
 
     // Customer endpoints
-    getCustomers: builder.query({
-      query: () => '/customers',
+    getCustomers: builder.query<
+      CustomersResponse,
+      GetCustomersParams
+    >({
+      query: ({ page = 1, limit = 10, search, status, sort }) => ({
+        url: API_ROUTES.ADMINS.CUSTOMERS.LIST,
+        params: {
+          page,
+          limit,
+          search,
+          status,
+          sort,
+        },
+      }),
       providesTags: ['Customers'],
     }),
-    getCustomerById: builder.query({
-      query: (id) => `/customers/${id}`,
+    getCustomerById: builder.query<ICustomer, string>({
+      query: (id: string) => API_ROUTES.ADMINS.CUSTOMERS.DETAILS(id),
       providesTags: (_result, _error, id) => [
         { type: 'Customers', id },
       ],
     }),
     createCustomer: builder.mutation({
       query: (customer) => ({
-        url: '/customers',
+        url: API_ROUTES.ADMINS.CUSTOMERS.CREATE,
         method: 'POST',
         body: customer,
       }),
@@ -130,8 +146,8 @@ export const api = createApi({
     }),
     updateCustomer: builder.mutation({
       query: ({ id, ...customer }) => ({
-        url: `/customers/${id}`,
-        method: 'PATCH',
+        url: API_ROUTES.ADMINS.CUSTOMERS.UPDATE(id),
+        method: 'PUT',
         body: customer,
       }),
       invalidatesTags: (_result, _error, { id }) => [
@@ -140,9 +156,22 @@ export const api = createApi({
     }),
     deleteCustomer: builder.mutation({
       query: (id) => ({
-        url: `/customers/${id}`,
+        url: API_ROUTES.ADMINS.CUSTOMERS.DELETE(id),
         method: 'DELETE',
       }),
+      invalidatesTags: ['Customers'],
+    }),
+    toggleCustomerStatus: builder.mutation({
+      query: ({ id, status }) => ({
+        url: API_ROUTES.ADMINS.CUSTOMERS.STATUS(id),
+
+        method: 'PATCH',
+
+        body: {
+          status,
+        },
+      }),
+
       invalidatesTags: ['Customers'],
     }),
 
@@ -324,6 +353,8 @@ export const {
   useCreateCustomerMutation,
   useUpdateCustomerMutation,
   useDeleteCustomerMutation,
+  useToggleCustomerStatusMutation,
+
   useGetEmployeesQuery,
   useGetEmployeeByIdQuery,
   useCreateEmployeeMutation,

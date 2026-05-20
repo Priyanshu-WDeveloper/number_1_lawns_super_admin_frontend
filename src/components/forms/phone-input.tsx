@@ -100,7 +100,7 @@ export function PhoneInput({
       </div>
 
       {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
-      {value.length > 0 && value.length < selected.minLength && (
+      {value && value.length > 0 && value.length < selected.minLength && (
         <p className="mt-1 text-sm text-red-500">
           Phone number must be at least {selected.minLength} digits (currently {value.length})
         </p>

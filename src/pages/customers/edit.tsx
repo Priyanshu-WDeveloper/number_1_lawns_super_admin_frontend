@@ -9,21 +9,21 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import z from 'zod';
 import toast from 'react-hot-toast';
 import { ArrowLeft } from 'lucide-react';
-import { SuperAdminLayout } from '@/components/layout/SuperAdminLayout';
+import { AppLayout } from '@/components/layout/AppLayout';
 import { Navbar } from '@/components/layout/Navbar';
 import { Button } from '@/components/ui/button';
 import { ROUTES } from '@/constants';
 import {
-  useGetAdminUserByIdQuery,
-  useUpdateAdminUserMutation,
-} from '../../../API/api';
-import { AdminFormStepper } from '../../../components/admin/admin-form-stepper';
-import { AdminFormStep } from '../../../components/admin/admin-form-step';
-import { AdminReviewCard } from '../../../components/admin/admin-review-card';
-import Loader from '../../../components/loader';
-import type { IAdmins } from '../../../types/admins.types';
+  useGetCustomerByIdQuery,
+  useUpdateCustomerMutation,
+} from '../../API/api';
+import { AdminFormStepper } from '../../components/admin/admin-form-stepper';
+import { AdminFormStep } from '../../components/admin/admin-form-step';
+import { AdminReviewCard } from '../../components/admin/admin-review-card';
+import Loader from '../../components/loader';
+import type { ICustomer } from '../../types';
 
-const editAdminSchema = z.object({
+const editCustomerSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
   lastName: z.string().min(1, 'Last name is required'),
   email: z
@@ -38,7 +38,12 @@ const editAdminSchema = z.object({
   address: z.string().min(1, 'Address is required'),
   city: z.string().min(1, 'City is required'),
   state: z.string().min(1, 'State is required'),
-  postalCode: z.string().min(1, 'Postal code is required'),
+  postalCode: z
+    .string()
+    .min(1, 'Postal code is required')
+    .min(3)
+    .max(10)
+    .regex(/^\d+$/, 'Invalid postal code'),
   country: z.string().min(1, 'Country is required'),
   location: z.string(),
   latitude: z.number(),
@@ -46,13 +51,13 @@ const editAdminSchema = z.object({
   locationMode: z.enum(['map', 'manual']),
 });
 
-type EditAdminFormData = z.infer<typeof editAdminSchema>;
+type EditCustomerFormData = z.infer<typeof editCustomerSchema>;
 
 const steps = [
   {
     id: 1,
     title: 'Basic Info',
-    description: 'Admin contact details',
+    description: 'Customer contact details',
     icon: null,
   },
   {
@@ -69,22 +74,33 @@ const steps = [
   },
 ];
 
-export default function AdminEditPage() {
+export default function CustomerEditPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
+  // if (!id) {
+  //   return (
+  //     <AppLayout>
+  //       <div className="flex h-full items-center justify-center">
+  //         <p className="text-[#777]">Invalid customer ID</p>
+  //       </div>
+  //     </AppLayout>
+  //   );
+  // }
   const location = useLocation();
-  const passedAdmin = location.state?.admin as IAdmins | undefined;
+  const passedCustomer = location.state?.customer as
+    | ICustomer
+    | undefined;
 
   const [currentStep, setCurrentStep] = useState(1);
-  const [updateAdmin, { isLoading: isUpdating }] =
-    useUpdateAdminUserMutation();
+  const [updateCustomer, { isLoading: isUpdating }] =
+    useUpdateCustomerMutation();
 
-  const { data, isLoading: isLoadingAdmin } =
-    useGetAdminUserByIdQuery(id, {
-      skip: !!passedAdmin,
+  const { data, isLoading: isLoadingCustomer } =
+    useGetCustomerByIdQuery(id, {
+      skip: !!passedCustomer,
     });
-  const admin = passedAdmin ?? data?.admin;
+  const customer = passedCustomer ?? (data as any)?.customer ?? data;
 
   const {
     register,
@@ -93,29 +109,29 @@ export default function AdminEditPage() {
     watch,
     setValue,
     formState: { errors },
-  } = useForm<EditAdminFormData>({
+  } = useForm<EditCustomerFormData>({
     mode: 'all',
-    resolver: zodResolver(editAdminSchema),
-    values: admin
+    resolver: zodResolver(editCustomerSchema),
+    values: customer
       ? {
-          firstName: admin.firstName,
-          lastName: admin.lastName,
-          email: admin.email,
-          phoneNumber: admin.phoneNumber,
-          countryCode: admin.countryCode,
-          address: admin.address,
-          city: admin.city,
-          state: admin.state,
-          postalCode: admin.postalCode,
-          country: admin.country,
-          location: admin.location?.coordinates
-            ? `${admin.location.coordinates[1]}, ${admin.location.coordinates[0]}`
+          firstName: customer.firstName,
+          lastName: customer.lastName,
+          email: customer.email,
+          phoneNumber: customer.phoneNumber,
+          countryCode: customer.countryCode,
+          address: customer.address,
+          city: customer.city,
+          state: customer.state,
+          postalCode: customer.postalCode,
+          country: customer.country,
+          location: customer.location?.coordinates
+            ? `${customer.location.coordinates[1]}, ${customer.location.coordinates[0]}`
             : '',
-          latitude: admin.location?.coordinates?.[1] || 0,
-          longitude: admin.location?.coordinates?.[0] || 0,
+          latitude: customer.location?.coordinates?.[1] || 0,
+          longitude: customer.location?.coordinates?.[0] || 0,
           locationMode:
-            admin.location?.coordinates?.[0] &&
-            admin.location?.coordinates?.[1]
+            customer.location?.coordinates?.[0] &&
+            customer.location?.coordinates?.[1]
               ? 'map'
               : 'manual',
         }
@@ -125,7 +141,7 @@ export default function AdminEditPage() {
   const formValues = watch();
 
   const handleNext = async () => {
-    let fieldsToValidate: (keyof EditAdminFormData)[] = [];
+    let fieldsToValidate: (keyof EditCustomerFormData)[] = [];
 
     if (currentStep === 1) {
       fieldsToValidate = [
@@ -159,45 +175,50 @@ export default function AdminEditPage() {
     }
   };
 
-  const onSubmit = async (data: EditAdminFormData) => {
+  const onSubmit = async (data: EditCustomerFormData) => {
     try {
-      await updateAdmin({
+      await updateCustomer({
         id,
         firstName: data.firstName,
         lastName: data.lastName,
+        email: data.email,
         phoneNumber: data.phoneNumber,
-        city: data.city,
+        countryCode: data.countryCode,
         address: data.address,
+        city: data.city,
         state: data.state,
         postalCode: data.postalCode,
+        country: data.country,
         location: {
           type: 'Point',
           coordinates: [data.longitude, data.latitude],
         },
       }).unwrap();
 
-      toast.success('Admin updated successfully');
-      navigate(ROUTES.SUPER_ADMIN_ADMINS);
+      toast.success('Customer updated successfully');
+      navigate(ROUTES.CUSTOMERS);
     } catch (error: any) {
-      toast.error(error?.data?.message || 'Failed to update admin');
+      toast.error(
+        error?.data?.message || 'Failed to update customer',
+      );
     }
   };
 
-  if (isLoadingAdmin) {
+  if (isLoadingCustomer) {
     return (
-      <SuperAdminLayout>
+      <AppLayout>
         <Loader />
-      </SuperAdminLayout>
+      </AppLayout>
     );
   }
 
-  if (!admin) {
+  if (!customer) {
     return (
-      <SuperAdminLayout>
+      <AppLayout>
         <div className="flex h-full items-center justify-center">
-          <p className="text-[#777]">Admin not found</p>
+          <p className="text-[#777]">Customer not found</p>
         </div>
-      </SuperAdminLayout>
+      </AppLayout>
     );
   }
 
@@ -235,26 +256,22 @@ export default function AdminEditPage() {
   };
 
   return (
-    <SuperAdminLayout>
+    <AppLayout>
       <div className="flex h-full flex-col">
-        <div
-          className="flex-1 w-full overflow-y-auto pl-10 p-5
-"
-        >
+        <div className="flex-1 w-full overflow-y-auto pl-10 p-5">
           <Button
             variant="ghost"
-            onClick={() => navigate(ROUTES.SUPER_ADMIN_ADMINS)}
+            onClick={() => navigate(ROUTES.CUSTOMERS)}
             className="mb-4 text-[#777] hover:text-[#16610E] hover:bg-[#edf8e7]"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Admins
+            Back to Customers
           </Button>
 
           <Navbar
-            title="Edit Admin"
-            subtitle="Update administrator account details"
+            title="Edit Customer"
+            subtitle="Update customer account details"
             showWelcome={false}
-            superAccess
           />
 
           <AdminFormStepper
@@ -272,6 +289,6 @@ export default function AdminEditPage() {
           </AdminFormStepper>
         </div>
       </div>
-    </SuperAdminLayout>
+    </AppLayout>
   );
 }

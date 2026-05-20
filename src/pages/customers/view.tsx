@@ -1,5 +1,8 @@
-import { StaticMap } from '@/components/google-maps/StaticMap';
-import { useParams, useNavigate } from 'react-router-dom';
+import {
+  useParams,
+  useNavigate,
+  useLocation,
+} from 'react-router-dom';
 import {
   ArrowLeft,
   Mail,
@@ -23,73 +26,94 @@ import {
 import { AppLayout } from '@/components/layout/AppLayout';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
 import { ROUTES } from '@/constants';
+import { StaticMap } from '@/components/google-maps/StaticMap';
+import {
+  useGetCustomerByIdQuery,
+  useToggleCustomerStatusMutation,
+} from '../../API/api';
+import type { ICustomer } from '../../types';
+import Loader from '../../components/loader';
+import toast from 'react-hot-toast';
+import { formatDate } from '../../lib/format-date';
+import { StatusBadge } from '../../components/data-table/StatusBadge';
 
-interface CustomerData {
-  name: string;
-  email: string;
-  phone: string;
-  address: string;
-  postalCode: string;
-  city: string;
-  state: string;
-  country: string;
-  active: boolean;
-  status: string;
-  createdBy: string;
-  createdAt: string;
-  updatedAt: string;
-  balance: number;
-  latitude?: number;
-  longitude?: number;
-}
-
-const mockCustomer: CustomerData = {
-  name: 'Babu',
-  email: 'babu_kondepudi@yahoo.co.nz',
-  phone: '0211470500',
-  address: '383A Richardson Road Mount Roskill',
-  postalCode: '',
-  city: '',
-  state: '',
-  country: '',
-  active: true,
-  status: 'Active',
-  createdBy: 'Aman',
-  createdAt: '2026-05-12T12:58:00Z',
-  updatedAt: '2026-05-12T12:58:00Z',
-  balance: 0,
-};
+const statusConfig: Record<string, { color: string; label: string }> =
+  {
+    active: { color: '#22c55e', label: 'Active' },
+    inactive: { color: '#ef4444', label: 'Inactive' },
+    expired: { color: '#f59e0b', label: 'Expired' },
+  };
 
 export default function CustomerViewPage() {
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
 
-  const customer = mockCustomer;
+  if (!id) {
+    return (
+      <AppLayout>
+        <div className="flex h-full items-center justify-center">
+          <p className="text-[#777]">Invalid customer ID</p>
+        </div>
+      </AppLayout>
+    );
+  }
+  const location = useLocation();
+  const passedCustomer = location.state?.customer as
+    | ICustomer
+    | undefined;
+  const [toggleCustomerStatus] = useToggleCustomerStatusMutation();
+
+  const { data, isLoading } = useGetCustomerByIdQuery(id, {
+    skip: !!passedCustomer,
+  });
+
+  const customer = passedCustomer ?? data;
+
+  const handleStatusChange = async (
+    status: 'active' | 'inactive',
+  ) => {
+    if (!customer) return;
+    try {
+      await toggleCustomerStatus({
+        id: customer._id,
+        status,
+      }).unwrap();
+      toast.success(`Customer set to ${status}`);
+    } catch {
+      toast.error('Failed to update status');
+    }
+  };
 
   const getInitials = (name: string) => {
     return name.charAt(0).toUpperCase();
   };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
+  const lat = customer?.location?.coordinates?.[1];
+  const lng = customer?.location?.coordinates?.[0];
+
+  if (isLoading) {
+    return (
+      <AppLayout>
+        <Loader />
+      </AppLayout>
+    );
+  }
+
+  if (!customer) {
+    return (
+      <AppLayout>
+        <div className="flex h-full items-center justify-center">
+          <p className="text-[#777]">Customer not found</p>
+        </div>
+      </AppLayout>
+    );
+  }
 
   return (
     <AppLayout>
       <div className="flex h-full flex-col">
-        <div
-          className="flex-1 w-full overflow-y-auto pl-10 p-5
-"
-        >
+        <div className="flex-1 w-full overflow-y-auto pl-10 p-5">
           <div className="mx-auto">
             {/* Back Button */}
             <Button
@@ -107,45 +131,24 @@ export default function CustomerViewPage() {
                 <div className="flex items-center gap-4">
                   <Avatar className="h-16 w-16 bg-[#16610E] text-white">
                     <AvatarFallback className="text-xl font-bold">
-                      {getInitials(customer.name)}
+                      {getInitials(customer.fullName)}
                     </AvatarFallback>
                   </Avatar>
                   <div>
                     <h1 className="text-2xl font-bold text-[#151515]">
-                      {customer.name}
+                      {customer.fullName}
                     </h1>
                     <p className="text-[#777] text-sm">
-                      Customer ID: {id}
+                      Customer ID: {customer._id}
                     </p>
                   </div>
                 </div>
-                {/* <div className="text-right">
-                  <Badge
-                    className={`${customer.active ? 'bg-green-100 text-green-700 border-green-200' : 'bg-gray-100 text-gray-700 border-gray-200'} border`}
-                  >
-                    {customer.status}
-                  </Badge>
-                  <div className="mt-2">
-                    <span
-                      className={`text-lg font-semibold ${customer.balance < 0 ? 'text-red-500' : 'text-green-600'}`}
-                    >
-                      {customer.balance < 0 ? '-' : ''}$
-                      {Math.abs(customer.balance).toFixed(2)}
-                    </span>
-                    <p className="text-xs text-[#777]">Balance</p>
-                  </div>
-                </div> */}
                 <div className="flex items-start gap-3">
                   <div className="text-right">
-                    <Badge
-                      className={`${
-                        customer.active
-                          ? 'bg-green-100 text-green-700 border-green-200'
-                          : 'bg-gray-100 text-gray-700 border-gray-200'
-                      } border`}
-                    >
-                      {customer.status}
-                    </Badge>
+                    <StatusBadge
+                      status={customer.status}
+                      config={statusConfig}
+                    />
 
                     <div className="mt-2">
                       <span
@@ -180,7 +183,13 @@ export default function CustomerViewPage() {
                     >
                       <DropdownMenuItem
                         onClick={() =>
-                          navigate(`/customers/edit/${id}`)
+                          navigate(
+                            ROUTES.CUSTOMERS_EDIT.replace(
+                              ':id',
+                              customer._id,
+                            ),
+                            { state: { customer } },
+                          )
                         }
                         className="cursor-pointer"
                       >
@@ -190,7 +199,9 @@ export default function CustomerViewPage() {
 
                       <DropdownMenuItem
                         onClick={() =>
-                          navigate(`/customers/wallet/${id}`)
+                          navigate(
+                            `/customers/wallet/${customer._id}`,
+                          )
                         }
                         className="cursor-pointer"
                       >
@@ -200,15 +211,31 @@ export default function CustomerViewPage() {
 
                       <DropdownMenuSeparator />
 
+                      {customer.status === 'active' ? (
+                        <DropdownMenuItem
+                          className="text-red-500 focus:text-red-500"
+                          onClick={() =>
+                            handleStatusChange('inactive')
+                          }
+                        >
+                          Set Inactive
+                        </DropdownMenuItem>
+                      ) : (
+                        <DropdownMenuItem
+                          className="text-green-600 focus:text-green-600"
+                          onClick={() => handleStatusChange('active')}
+                        >
+                          Set Active
+                        </DropdownMenuItem>
+                      )}
                       <DropdownMenuItem
                         onClick={() =>
-                          console.log('Delete customer:', id)
+                          console.log(
+                            'Delete customer:',
+                            customer._id,
+                          )
                         }
-                        className="
-          cursor-pointer
-          text-red-500
-          focus:text-red-500
-        "
+                        className="cursor-pointer text-red-500 focus:text-red-500"
                       >
                         <Trash2 className="mr-2 h-4 w-4" />
                         Delete Customer
@@ -237,7 +264,7 @@ export default function CustomerViewPage() {
                     <div>
                       <p className="text-sm text-[#777]">Name</p>
                       <p className="text-[#151515] font-medium">
-                        {customer.name}
+                        {customer.fullName}
                       </p>
                     </div>
                   </div>
@@ -255,15 +282,57 @@ export default function CustomerViewPage() {
                     <div>
                       <p className="text-sm text-[#777]">Phone</p>
                       <p className="text-[#151515] font-medium">
-                        {customer.phone}
+                        {customer.countryCode} {customer.phoneNumber}
                       </p>
                     </div>
                   </div>
                 </div>
               </div>
 
+              {/* Account Summary Card */}
+              <div className="bg-white rounded-xl p-6 shadow-sm border border-[#ececec] ">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="h-8 w-8 rounded-lg bg-[#edf8e7] flex items-center justify-center">
+                    <CreditCard className="h-4 w-4 text-[#16610E]" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-[#151515]">
+                    Account Summary
+                  </h3>
+                </div>
+                {/* <div className="grid grid-cols-2 md:grid-cols-4 gap-6"> */}
+                <div className="space-y-4">
+                  {/* <div>
+                    <p className="text-sm text-[#777]">Status</p>
+                    <StatusBadge
+                      status={customer.status}
+                      config={statusConfig}
+                    />
+                  </div> */}
+                  <div>
+                    <p className="text-sm text-[#777]">Managed By</p>
+                    <p className="text-[#151515] font-medium mt-1">
+                      {customer.parentAdmin || '-'}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-[#777]">Created At</p>
+                    <p className="text-[#151515] font-medium mt-1">
+                      {formatDate(customer.createdAt)}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-[#777]">
+                      Last Updated
+                    </p>
+                    <p className="text-[#151515] font-medium mt-1">
+                      {formatDate(customer.updatedAt)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
               {/* Address Details Card */}
-              <div className="bg-white rounded-xl p-6 shadow-sm border border-[#ececec]">
+              <div className="bg-white rounded-xl p-6 shadow-sm border border-[#ececec] md:col-span-2">
                 <div className="flex items-center gap-2 mb-4">
                   <div className="h-8 w-8 rounded-lg bg-[#edf8e7] flex items-center justify-center">
                     <MapPin className="h-4 w-4 text-[#16610E]" />
@@ -314,55 +383,9 @@ export default function CustomerViewPage() {
                   </div>
 
                   {/* Embedded Google Map */}
-                  {customer.address && customer.latitude && customer.longitude && (
-                    <StaticMap
-                      lat={customer.latitude}
-                      lng={customer.longitude}
-                      height={250}
-                    />
+                  {lat && lng && (
+                    <StaticMap lat={lat} lng={lng} height={250} />
                   )}
-                </div>
-              </div>
-
-              {/* Account Summary Card */}
-              <div className="bg-white rounded-xl p-6 shadow-sm border border-[#ececec] md:col-span-2">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="h-8 w-8 rounded-lg bg-[#edf8e7] flex items-center justify-center">
-                    <CreditCard className="h-4 w-4 text-[#16610E]" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-[#151515]">
-                    Account Summary
-                  </h3>
-                </div>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                  <div>
-                    <p className="text-sm text-[#777]">Status</p>
-                    <Badge
-                      className={`mt-1 ${customer.active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}
-                    >
-                      {customer.status}
-                    </Badge>
-                  </div>
-                  <div>
-                    <p className="text-sm text-[#777]">Created By</p>
-                    <p className="text-[#151515] font-medium mt-1">
-                      {customer.createdBy}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-[#777]">Created At</p>
-                    <p className="text-[#151515] font-medium mt-1">
-                      {formatDate(customer.createdAt)}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-[#777]">
-                      Last Updated
-                    </p>
-                    <p className="text-[#151515] font-medium mt-1">
-                      {formatDate(customer.updatedAt)}
-                    </p>
-                  </div>
                 </div>
               </div>
             </div>

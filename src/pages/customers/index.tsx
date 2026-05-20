@@ -14,103 +14,161 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '../../components/ui/dropdown-menu';
+import {
+  useGetCustomersQuery,
+  useToggleCustomerStatusMutation,
+} from '../../API/api';
+import { useMemo } from 'react';
+import { useDataTableState } from '../../hooks/useDataTableState';
+import type { GetCustomersParams } from '../../types/api.types';
+import type { ICustomer } from '../../types';
+import { Skeleton } from '../../components/ui/skeleton';
+import { StatusBadge } from '../../components/data-table/StatusBadge';
+import { AvatarCell } from '../../components/data-table/AvatarCell';
+import { formatDate } from '../../lib/format-date';
+import toast from 'react-hot-toast';
 
-// Define the structure for Customer data
-interface Customer {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  city: string;
-  status: 'Active' | 'Inactive';
-  balance: number;
-}
+const statusConfig: Record<string, { color: string; label: string }> =
+  {
+    active: { color: '#22c55e', label: 'Active' },
+    inactive: { color: '#ef4444', label: 'Inactive' },
+    expired: { color: '#f59e0b', label: 'Expired' },
+  };
 
-// Sample Customer Data
-const customers: Customer[] = [
-  {
-    id: 'CUST-0001',
-    name: 'Babu Kondepudi',
-    email: 'babu_kondepudi@yahoo.co.nz',
-    phone: '0211470500',
-    city: '-',
-    status: 'Active',
-    balance: -80.5,
-  },
-  {
-    id: 'CUST-0002',
-    name: 'John Doe',
-    email: 'john.doe@example.com',
-    phone: '0211234567',
-    city: 'Auckland',
-    status: 'Active',
-    balance: 120.75,
-  },
-  {
-    id: 'CUST-0003',
-    name: 'Jane Smith',
-    email: 'jane.smith@example.com',
-    phone: '0227654321',
-    city: 'Wellington',
-    status: 'Inactive',
-    balance: 0.0,
-  },
-  {
-    id: 'CUST-0004',
-    name: 'Michael Brown',
-    email: 'michael.brown@example.com',
-    phone: '0219988776',
-    city: 'Christchurch',
-    status: 'Active',
-    balance: 45.5,
-  },
-  {
-    id: 'CUST-0005',
-    name: 'Sarah Wilson',
-    email: 'sarah.wilson@example.com',
-    phone: '0213344556',
-    city: 'Hamilton',
-    status: 'Active',
-    balance: 10.0,
-  },
-];
+const mapSortToApi = (
+  sortValue: string,
+): GetCustomersParams['sort'] => {
+  if (
+    sortValue === 'fullName' ||
+    sortValue === 'email' ||
+    sortValue === 'phoneNumber'
+  )
+    return 'a_z';
+  if (
+    sortValue === 'fullName_desc' ||
+    sortValue === 'email_desc' ||
+    sortValue === 'phoneNumber_desc'
+  )
+    return 'z_a';
+  if (sortValue === 'createdAt' || sortValue === 'updatedAt')
+    return 'newest';
+  if (
+    sortValue === 'createdAt_desc' ||
+    sortValue === 'updatedAt_desc'
+  )
+    return 'oldest';
+  return 'newest';
+};
 
-// Main Customer Management Page Component
 export default function CustomerManagementPage() {
   const navigate = useNavigate();
+  const [toggleCustomerStatus] = useToggleCustomerStatusMutation();
 
-  // Define columns inside component to access navigate
-  const customerColumns: ColumnDef<Customer>[] = [
+  const {
+    page,
+    setPage,
+    limit,
+    setLimit,
+    search,
+    setSearch,
+    debouncedSearch,
+    statusFilter,
+    setStatusFilter,
+    sort,
+    setSort,
+  } = useDataTableState({ defaultLimit: 10 });
+
+  const queryParams = useMemo(
+    () => ({
+      page,
+      limit,
+      search: debouncedSearch || undefined,
+      status:
+        statusFilter === 'All'
+          ? undefined
+          : (statusFilter.toLowerCase() as
+              | 'active'
+              | 'inactive'
+              | 'expired'),
+      sort: mapSortToApi(sort),
+    }),
+    [page, limit, debouncedSearch, statusFilter, sort],
+  );
+
+  const { data, isLoading } = useGetCustomersQuery(queryParams);
+  console.log(
+    '\n===================== 🟢 data =====================',
+  );
+  console.log(data?.customers);
+  console.log('=================================================\n');
+  const handleStatusChange = async (
+    id: string,
+    status: 'active' | 'inactive',
+  ) => {
+    try {
+      await toggleCustomerStatus({ id, status }).unwrap();
+      toast.success(`Customer set to ${status}`);
+    } catch {
+      toast.error('Failed to update status');
+    }
+  };
+
+  const customerColumns: ColumnDef<ICustomer>[] = [
     {
-      accessorKey: 'id',
-      header: 'Customer ID',
-    },
-    {
-      accessorKey: 'name',
+      accessorKey: 'fullName',
       header: 'Name',
+      sortable: true,
+      skeleton: () => (
+        <div className="flex items-center gap-3">
+          <Skeleton className="h-7 w-7 rounded-full" />
+          <div className="flex flex-col gap-1.5">
+            <Skeleton className="h-4 w-32" />
+            <Skeleton className="h-3 w-48" />
+          </div>
+        </div>
+      ),
+      cell: (row: ICustomer) => (
+        <AvatarCell name={row.fullName} email={row.email} />
+      ),
     },
     {
-      accessorKey: 'email',
-      header: 'Email',
-    },
-    {
-      accessorKey: 'phone',
+      accessorKey: 'phoneNumber',
       header: 'Phone',
+      sortable: true,
+      skeleton: () => <Skeleton className="h-4 w-24" />,
+      cell: (row: ICustomer) => (
+        <span className="text-[#6b7280]">
+          {row.countryCode} {row.phoneNumber}
+        </span>
+      ),
     },
     {
       accessorKey: 'city',
       header: 'City',
+      sortable: true,
+      skeleton: () => <Skeleton className="h-4 w-20" />,
+      cell: (row: ICustomer) => (
+        <span className="text-[#6b7280]">{row.city || '-'}</span>
+      ),
     },
     {
       accessorKey: 'status',
       header: 'Status',
-      filterField: 'status',
-      filterOptions: ['Active', 'Inactive'],
+      skeleton: () => (
+        <div className="inline-flex items-center gap-1.5">
+          <Skeleton className="h-2 w-2 rounded-full" />
+          <Skeleton className="h-4 w-16" />
+        </div>
+      ),
+      cell: (row: ICustomer) => (
+        <StatusBadge status={row.status} config={statusConfig} />
+      ),
     },
     {
       accessorKey: 'balance',
       header: 'Balance',
-      cell: (row: Customer) => (
+      skeleton: () => <Skeleton className="h-4 w-16" />,
+      cell: (row: ICustomer) => (
         <span
           className={
             row.balance < 0 ? 'text-red-500' : 'text-green-600'
@@ -121,31 +179,42 @@ export default function CustomerManagementPage() {
       ),
     },
     {
+      accessorKey: 'createdAt',
+      header: 'Joined',
+      sortable: true,
+      skeleton: () => <Skeleton className="h-4 w-24" />,
+      cell: (row: ICustomer) => (
+        <span className="text-[#6b7280]">
+          {formatDate(row.createdAt)}
+        </span>
+      ),
+    },
+    {
       accessorKey: 'actions',
       header: 'Actions',
-      cell: (row: Customer) => (
-        <div className="flex flex-wrap gap-2">
+      skeleton: () => (
+        <div className="flex items-center gap-1">
+          <Skeleton className="h-8 w-8 rounded-full" />
+          <Skeleton className="h-8 w-8 rounded-full" />
+          <Skeleton className="h-8 w-8 rounded-full" />
+        </div>
+      ),
+      cell: (row: ICustomer) => (
+        <div className="flex items-center gap-1">
           <ActionButton
             intent="view"
             icon={<Eye className="h-4 w-4" />}
             onClick={() =>
-              navigate(ROUTES.CUSTOMERS_VIEW.replace(':id', row.id))
+              navigate(ROUTES.CUSTOMERS_VIEW.replace(':id', row._id))
             }
           />
-
           <ActionButton
             intent="edit"
             icon={<Pencil className="h-4 w-4" />}
-            onClick={() => console.log('Edit customer:', row.id)}
-          />
-
-          {/* <ActionButton
-            intent="delete"
-            icon={<LucideTrash2 className="h-4 w-4" />}
             onClick={() =>
-              console.log('Deleting access for job ID:', row.id)
+              navigate(ROUTES.CUSTOMERS_EDIT.replace(':id', row._id))
             }
-          /> */}
+          />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <ActionButton
@@ -154,12 +223,22 @@ export default function CustomerManagementPage() {
               />
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              {row.status === 'Active' ? (
-                <DropdownMenuItem className="text-red-500 focus:text-red-500">
+              {row.status === 'active' ? (
+                <DropdownMenuItem
+                  className="text-red-500 focus:text-red-500"
+                  onClick={() =>
+                    handleStatusChange(row._id, 'inactive')
+                  }
+                >
                   Set Inactive
                 </DropdownMenuItem>
               ) : (
-                <DropdownMenuItem className="text-green-600 focus:text-green-600">
+                <DropdownMenuItem
+                  className="text-green-600 focus:text-green-600"
+                  onClick={() =>
+                    handleStatusChange(row._id, 'active')
+                  }
+                >
                   Set Active
                 </DropdownMenuItem>
               )}
@@ -172,9 +251,6 @@ export default function CustomerManagementPage() {
 
   return (
     <AppLayout>
-      {/* <main className="flex-1 w-full overflow-y-auto px-4 pt-9 pb-9"> */}
-      {/* <main className="flex-1 h-[90vh] border border-blue-600 w-full overflow-y-auto px-4 pt-5 pb-5">
-        <div className="min-h-full w-full h-[90vh] border border-blue-600"> */}
       <div className="flex h-full flex-col">
         <div className="flex-1 w-full overflow-y-auto px-4 py-5">
           <div className="flex w-full flex-col">
@@ -184,16 +260,40 @@ export default function CustomerManagementPage() {
               showWelcome={false}
             />
 
-            <DataTable<Customer>
-              data={customers}
+            <DataTable<ICustomer>
+              data={data?.customers ?? []}
               columns={customerColumns}
-              title="Customers"
-              description="Manage all your customers in one place."
-              searchPlaceholder="Search customers..."
+              loading={isLoading}
+              title=""
+              description=""
+              searchPlaceholder="Search customers by name, email or phone..."
               filterField="status"
-              filterOptions={['Active', 'Inactive']}
+              filterOptions={['Active', 'Inactive', 'Expired']}
               addButtonLabel="Add Customer"
               onAddClick={() => navigate(ROUTES.CUSTOMERS_CREATE)}
+              searchValue={search}
+              onSearchChange={setSearch}
+              filterValue={statusFilter}
+              onFilterChange={setStatusFilter}
+              sortValue={sort}
+              onSortChange={setSort}
+              serverSideFiltering
+              serverSideSorting
+              pagination={
+                data
+                  ? {
+                      page: data.page,
+                      limit: data.limit,
+                      total: data.total,
+                      totalPages: data.totalPages,
+                    }
+                  : undefined
+              }
+              onPageChange={setPage}
+              onLimitChange={(newLimit) => {
+                setLimit(newLimit);
+                setPage(1);
+              }}
             />
           </div>
         </div>

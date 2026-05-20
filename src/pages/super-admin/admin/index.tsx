@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { SuperAdminLayout } from '@/components/layout/SuperAdminLayout';
 import { Navbar } from '@/components/layout/Navbar';
 import { Eye, Pencil, Ellipsis } from 'lucide-react';
@@ -22,53 +22,58 @@ import {
 } from '../../../API/api';
 import type { GetAdminsParams } from '../../../types/api.types';
 import { Skeleton } from '../../../components/ui/skeleton';
-import { useDebounce } from '../../../hooks/useDebounce';
+import { useDataTableState } from '../../../hooks/useDataTableState';
+import { StatusBadge } from '../../../components/data-table/StatusBadge';
+import { AvatarCell } from '../../../components/data-table/AvatarCell';
+import { formatDate } from '../../../lib/format-date';
+
+const statusConfig: Record<string, { color: string; label: string }> =
+  {
+    active: { color: '#22c55e', label: 'Active' },
+    inactive: { color: '#ef4444', label: 'Inactive' },
+    suspended: { color: '#f59e0b', label: 'Suspended' },
+  };
+
+const mapSortToApi = (sortValue: string): GetAdminsParams['sort'] => {
+  if (
+    sortValue === 'fullName' ||
+    sortValue === 'adminId' ||
+    sortValue === 'phoneNumber'
+  )
+    return 'a_z';
+  if (
+    sortValue === 'fullName_desc' ||
+    sortValue === 'adminId_desc' ||
+    sortValue === 'phoneNumber_desc'
+  )
+    return 'z_a';
+  if (sortValue === 'createdAt' || sortValue === 'updatedAt')
+    return 'newest';
+  if (
+    sortValue === 'createdAt_desc' ||
+    sortValue === 'updatedAt_desc'
+  )
+    return 'oldest';
+  return 'newest';
+};
 
 const SuperAdminAdminsPage: React.FC = () => {
   const navigate = useNavigate();
   const [updateAdminUser] = useUpdateAdminUserMutation();
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(8);
-  const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('All');
-  const [sort, setSort] = useState<string>('createdAt'); // Default: newest first
 
-  const debouncedSearch = useDebounce(search, 300);
-
-  // Reset page when search/filter/sort changes
-  useEffect(() => {
-    setPage(1);
-  }, [debouncedSearch, statusFilter, sort]);
-
-  // Sort mapping: UI state → API format
-  const mapSortToApi = (
-    sortValue: string,
-  ): GetAdminsParams['sort'] => {
-    // Name-like fields → a_z / z_a
-    if (
-      sortValue === 'fullName' ||
-      sortValue === 'adminId' ||
-      sortValue === 'phoneNumber'
-    )
-      return 'a_z';
-    if (
-      sortValue === 'fullName_desc' ||
-      sortValue === 'adminId_desc' ||
-      sortValue === 'phoneNumber_desc'
-    )
-      return 'z_a';
-
-    // Date fields → newest / oldest
-    if (sortValue === 'createdAt' || sortValue === 'updatedAt')
-      return 'newest';
-    if (
-      sortValue === 'createdAt_desc' ||
-      sortValue === 'updatedAt_desc'
-    )
-      return 'oldest';
-
-    return 'newest'; // Default fallback
-  };
+  const {
+    page,
+    setPage,
+    limit,
+    setLimit,
+    search,
+    setSearch,
+    debouncedSearch,
+    statusFilter,
+    setStatusFilter,
+    sort,
+    setSort,
+  } = useDataTableState({ defaultLimit: 8 });
 
   const { data, isLoading } = useGetAdminUsersQuery({
     page,
@@ -77,30 +82,19 @@ const SuperAdminAdminsPage: React.FC = () => {
     status: statusFilter === 'All' ? undefined : statusFilter,
     sort: mapSortToApi(sort),
   });
-  const statusConfig: Record<
-    string,
-    { color: string; label: string }
-  > = {
-    active: { color: '#22c55e', label: 'Active' },
-    inactive: { color: '#ef4444', label: 'Inactive' },
-    suspended: { color: '#f59e0b', label: 'Suspended' },
-  };
 
   const handleStatusChange = async (
     id: string,
     status: 'active' | 'inactive',
   ) => {
     try {
-      await updateAdminUser({
-        id,
-        status,
-      }).unwrap();
-
+      await updateAdminUser({ id, status }).unwrap();
       toast.success(`Admin set to ${status}`);
     } catch {
       toast.error('Failed to update status');
     }
   };
+
   const adminsColumns: ColumnDef<IAdmins>[] = [
     {
       accessorKey: 'adminId',
@@ -125,29 +119,7 @@ const SuperAdminAdminsPage: React.FC = () => {
         </div>
       ),
       cell: (row: IAdmins) => (
-        <div className="flex items-center gap-3">
-          <div
-            className="flex h-7 w-7 items-center justify-center rounded-full text-xs font-semibold"
-            style={
-              row.fullName
-                ? {
-                    backgroundColor: `hsl(${(row.fullName.charCodeAt(0) * 137.5) % 360}, 60%, 90%)`,
-                    color: `hsl(${(row.fullName.charCodeAt(0) * 137.5) % 360}, 60%, 35%)`,
-                  }
-                : { backgroundColor: '#edf8e7', color: '#16610E' }
-            }
-          >
-            {row.fullName
-              ? row.fullName.charAt(0).toUpperCase()
-              : 'A'}
-          </div>
-          <div>
-            <span className="font-medium text-[#151515]">
-              {row.fullName || '-'}
-            </span>
-            <p className="text-xs text-[#6b7280]">{row.email}</p>
-          </div>
-        </div>
+        <AvatarCell name={row.fullName} email={row.email} />
       ),
     },
     {
@@ -159,18 +131,9 @@ const SuperAdminAdminsPage: React.FC = () => {
           <Skeleton className="h-4 w-16" />
         </div>
       ),
-      cell: (row: IAdmins) => {
-        const cfg = statusConfig[row.status] || statusConfig.active;
-        return (
-          <span className="inline-flex items-center gap-1.5 text-xs font-medium">
-            <span
-              className="h-2 w-2 rounded-full"
-              style={{ backgroundColor: cfg.color }}
-            />
-            <span style={{ color: cfg.color }}>{cfg.label}</span>
-          </span>
-        );
-      },
+      cell: (row: IAdmins) => (
+        <StatusBadge status={row.status} config={statusConfig} />
+      ),
     },
     {
       accessorKey: 'phoneNumber',
@@ -190,11 +153,7 @@ const SuperAdminAdminsPage: React.FC = () => {
       skeleton: () => <Skeleton className="h-4 w-24" />,
       cell: (row: IAdmins) => (
         <span className="text-[#6b7280]">
-          {new Date(row.createdAt).toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric',
-          })}
+          {formatDate(row.createdAt)}
         </span>
       ),
     },
@@ -205,11 +164,7 @@ const SuperAdminAdminsPage: React.FC = () => {
       skeleton: () => <Skeleton className="h-4 w-24" />,
       cell: (row: IAdmins) => (
         <span className="text-[#6b7280]">
-          {new Date(row.updatedAt).toLocaleDateString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric',
-          })}
+          {formatDate(row.updatedAt)}
         </span>
       ),
     },
@@ -231,7 +186,9 @@ const SuperAdminAdminsPage: React.FC = () => {
             onClick={() =>
               navigate(
                 ROUTES.ADMIN_VIEW.replace(':id', String(row._id)),
-                { state: { admin: row } },
+                {
+                  state: { admin: row },
+                },
               )
             }
           />
@@ -241,7 +198,9 @@ const SuperAdminAdminsPage: React.FC = () => {
             onClick={() =>
               navigate(
                 ROUTES.ADMIN_EDIT.replace(':id', String(row._id)),
-                { state: { admin: row } },
+                {
+                  state: { admin: row },
+                },
               )
             }
           />
@@ -317,7 +276,6 @@ const SuperAdminAdminsPage: React.FC = () => {
                 filterOptions={['Active', 'Inactive', 'Suspended']}
                 addButtonLabel="Add admin"
                 onAddClick={() => navigate(ROUTES.ADMIN_CREATE)}
-                // Controlled mode props for server-side filtering
                 searchValue={search}
                 onSearchChange={setSearch}
                 filterValue={statusFilter}
@@ -326,7 +284,6 @@ const SuperAdminAdminsPage: React.FC = () => {
                 onSortChange={setSort}
                 serverSideFiltering
                 serverSideSorting
-                // Pagination
                 pagination={
                   data
                     ? {

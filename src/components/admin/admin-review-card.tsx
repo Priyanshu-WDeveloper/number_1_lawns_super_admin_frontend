@@ -79,7 +79,7 @@ export function AdminReviewCard({
         {/* Contact Info */}
         <div>
           <h6 className="mb-3 text-xs font-semibold uppercase tracking-wide text-[#777]">
-            Contact Information
+            Customer Information
           </h6>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div className="space-y-4">

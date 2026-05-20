@@ -1,3 +1,4 @@
+import type { ICustomer } from '.';
 import type { IAdmins } from './admins.types';
 
 export type GetAdminsParams = {
@@ -15,3 +16,24 @@ export type GetAdminsResponse = {
   total: number;
   totalPages: number;
 };
+
+export interface GetCustomersParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  status?: 'active' | 'inactive' | 'expired';
+  active?: boolean;
+  sort?: 'a_z' | 'z_a' | 'newest' | 'oldest';
+}
+
+export interface CustomersResponse {
+  customers: ICustomer[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+export interface CustomerMutationResponse {
+  message: string;
+  customer: ICustomer;
+}

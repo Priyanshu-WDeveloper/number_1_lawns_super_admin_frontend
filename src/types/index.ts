@@ -1,12 +1,44 @@
 // Customer types
-export interface Customer {
-  id: string;
-  name: string;
+export interface ICustomer {
+  _id: string;
+
+  firstName: string;
+  lastName: string;
+  fullName: string;
+
   email: string;
-  phone: string;
+
+  status: 'active' | 'inactive' | 'expired';
+
+  profileImage: string;
+
+  countryCode: string;
+  phoneNumber: string;
+  role: number;
+
   city: string;
-  status: 'Active' | 'Inactive';
+  address: string;
+  state: string;
+  postalCode: string;
+  country: string;
+
   balance: number;
+
+  parentAdmin: string;
+
+  active: boolean;
+  isDeleted: boolean;
+
+  deletedAt: string | null;
+
+  createdAt: string;
+  updatedAt: string;
+
+  location: {
+    type: 'Point';
+
+    coordinates: [number, number];
+  };
 }
 
 // Employee types
