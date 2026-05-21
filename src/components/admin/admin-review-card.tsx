@@ -8,7 +8,6 @@ import {
   Map,
   Hash,
   Globe,
-  Camera,
 } from 'lucide-react';
 
 import { DetailRow } from './detail-row';
@@ -27,6 +26,8 @@ interface AdminReviewCardProps {
   state: string;
   postalCode: string;
   country: string;
+  latitude?: number;
+  longitude?: number;
   profileImage?: string;
   documents?: NamedDoc[];
 }
@@ -42,6 +43,8 @@ export function AdminReviewCard({
   state,
   postalCode,
   country,
+  latitude,
+  longitude,
   profileImage,
   documents = [],
 }: AdminReviewCardProps) {
@@ -120,6 +123,20 @@ export function AdminReviewCard({
             label="Country"
             value={country}
           />
+          {latitude !== undefined && longitude !== undefined && (
+            <>
+              <DetailRow
+                icon={<Map className="h-4 w-4" />}
+                label="Latitude"
+                value={String(latitude)}
+              />
+              <DetailRow
+                icon={<Map className="h-4 w-4" />}
+                label="Longitude"
+                value={String(longitude)}
+              />
+            </>
+          )}
         </div>
       </div>
 

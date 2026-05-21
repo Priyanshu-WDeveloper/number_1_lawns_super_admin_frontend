@@ -27,7 +27,6 @@ import type {
   IInvoice,
   IAdminUser,
 } from '../types';
-import type { Notification } from '../types/api.types';
 
 export const api = createApi({
   reducerPath: 'api',

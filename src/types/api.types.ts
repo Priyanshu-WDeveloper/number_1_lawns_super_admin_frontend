@@ -1,4 +1,4 @@
-import type { ICustomer, IJob, IInvoice } from '.';
+import type { ICustomer, IJob, IInvoice, IEmployee } from '.';
 import type { IAdmins } from './admins.types';
 
 export type GetAdminsParams = {
@@ -24,6 +24,7 @@ export interface GetCustomersParams {
   status?: 'active' | 'inactive' | 'expired';
   active?: boolean;
   sort?: 'a_z' | 'z_a' | 'newest' | 'oldest';
+  [key: string]: unknown;
 }
 
 export interface CustomersResponse {
@@ -68,3 +69,42 @@ export interface NotificationsResponse {
   total: number;
   unreadCount: number;
 }
+
+export interface EmployeesResponse {
+  employees: IEmployee[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
+export interface ListQueryParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  status?: string;
+  [key: string]: unknown;
+}
+
+export interface CreateEmployeePayload {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  countryCode: string;
+  address: string;
+  city: string;
+  state: string;
+  postalCode: string;
+  country: string;
+  location?: { type: 'Point'; coordinates: [number, number] };
+  latitude?: number;
+  longitude?: number;
+  profileImage?: string;
+  documents?: Array<{ name: string; file: File | null }>;
+}
+
+export interface UpdateEmployeePayload extends Partial<CreateEmployeePayload> {
+  id: string;
+}
+

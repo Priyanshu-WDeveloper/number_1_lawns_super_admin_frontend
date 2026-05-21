@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, X, Upload, FileText, Image as ImageIcon, File } from 'lucide-react';
+import { Plus, X, Upload, FileText, File } from 'lucide-react';
 
 import { formatFileSize } from '../../lib/file-utils';
 import { DocumentPreviewModal } from './document-preview-modal';

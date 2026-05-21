@@ -303,13 +303,6 @@ export default function EditEmployeePage() {
     );
   };
 
-  const handlePreviewDocument = useCallback((doc: NamedDoc) => {
-    if (doc.file) {
-      const url = URL.createObjectURL(doc.file);
-      window.open(url, '_blank');
-    }
-  }, []);
-
   const handleCoordinatePick = (lat: number, lng: number) => {
     setValue('latitude', lat, { shouldValidate: true });
     setValue('longitude', lng, { shouldValidate: true });
@@ -622,7 +615,6 @@ export default function EditEmployeePage() {
           country={formValues.country}
           profileImage={formValues.profileImage}
           documents={documents}
-          onPreviewDocument={handlePreviewDocument}
         />
       </form>
     );

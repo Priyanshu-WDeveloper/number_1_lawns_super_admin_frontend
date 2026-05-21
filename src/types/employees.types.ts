@@ -18,6 +18,7 @@ export interface IEmployee {
   country: string;
   latitude: number;
   longitude: number;
+  locationMode?: 'map' | 'manual';
   balance: number;
   parentAdmin: string;
   active: boolean;

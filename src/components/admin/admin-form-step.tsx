@@ -12,7 +12,7 @@ interface AdminFormStepProps {
   watch: any;
   setValue: any;
   errors: Record<string, { message?: string }>;
-  trigger?: (field: string) => void;
+  trigger?: (...args: any[]) => Promise<boolean>;
 }
 
 export function AdminFormStep({
@@ -109,7 +109,6 @@ export function AdminFormStep({
                     setValue('phoneNumber', formValues.phoneNumber, {
                       shouldValidate: true,
                     });
-                    const limits = { minLength: 0, maxLength: 99 };
                     const result = validatePhone(formValues.phoneNumber, formValues.countryCode);
                     if (!result.valid && result.error) {
                       setValue('phoneNumber', undefined, { shouldValidate: true });

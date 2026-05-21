@@ -34,13 +34,13 @@ export default function CustomerManagementPage() {
   const [toggleCustomerStatus] = useToggleCustomerStatusMutation();
 
   const {
-    page,
+    page: _page,
     setPage,
-    limit,
+    limit: _limit,
     setLimit,
     search,
     setSearch,
-    debouncedSearch,
+    debouncedSearch: _debouncedSearch,
     statusFilter,
     setStatusFilter,
     sort,

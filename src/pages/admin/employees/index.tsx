@@ -35,7 +35,7 @@ import { getErrorMessage } from '@/lib/get-error-message';
 
 export default function EmployeeManagementPage() {
   const navigate = useNavigate();
-  const [deleteEmployee] = useDeleteEmployeeMutation();
+  const [_deleteEmployee] = useDeleteEmployeeMutation();
   const [toggleEmployeeStatus] = useToggleEmployeeStatusMutation();
   const [deleteEmployeeValidity] = useDeleteEmployeeValidityMutation();
   const [validityEmployee, setValidityEmployee] = useState<IEmployee | null>(

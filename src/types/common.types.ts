@@ -5,4 +5,5 @@ export interface ListQueryParams {
   status?: 'active' | 'inactive' | 'expired';
   active?: boolean;
   sort?: 'a_z' | 'z_a' | 'newest' | 'oldest';
+  [key: string]: unknown;
 }

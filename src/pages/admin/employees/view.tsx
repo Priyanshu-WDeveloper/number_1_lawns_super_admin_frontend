@@ -8,11 +8,9 @@ import {
   Mail,
   Phone,
   MapPin,
-  User,
   CreditCard,
   MoreVertical,
   Pencil,
-  Trash2,
   PowerOff,
   Power,
 } from 'lucide-react';

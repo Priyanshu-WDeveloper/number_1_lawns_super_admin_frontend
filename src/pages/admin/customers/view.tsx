@@ -8,7 +8,6 @@ import {
   Mail,
   Phone,
   MapPin,
-  User,
   CreditCard,
   MoreVertical,
   Pencil,
