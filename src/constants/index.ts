@@ -2,32 +2,7 @@
 export const ROUTES = {
   // Public routes
   LOGIN: '/login',
-  SUPER_ADMIN_LOGIN: '/super-admin-login',
   FORGOT_PASSWORD: '/forgot-password',
-
-  // Admin routes
-  DASHBOARD: '/dashboard',
-  SUBSCRIPTION_EXPIRED: '/subscription-expired',
-  PROFILE: '/profile',
-  CHANGE_PASSWORD: '/change-password',
-  CUSTOMERS: '/customers',
-  CUSTOMERS_CREATE: '/customers/create',
-  CUSTOMERS_VIEW: '/customers/:id',
-  CUSTOMERS_EDIT: '/customers/edit/:id',
-  EMPLOYEES: '/employees',
-  EMPLOYEES_CREATE: '/employees/create',
-  EMPLOYEES_VIEW: '/employees/:id',
-  EMPLOYEES_EDIT: '/employees/edit/:id',
-  JOBS: '/jobs',
-  JOBS_CREATE: '/jobs/create',
-  JOBS_VIEW: '/jobs/:id',
-  JOBS_EDIT: '/jobs/edit/:id',
-  JOBS_VIEW_MANAGE: '/jobs/manage-view/:id',
-  MANAGE_JOBS: '/manage-jobs',
-  SCHEDULED_JOBS: '/scheduled-jobs',
-  INVOICES: '/invoices',
-  INVOICES_VIEW: '/invoices/:jobId',
-  NOTIFICATIONS: '/notifications',
 
   // Super Admin routes
   SUPER_ADMIN_DASHBOARD: '/super-admin/dashboard',
@@ -40,8 +15,10 @@ export const ROUTES = {
   SUPER_ADMIN_BILLING: '/super-admin/billing',
   SUPER_ADMIN_NOTIFICATIONS: '/super-admin/notifications',
 
+  // Admin routes (for layout references)
+  NOTIFICATIONS: '/notifications',
+
   // Default redirects
-  DEFAULT_REDIRECT: '/dashboard',
   SUPER_ADMIN_DEFAULT_REDIRECT: '/super-admin/dashboard',
 } as const;
 
@@ -72,8 +49,7 @@ export const API_ROUTES = {
     DELETE: (id: string) => `/admins/employees/${id}`,
     STATUS: (id: string) => `/admins/employees/${id}/status`,
     SET_VALIDITY: (id: string) => `/admins/employees/${id}/validity`,
-    REMOVE_VALIDITY: (id: string) =>
-      `/admins/employees/${id}/validity`,
+    REMOVE_VALIDITY: (id: string) => `/admins/employees/${id}/validity`,
     UPLOAD: '/admins/upload',
   },
   JOBS: {
@@ -84,7 +60,7 @@ export const API_ROUTES = {
     DELETE: (id: string) => `/jobs/${id}`,
     CANCEL: '/jobs/cancel',
     COMPLETE: '/jobs/complete',
-    ASSIGN_EMPLOYEE: `/jobs/assign-employee`,
+    ASSIGN_EMPLOYEE: '/jobs/assign-employee',
     RECEIPT: (id: string) => `/jobs/${id}/receipt`,
   },
   PARENT_JOBS: {

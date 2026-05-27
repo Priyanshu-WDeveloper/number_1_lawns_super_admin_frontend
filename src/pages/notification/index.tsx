@@ -11,7 +11,7 @@ import {
   XCircle,
   Ellipsis,
 } from 'lucide-react';
-import { AppLayout } from '@/components/layout/app-layout';
+import { SuperAdminLayout } from '@/components/layout/super-layout';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -153,7 +153,7 @@ export default function NotificationsPage() {
       : notifications;
 
   return (
-    <AppLayout>
+    <SuperAdminLayout>
       <div className="flex h-full flex-col">
         <div
           className="flex-1 w-full overflow-y-auto p-5 md:pl-10
@@ -346,6 +346,6 @@ export default function NotificationsPage() {
           </div>
         </div>
       </div>
-    </AppLayout>
+    </SuperAdminLayout>
   );
 }

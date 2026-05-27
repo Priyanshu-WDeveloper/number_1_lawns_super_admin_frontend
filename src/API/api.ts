@@ -83,34 +83,7 @@ export const api = createApi({
     'Notifications',
   ],
   endpoints: (builder) => ({
-    // Auth endpoints
-    login: builder.mutation({
-      query: (credentials) => ({
-        url: API_ROUTES.AUTH.LOGIN,
-        method: 'POST',
-        body: {
-          ...credentials,
-          deviceType: getDeviceType(),
-          deviceToken: getDeviceToken(),
-        },
-      }),
-      async onQueryStarted(_, { queryFulfilled, dispatch }) {
-        try {
-          const { data } = await queryFulfilled;
-          if (data?.user) {
-            dispatch(
-              setAuth({
-                user: data.user,
-                token: data.token,
-                rememberMe: true,
-              }),
-            );
-          }
-        } catch {
-          /* handled by caller */
-        }
-      },
-    }),
+   
     superLogin: builder.mutation({
       query: (credentials) => ({
         url: API_ROUTES.AUTH.SUPER_LOGIN,
@@ -622,11 +595,10 @@ export const api = createApi({
 });
 
 export const {
-  useLoginMutation,
   useSuperLoginMutation,
   useLogoutMutation,
 
-  useGetCustomersQuery,
+   useGetCustomersQuery,
   useGetCustomerByIdQuery,
   useCreateCustomerMutation,
   useUpdateCustomerMutation,
@@ -677,9 +649,6 @@ export const {
   useSetAdminValidityMutation,
   useDeleteAdminValidityMutation,
 
-  useGetAdminDetailsQuery,
-
-  useChangePasswordMutation,
   useSuperAdminChangePasswordMutation,
 
   useGetBillingStatsQuery,

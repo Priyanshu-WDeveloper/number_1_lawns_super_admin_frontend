@@ -1,14 +1,14 @@
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 
-import { AppLayout } from '@/components/layout/app-layout';
+import { SuperAdminLayout } from '@/components/layout/super-layout';
 import { Button } from '@/components/ui/button';
 
 export default function NotFoundPage() {
   const navigate = useNavigate();
 
   return (
-    <AppLayout>
+    <SuperAdminLayout>
       <div className="flex h-full items-center justify-center">
         <div className="text-center">
           <h1 className="text-6xl font-bold text-primary">404</h1>
@@ -25,6 +25,6 @@ export default function NotFoundPage() {
           </Button>
         </div>
       </div>
-    </AppLayout>
+    </SuperAdminLayout>
   );
 }

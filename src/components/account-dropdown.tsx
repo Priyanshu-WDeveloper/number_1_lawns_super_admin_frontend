@@ -1,7 +1,6 @@
 import {
   ChevronDown,
   CircleDot,
-  CreditCard,
   LogOut,
   Mail,
   User,
@@ -27,7 +26,7 @@ import { useDispatch } from 'react-redux';
 import { clearAuth } from '@/store/auth-slice';
 import { api } from '@/API/api';
 import { format } from 'date-fns';
-import { ChangeAdminPasswordDialog } from '@/pages/admin/change-password';
+
 
 export default function AccountDropdown({
   superAccess = false,
@@ -39,7 +38,6 @@ export default function AccountDropdown({
   const navigate = useNavigate();
   const user = useSelector((state: RootState) => state.auth.user);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
-  const [showChangePassword, setShowChangePassword] = useState(false);
   const dispatch = useDispatch();
   const daysLeft = user?.validity
     ? Math.ceil(
@@ -57,7 +55,7 @@ export default function AccountDropdown({
       setShowLogoutDialog(false);
 
       navigate(
-        superAccess ? ROUTES.SUPER_ADMIN_LOGIN : ROUTES.LOGIN,
+        superAccess ? ROUTES.LOGIN : ROUTES.LOGIN,
         {
           replace: true,
         },
@@ -197,9 +195,7 @@ export default function AccountDropdown({
           <DropdownMenuItem
             onClick={() =>
               navigate(
-                superAccess
-                  ? ROUTES.SUPER_ADMIN_PROFILE
-                  : ROUTES.PROFILE,
+                  ROUTES.SUPER_ADMIN_PROFILE,
               )
             }
             className="flex cursor-pointer items-center gap-3 px-4 py-3 text-sm"
@@ -208,13 +204,6 @@ export default function AccountDropdown({
             Profile
           </DropdownMenuItem>
 
-          <DropdownMenuItem
-            onClick={() => setShowChangePassword(true)}
-            className="flex cursor-pointer items-center gap-3 px-4 py-3 text-sm"
-          >
-            <CreditCard className="h-4 w-4 text-slate-700" />
-            Change Password
-          </DropdownMenuItem>
         </div>
 
         <DropdownMenuItem className="flex cursor-pointer items-center gap-3 px-4 py-3 text-sm">
@@ -237,10 +226,7 @@ export default function AccountDropdown({
           confirmText="Logout"
           onConfirm={handleLogout}
         />
-        <ChangeAdminPasswordDialog
-          open={showChangePassword}
-          onOpenChange={setShowChangePassword}
-        />
+
       </DropdownMenuContent>
     </DropdownMenu>
   );

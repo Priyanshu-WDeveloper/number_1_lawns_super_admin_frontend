@@ -69,7 +69,7 @@ export function SuperAdminSidebar() {
       toast.success('Logged out');
       setShowLogoutDialog(false);
 
-      navigate(ROUTES.SUPER_ADMIN_LOGIN, {
+      navigate(ROUTES.LOGIN, {
         replace: true,
       });
     } catch (error) {

@@ -7,7 +7,7 @@ import { Leaf, Mail, ArrowLeft, Lock } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 import { getErrorMessage } from '@/lib/get-error-message';
-import { InputWithIcon } from '@/components/forms/input-with-icon';
+import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ROUTES } from '@/constants';
 
@@ -219,11 +219,11 @@ const ForgotPassword = () => {
                         Email address
                       </label>
 
-                      <div className="mt-3">
-                        <InputWithIcon
+                      <div className="mt-3 relative">
+                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary" />
+                        <Input
                           placeholder="example@mail.com"
-                          icon={<Mail />}
-                          className="h-16 rounded-2xl bg-[#f6fff4] border-primary/20"
+                          className="h-16 rounded-2xl bg-[#f6fff4] border-primary/20 pl-12"
                           {...register('email')}
                         />
                         {errors.email && (

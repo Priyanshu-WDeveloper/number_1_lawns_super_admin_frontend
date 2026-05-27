@@ -1,6 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import z from 'zod';
 import {
@@ -30,7 +29,7 @@ import {
 } from '@/API/api';
 import { Input } from '@/components/ui/input';
 import { AdminFormStepper } from '@/components/admin/admin-form-stepper';
-import { AdminFormStep } from '@/components/admin/admin-form-step';
+// import { AdminFormStep } from '@/components/admin/admin-form-step';
 import { ReviewCard } from '@/components/admin/review-card';
 import { Button } from '@/components/ui/button';
 import { validatePhone } from '@/lib/phone-validation';
@@ -38,6 +37,8 @@ import {
   validateAddress,
   getCountryIsoFromPhoneCode,
 } from '@/lib/address-validation';
+import { useForm } from 'react-hook-form';
+import { AdminFormStep } from '@/components/admin/admin-form-step';
 
 const createAdminSchema = z
   .object({

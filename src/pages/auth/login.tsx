@@ -1,15 +1,23 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Leaf, Mail, Lock, Eye, Globe, EyeOff } from 'lucide-react';
+import {
+  Leaf,
+  Mail,
+  Lock,
+  Eye,
+  Shield,
+  Globe,
+  EyeOff,
+} from 'lucide-react';
 import toast from 'react-hot-toast';
 
 import { getErrorMessage } from '@/lib/get-error-message';
-import { InputWithIcon } from '@/components/forms/input-with-icon';
+import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import z from 'zod';
-import { useLoginMutation } from '@/API/api';
+import { useSuperLoginMutation } from '@/API/api';
 import { ROUTES } from '@/constants';
 
 const loginSchema = z.object({
@@ -17,10 +25,13 @@ const loginSchema = z.object({
     .string()
     .min(1, { message: 'Email is required' })
     .email({ message: 'Invalid email address' }),
+
   password: z
     .string()
     .min(1, { message: 'Password is required' })
-    .min(8, { message: 'Password must be at least 8 characters' })
+    .min(8, {
+      message: 'Password must be at least 8 characters',
+    })
     .refine((pwd: string) => !pwd.includes(' '), {
       message: 'Password cannot contain spaces',
     }),
@@ -30,9 +41,12 @@ type LoginFormData = z.infer<typeof loginSchema>;
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
+
   const [rememberMe, setRememberMe] = useState(true);
+
   const navigate = useNavigate();
-  const [login, { isLoading }] = useLoginMutation();
+
+  const [superLogin, { isLoading }] = useSuperLoginMutation();
 
   const {
     register,
@@ -48,21 +62,24 @@ const Login = () => {
 
   const onSubmit = async (data: LoginFormData) => {
     try {
-      const res = await login(data).unwrap();
+      const res = await superLogin(data).unwrap();
 
       if (res.user) {
-        toast.success('Welcome back Admin!');
+        toast.success('Welcome back Super Admin!');
+
         if (!rememberMe) {
           const authData = localStorage.getItem('auth_state');
+
           if (authData) {
             sessionStorage.setItem('auth_state', authData);
+
             localStorage.removeItem('auth_state');
           }
         }
-        navigate(ROUTES.DASHBOARD);
+
+        navigate(ROUTES.SUPER_ADMIN_DASHBOARD);
       }
     } catch (error) {
-      console.error(error);
       toast.error(
         getErrorMessage(
           error,
@@ -109,17 +126,18 @@ const Login = () => {
                   </div>
 
                   <h1 className="text-3xl font-bold text-primary">
-                    No. 1 Lawns
+                    Super Admin
                   </h1>
                 </div>
 
                 <div className="mt-20">
                   <h2 className="text-5xl font-bold text-primary leading-tight">
-                    Welcome Back!
+                    Admin Control
                   </h2>
 
                   <p className="mt-5 text-xl text-gray-700 max-w-md leading-9">
-                    Login to continue your journey with No. 1 Lawns
+                    Access the control panel to manage all
+                    administrators
                   </p>
 
                   {/* Divider */}
@@ -135,12 +153,12 @@ const Login = () => {
                   <div className="mt-10 bg-white/70 backdrop-blur-md border border-white/40 shadow-lg rounded-2xl p-5 max-w-sm">
                     <div className="flex items-start gap-4">
                       <div className="w-12 h-12 rounded-full bg-primary overflow-hidden shrink-0 flex items-center justify-center">
-                        <Leaf className="text-white w-6 h-6" />
+                        <Shield className="text-white w-6 h-6" />
                       </div>
 
                       <p className="text-gray-700 leading-7">
-                        Let&apos;s grow a No. 1 Lawns tomorrow,
-                        together.
+                        Secure access to manage all admin users and
+                        system settings.
                       </p>
                     </div>
                   </div>
@@ -183,7 +201,7 @@ const Login = () => {
                   {/* Desktop heading */}
                   <div className="hidden lg:block text-center">
                     <h2 className="text-[2rem] sm:text-[2.5rem] font-bold text-primary leading-tight">
-                      Log in to your Account
+                      Super Admin Access
                     </h2>
 
                     <p className="mt-4 text-base sm:text-xl leading-7 sm:leading-9 text-gray-500">
@@ -198,7 +216,7 @@ const Login = () => {
 
                       <div>
                         <h2 className="text-3xl font-bold text-gray-900">
-                          Welcome back Admin!
+                          Welcome Super Admin!
                         </h2>
 
                         <p className="mt-2 text-lg text-gray-500">
@@ -219,11 +237,11 @@ const Login = () => {
                         Email address
                       </label>
 
-                      <div className="mt-3">
-                        <InputWithIcon
-                          placeholder="admin@mail.com"
-                          icon={<Mail />}
-                          className="h-16 rounded-2xl bg-[#f6fff4] border-primary/20"
+                      <div className="mt-3 relative">
+                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary" />
+                        <Input
+                          placeholder="you@example.com"
+                          className="h-16 rounded-2xl bg-[#f6fff4] border-primary/20 pl-12"
                           {...register('email')}
                         />
                         {errors.email && (
@@ -240,30 +258,26 @@ const Login = () => {
                         Password
                       </label>
 
-                      <div className="mt-3">
-                        <InputWithIcon
+                      <div className="mt-3 relative">
+                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary" />
+                        <Input
                           type={showPassword ? 'text' : 'password'}
                           placeholder="••••••••"
-                          icon={<Lock />}
-                          trailingIcon={
-                            <button
-                              type="button"
-                              onClick={() =>
-                                setShowPassword(!showPassword)
-                              }
-                              className="focus:outline-none"
-                            >
-                              {showPassword ? (
-                                <EyeOff className="size-6 text-primary" />
-                              ) : (
-                                <Eye className="size-6 text-primary" />
-                              )}
-                            </button>
-                          }
                           autoComplete="off"
-                          className="h-16 rounded-2xl bg-[#f6fff4] border-primary/20"
+                          className="h-16 rounded-2xl bg-[#f6fff4] border-primary/20 pl-12 pr-12"
                           {...register('password')}
                         />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-4 top-1/2 -translate-y-1/2 focus:outline-none"
+                        >
+                          {showPassword ? (
+                            <EyeOff className="size-6 text-primary" />
+                          ) : (
+                            <Eye className="size-6 text-primary" />
+                          )}
+                        </button>
                         {errors.password && (
                           <p className="mt-1 text-sm text-red-500">
                             {errors.password.message}
@@ -309,8 +323,28 @@ const Login = () => {
                 </div>
 
                 {/* Mobile Footer */}
-                <div className="w-full bg-white px-6 pb-8 lg:hidden">
-                  <div className="border-t border-gray-100">
+                {/* <div className="w-full px-6 pb-6 lg:hidden bg-white">
+                  <div className="flex flex-col items-start gap-2 text-left text-[13px] text-[#6d6d6d]">
+                    <span>
+                      © 2026 No. 1 Lawns. All rights reserved.
+                    </span>
+
+                    <div className="flex items-center gap-3">
+                      <button className="hover:text-primary transition">
+                        Privacy Policy
+                      </button>
+
+                      <span className="text-[#bdbdbd]">|</span>
+
+                      <button className="hover:text-primary transition">
+                        Terms of Service
+                      </button>
+                    </div>
+                  </div>
+                </div> */}
+                {/* Mobile Footer */}
+                <div className="w-full bg-white px-6 pb-8  lg:hidden">
+                  <div className="border-t border-gray-100 ">
                     <div className="flex flex-col items-center gap-3 text-center">
                       <p className="text-[12px] leading-5 text-gray-500">
                         © 2026 No. 1 Lawns. All rights reserved.
@@ -330,7 +364,6 @@ const Login = () => {
                     </div>
                   </div>
                 </div>
-
                 {/* Desktop Bottom Info */}
                 <div className="border-gray-200 pt-6 hidden sm:block">
                   <div className="grid w-full grid-cols-1 gap-3 lg:grid-cols-3">
@@ -393,7 +426,7 @@ const Login = () => {
       </div>
 
       {/* Desktop Footer */}
-      <div className="hidden sm:block w-full px-4 sm:px-10 pt-[18px]">
+      <div className="hidden sm:block w-full px-4 sm:px-10 pt-4.5">
         <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-center text-[15px] text-[#6d6d6d]">
           <span>© 2026 No. 1 Lawns. All rights reserved.</span>
 

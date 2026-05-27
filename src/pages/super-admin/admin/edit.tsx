@@ -43,7 +43,6 @@ import {
   validateAddress,
   getCountryIsoFromPhoneCode,
 } from '@/lib/address-validation';
-
 const editAdminSchema = z
   .object({
     firstName: z.string().min(1, 'First name is required'),
@@ -290,23 +289,22 @@ export default function AdminEditPage() {
 
   const onSubmit = async (data: EditAdminFormData) => {
     try {
-      let profileImageUrl = admin?.profileImage || '';
-      let invoiceLogoUrl = admin?.invoiceLogo || '';
+      const profileImageUrl = admin?.profileImage || '';
+      const invoiceLogoUrl = admin?.invoiceLogo || '';
 
-      if (profileImageFile) {
-        const fd = new FormData();
-        fd.append('files', profileImageFile);
-        const res = await uploadDocument(fd).unwrap();
-        profileImageUrl = res.urls[0];
-      }
+      // if (profileImageFile) {
+      //   const fd = new FormData();
+      //   fd.append('files', profileImageFile);
+      //   const res = await uploadDocument(fd).unwrap();
+      //   profileImageUrl = res.urls[0];
+      // }
 
-      if (invoiceLogoFile) {
-        const fd = new FormData();
-        fd.append('files', invoiceLogoFile);
-        const res = await uploadDocument(fd).unwrap();
-        invoiceLogoUrl = res.urls[0];
-      }
-
+      // if (invoiceLogoFile) {
+      //   const fd = new FormData();
+      //   fd.append('files', invoiceLogoFile);
+      //   const res = await uploadDocument(fd).unwrap();
+      //   invoiceLogoUrl = res.urls[0];
+      // }
       await updateAdmin({
         id: id!,
         firstName: data.firstName,
@@ -319,8 +317,8 @@ export default function AdminEditPage() {
         companyName: data.companyName,
         gstNumber: data.gstNumber,
         bankAccountNumber: data.bankAccountNumber,
-        profileImage: profileImageUrl,
-        invoiceLogo: invoiceLogoUrl,
+        // profileImage: profileImageUrl,
+        // invoiceLogo: invoiceLogoUrl,
         location: {
           type: 'Point',
           coordinates: [data.longitude, data.latitude],
