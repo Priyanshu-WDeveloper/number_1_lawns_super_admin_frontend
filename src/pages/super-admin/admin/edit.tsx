@@ -31,7 +31,6 @@ import { ROUTES } from '@/constants';
 import {
   useGetAdminUserByIdQuery,
   useUpdateAdminUserMutation,
-  useUploadDocumentMutation,
 } from '@/API/api';
 import { AdminFormStepper } from '@/components/admin/admin-form-stepper';
 import { AdminFormStep } from '@/components/admin/admin-form-step';
@@ -242,8 +241,6 @@ export default function AdminEditPage() {
     };
   }, [profileImagePreview, invoiceLogoPreview]);
 
-  const [uploadDocument] = useUploadDocumentMutation();
-
   const handleNext = async () => {
     let fieldsToValidate: (keyof EditAdminFormData)[] = [];
 
@@ -291,6 +288,8 @@ export default function AdminEditPage() {
     try {
       const profileImageUrl = admin?.profileImage || '';
       const invoiceLogoUrl = admin?.invoiceLogo || '';
+      void profileImageUrl;
+      void invoiceLogoUrl;
 
       // if (profileImageFile) {
       //   const fd = new FormData();

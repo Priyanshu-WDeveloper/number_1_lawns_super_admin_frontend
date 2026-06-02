@@ -25,7 +25,6 @@ import { Navbar } from '@/components/layout/navbar';
 import { ROUTES } from '@/constants';
 import {
   useCreateAdminUserMutation,
-  useUploadDocumentMutation,
 } from '@/API/api';
 import { Input } from '@/components/ui/input';
 import { AdminFormStepper } from '@/components/admin/admin-form-stepper';
@@ -226,8 +225,6 @@ export default function CreateAdminPage() {
     };
   }, [profileImagePreview, invoiceLogoPreview]);
 
-  const [uploadDocument] = useUploadDocumentMutation();
-
   const handleNext = async () => {
     let fieldsToValidate: (keyof CreateAdminFormData)[] = [];
 
@@ -273,22 +270,22 @@ export default function CreateAdminPage() {
 
   const onSubmit = async (data: CreateAdminFormData) => {
     try {
-      let profileImageUrl = '';
-      let invoiceLogoUrl = '';
+      // let profileImageUrl = '';
+      // let invoiceLogoUrl = '';
 
-      if (profileImageFile) {
-        const fd = new FormData();
-        fd.append('files', profileImageFile);
-        const res = await uploadDocument(fd).unwrap();
-        profileImageUrl = res.urls[0];
-      }
+      // if (profileImageFile) {
+      //   const fd = new FormData();
+      //   fd.append('files', profileImageFile);
+      //   const res = await uploadDocument(fd).unwrap();
+      //   profileImageUrl = res.urls[0];
+      // }
 
-      if (invoiceLogoFile) {
-        const fd = new FormData();
-        fd.append('files', invoiceLogoFile);
-        const res = await uploadDocument(fd).unwrap();
-        invoiceLogoUrl = res.urls[0];
-      }
+      // if (invoiceLogoFile) {
+      //   const fd = new FormData();
+      //   fd.append('files', invoiceLogoFile);
+      //   const res = await uploadDocument(fd).unwrap();
+      //   invoiceLogoUrl = res.urls[0];
+      // }
 
       await createAdmin({
         firstName: data.firstName,
@@ -304,8 +301,8 @@ export default function CreateAdminPage() {
         companyName: data.companyName,
         gstNumber: data.gstNumber,
         bankAccountNumber: data.bankAccountNumber,
-        profileImage: profileImageUrl,
-        invoiceLogo: invoiceLogoUrl,
+        // profileImage: profileImageUrl,
+        // invoiceLogo: invoiceLogoUrl,
         location: {
           type: 'Point',
           coordinates: [data.longitude, data.latitude],

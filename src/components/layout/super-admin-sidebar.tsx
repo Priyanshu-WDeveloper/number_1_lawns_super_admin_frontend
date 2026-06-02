@@ -8,6 +8,17 @@ import {
   Shield,
   KeyRound,
   LogOutIcon,
+  TreePine,
+  PhoneCall,
+  Star,
+  HelpCircle,
+  Map,
+  Image,
+  FileText,
+  Phone,
+  UserCircle,
+  Tag,
+  BarChart3,
 } from 'lucide-react';
 
 import {
@@ -48,6 +59,18 @@ const items = [
     icon: CreditCard,
     url: '/super-admin/billing',
   },
+  { type: 'label', label: 'No. 1 Lawns' },
+  { title: 'Services', icon: TreePine, url: '/super-admin/new-lawns/services' },
+  { title: 'Leads', icon: PhoneCall, url: '/super-admin/new-lawns/leads' },
+  { title: 'Reviews', icon: Star, url: '/super-admin/new-lawns/reviews' },
+  { title: 'FAQs', icon: HelpCircle, url: '/super-admin/new-lawns/faqs' },
+  { title: 'Areas', icon: Map, url: '/super-admin/new-lawns/areas' },
+  { title: 'Gallery', icon: Image, url: '/super-admin/new-lawns/gallery' },
+  { title: 'Page Content', icon: FileText, url: '/super-admin/new-lawns/page-content' },
+  { title: 'Contact Info', icon: Phone, url: '/super-admin/new-lawns/contact-info' },
+  { title: 'Team', icon: UserCircle, url: '/super-admin/new-lawns/team' },
+  { title: 'Promotions', icon: Tag, url: '/super-admin/new-lawns/promotions' },
+  { title: 'Stats', icon: BarChart3, url: '/super-admin/new-lawns/stats' },
 ];
 
 export function SuperAdminSidebar() {
@@ -102,18 +125,31 @@ export function SuperAdminSidebar() {
       <SidebarContent className="bg-gradient-to-b from-[var(--sidebar-bg-from)] to-[var(--sidebar-bg-to)]">
         <SidebarGroup>
           <SidebarMenu className="space-y-2 px-3">
-            {items.map((item) => (
-              <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton
-                  onClick={() => navigate(item.url)}
-                  isActive={location.pathname === item.url}
-                  className="h-14 rounded-2xl text-base hover:bg-[var(--sidebar-active)] data-[active=true]:bg-[var(--sidebar-active)]"
-                >
-                  <item.icon className="h-5 w-5" />
-                  <span>{item.title}</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
+            {items.map((item) => {
+              if ('type' in item && item.type === 'label') {
+                return (
+                  <div
+                    key={item.label}
+                    className="px-3 pt-4 pb-1 text-xs font-semibold uppercase tracking-wider text-white/50"
+                  >
+                    {item.label}
+                  </div>
+                );
+              }
+              if (!('url' in item)) return null;
+              return (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton
+                    onClick={() => navigate(item.url!)}
+                    isActive={location.pathname === item.url}
+                    className="h-14 rounded-2xl text-base hover:bg-[var(--sidebar-active)] data-[active=true]:bg-[var(--sidebar-active)]"
+                  >
+                    {item.icon && <item.icon className="h-5 w-5" />}
+                    <span>{item.title}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              );
+            })}
           </SidebarMenu>
         </SidebarGroup>
       </SidebarContent>

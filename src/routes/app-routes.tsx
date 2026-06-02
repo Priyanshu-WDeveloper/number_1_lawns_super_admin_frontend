@@ -6,6 +6,7 @@ import {
 } from '@/components/route-guards';
 import { ROUTES } from '@/constants';
 import Loader from '@/components/loader';
+import NewLawnsRoutes from './new-lawns-routes';
 
 const Login = React.lazy(() => import('../pages/auth/login'));
 const ForgotPassword = React.lazy(
@@ -124,6 +125,8 @@ const AppRoutes = () => {
             </SuperAdminRoute>
           }
         />
+
+        <Route path="/super-admin/new-lawns/*" element={<NewLawnsRoutes />} />
 
         {/* Root and Catch-all */}
         <Route

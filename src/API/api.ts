@@ -651,6 +651,8 @@ export const {
 
   useSuperAdminChangePasswordMutation,
 
+  useGetAdminDetailsQuery,
+
   useGetBillingStatsQuery,
   useGetBillingInvoicesQuery,
 } = api;
