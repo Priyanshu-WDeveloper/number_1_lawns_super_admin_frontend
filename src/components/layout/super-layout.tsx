@@ -10,11 +10,11 @@ export function SuperAdminLayout({
   children,
 }: SuperAdminLayoutProps) {
   return (
-    <SidebarProvider>
+    <SidebarProvider style={{ "--sidebar-width": "18rem" } as React.CSSProperties}>
       <div className="h-screen overflow-hidden w-full bg-[#F4F7EF]">
         <div className="flex h-full rounded-[22px] bg-[#f8f8f5] shadow-xl">
           <SuperAdminSidebar />
-          <main className="flex-1 overflow-hidden md:ml-12 flex flex-col">
+          <main className="flex-1 overflow-hidden flex flex-col">
             <div className="flex-1 min-h-0 flex flex-col">{children}</div>
           </main>
         </div>

@@ -102,7 +102,7 @@ export function SuperAdminSidebar() {
   };
 
   return (
-    <Sidebar className="border-r-0 w-78">
+    <Sidebar className="border-r-0">
       <SidebarHeader className="bg-gradient-to-b from-[var(--sidebar-bg-from)] to-[var(--sidebar-bg-to)] border-b border-sidebar-border">
         <div className="flex items-center justify-between px-4 py-6">
           <div className="flex items-center gap-3">
@@ -130,7 +130,7 @@ export function SuperAdminSidebar() {
                 return (
                   <div
                     key={item.label}
-                    className="px-3 pt-4 pb-1 text-xs font-semibold uppercase tracking-wider text-white/50"
+                    className="px-3 pt-4 pb-2 text-xs font-semibold uppercase tracking-wider text-white/50"
                   >
                     {item.label}
                   </div>
@@ -142,7 +142,7 @@ export function SuperAdminSidebar() {
                   <SidebarMenuButton
                     onClick={() => navigate(item.url!)}
                     isActive={location.pathname === item.url}
-                    className="h-14 rounded-2xl text-base hover:bg-[var(--sidebar-active)] data-[active=true]:bg-[var(--sidebar-active)]"
+                    className="h-11 rounded-2xl text-base hover:bg-[var(--sidebar-active)] data-[active=true]:bg-[var(--sidebar-active)]"
                   >
                     {item.icon && <item.icon className="h-5 w-5" />}
                     <span>{item.title}</span>
@@ -164,7 +164,7 @@ export function SuperAdminSidebar() {
           }
         >
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white">
               <KeyRound className="h-5 w-5 text-sidebar" />
             </div>
 
@@ -183,10 +183,8 @@ export function SuperAdminSidebar() {
           onClick={() => setShowLogoutDialog(true)}
         >
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white">
-              <span className="font-bold text-sidebar">
-                <LogOutIcon />
-              </span>
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white">
+              <LogOutIcon className="h-5 w-5 text-sidebar" />
             </div>
 
             <div>
