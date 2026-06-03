@@ -9,16 +9,9 @@ import {
   KeyRound,
   LogOutIcon,
   TreePine,
-  PhoneCall,
   Star,
-  HelpCircle,
-  Map,
   Image,
-  FileText,
-  Phone,
-  UserCircle,
-  Tag,
-  BarChart3,
+  Settings,
 } from 'lucide-react';
 
 import {
@@ -34,7 +27,6 @@ import {
 } from '@/components/ui/sidebar';
 import { PanelLeftIcon } from 'lucide-react';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
-// import { useLogoutMutation } from '@/store/api';
 import toast from 'react-hot-toast';
 import { ROUTES } from '@/constants';
 import { localLogout } from '@/lib/auth';
@@ -59,18 +51,27 @@ const items = [
     icon: CreditCard,
     url: '/super-admin/billing',
   },
-  { type: 'label', label: 'No. 1 Lawns' },
-  { title: 'Services', icon: TreePine, url: '/super-admin/new-lawns/services' },
-  { title: 'Leads', icon: PhoneCall, url: '/super-admin/new-lawns/leads' },
-  { title: 'Reviews', icon: Star, url: '/super-admin/new-lawns/reviews' },
-  { title: 'FAQs', icon: HelpCircle, url: '/super-admin/new-lawns/faqs' },
-  { title: 'Areas', icon: Map, url: '/super-admin/new-lawns/areas' },
-  { title: 'Gallery', icon: Image, url: '/super-admin/new-lawns/gallery' },
-  { title: 'Page Content', icon: FileText, url: '/super-admin/new-lawns/page-content' },
-  { title: 'Contact Info', icon: Phone, url: '/super-admin/new-lawns/contact-info' },
-  { title: 'Team', icon: UserCircle, url: '/super-admin/new-lawns/team' },
-  { title: 'Promotions', icon: Tag, url: '/super-admin/new-lawns/promotions' },
-  { title: 'Stats', icon: BarChart3, url: '/super-admin/new-lawns/stats' },
+  { type: 'label', label: 'Web Handling' },
+  {
+    title: 'Services',
+    icon: TreePine,
+    url: '/super-admin/new-lawns/services',
+  },
+  {
+    title: 'Reviews',
+    icon: Star,
+    url: '/super-admin/new-lawns/reviews',
+  },
+  {
+    title: 'Gallery',
+    icon: Image,
+    url: '/super-admin/new-lawns/gallery',
+  },
+  {
+    title: 'Website Config',
+    icon: Settings,
+    url: '/super-admin/new-lawns/website-config',
+  },
 ];
 
 export function SuperAdminSidebar() {
@@ -112,7 +113,6 @@ export function SuperAdminSidebar() {
               Super Admin
             </h2>
           </div>
-          {/* Mobile menu button */}
           <button
             onClick={toggleSidebar}
             className="md:hidden p-2 rounded-lg hover:bg-white/10 transition-colors"
@@ -157,7 +157,6 @@ export function SuperAdminSidebar() {
       <SidebarFooter className="bg-[var(--sidebar-bg-to)] p-4 space-y-2">
         <button
           className="w-full rounded-2xl bg-white/10 p-4 text-left backdrop-blur transition hover:bg-white/20"
-          // onClick={() => navigate(ROUTES.CHANGE_PASSWORD)}
           onClick={() =>
             setConfirmAction({
               type: 'change-password',

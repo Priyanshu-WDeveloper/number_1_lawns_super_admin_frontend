@@ -7,18 +7,15 @@ import {
   ArrowLeft,
   Pencil,
   Trash2,
-  Tag,
-  DollarSign,
   FileText,
-  Clock,
   Calendar,
+  ImageIcon,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 
 import { SuperAdminLayout } from '@/components/layout/super-layout';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { ActionButton } from '@/components/data-table/data-table';
 import {
   useGetNLServiceByIdQuery,
@@ -27,20 +24,10 @@ import {
 import { NEW_LAWNS_ROUTES } from '@/constants/new-lawns-routes';
 import type { NewLawnService } from '@/types/new-lawns.types';
 import { getErrorMessage } from '@/lib/get-error-message';
+import { ImageWithFallback } from '@/components/ui/image-with-fallback';
 import Loader from '@/components/loader';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { useState } from 'react';
-
-const statusColors: Record<string, string> = {
-  active: 'bg-primary/10 text-primary border-primary/20',
-  inactive: 'bg-gray-100 text-gray-700 border-gray-200',
-};
-
-const categoryColors: Record<string, string> = {
-  installation: 'bg-blue-100 text-blue-700 border-blue-200',
-  maintenance: 'bg-amber-100 text-amber-700 border-amber-200',
-  design: 'bg-purple-100 text-purple-700 border-purple-200',
-};
 
 export default function ViewServicePage() {
   const { id } = useParams<{ id: string }>();
@@ -109,22 +96,9 @@ export default function ViewServicePage() {
           <div className="mb-6 rounded-xl border border-[#ececec] bg-white p-6 shadow-sm">
             <div className="flex items-start justify-between">
               <div className="flex-1">
-                <div className="flex items-center gap-3 mb-2">
-                  <h1 className="text-2xl font-bold text-foreground">
-                    {service.title}
-                  </h1>
-                  <Badge
-                    className={`${statusColors[service.status] || statusColors.inactive} border px-3 py-1`}
-                  >
-                    {service.status}
-                  </Badge>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-muted-foreground">
-                    /
-                    {service.slug}
-                  </span>
-                </div>
+                <h1 className="text-2xl font-bold text-foreground">
+                  {service.title}
+                </h1>
               </div>
 
               <div className="flex items-center gap-1 shrink-0">
@@ -150,54 +124,36 @@ export default function ViewServicePage() {
           </div>
 
           <div className="grid gap-6 md:grid-cols-2">
-            <div className="rounded-xl border border-[#ececec] bg-white p-6 shadow-sm">
+            {service.image && (
+              <div className="rounded-xl border border-[#ececec] bg-white p-6 shadow-sm md:col-span-2">
+                <div className="mb-4 flex items-center gap-2">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
+                    <ImageIcon className="h-4 w-4 text-primary" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-foreground">
+                    Image
+                  </h3>
+                </div>
+                <ImageWithFallback
+                  src={service.image}
+                  alt={service.title}
+                  className="max-h-64 rounded-lg object-cover"
+                />
+              </div>
+            )}
+
+            <div className="rounded-xl border border-[#ececec] bg-white p-6 shadow-sm md:col-span-2">
               <div className="mb-4 flex items-center gap-2">
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
-                  <Tag className="h-4 w-4 text-primary" />
+                  <FileText className="h-4 w-4 text-primary" />
                 </div>
                 <h3 className="text-lg font-semibold text-foreground">
-                  Service Details
+                  Description
                 </h3>
               </div>
-              <div className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <Tag className="h-4 w-4 text-muted-foreground shrink-0" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">
-                      Category
-                    </p>
-                    <Badge
-                      className={`${categoryColors[service.category]} border mt-0.5`}
-                    >
-                      {service.category}
-                    </Badge>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <DollarSign className="h-4 w-4 text-muted-foreground shrink-0" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">
-                      Price
-                    </p>
-                    <p className="text-foreground font-medium">
-                      {service.price}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Clock className="h-4 w-4 text-muted-foreground shrink-0" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">
-                      Status
-                    </p>
-                    <Badge
-                      className={`${statusColors[service.status] || statusColors.inactive} border mt-0.5`}
-                    >
-                      {service.status}
-                    </Badge>
-                  </div>
-                </div>
-              </div>
+              <p className="text-foreground leading-relaxed whitespace-pre-wrap">
+                {service.description}
+              </p>
             </div>
 
             <div className="rounded-xl border border-[#ececec] bg-white p-6 shadow-sm">
@@ -232,42 +188,6 @@ export default function ViewServicePage() {
                     )}
                   </p>
                 </div>
-              </div>
-            </div>
-
-            <div className="rounded-xl border border-[#ececec] bg-white p-6 shadow-sm md:col-span-2">
-              <div className="mb-4 flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
-                  <FileText className="h-4 w-4 text-primary" />
-                </div>
-                <h3 className="text-lg font-semibold text-foreground">
-                  Description
-                </h3>
-              </div>
-              <p className="text-foreground leading-relaxed whitespace-pre-wrap">
-                {service.description}
-              </p>
-            </div>
-
-            <div className="rounded-xl border border-[#ececec] bg-white p-6 shadow-sm md:col-span-2">
-              <div className="mb-4 flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
-                  <Tag className="h-4 w-4 text-primary" />
-                </div>
-                <h3 className="text-lg font-semibold text-foreground">
-                  Features
-                </h3>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {service.features.map((feature, index) => (
-                  <Badge
-                    key={index}
-                    variant="secondary"
-                    className="px-3 py-1.5 text-sm"
-                  >
-                    {feature}
-                  </Badge>
-                ))}
               </div>
             </div>
           </div>

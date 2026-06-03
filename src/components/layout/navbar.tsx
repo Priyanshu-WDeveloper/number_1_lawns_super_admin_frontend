@@ -32,7 +32,7 @@ export function Navbar({
     : `Welcome back, ${superAccess ? 'Super Admin' : 'Admin'}`;
 
   return (
-    <div className=" px-2 sm:px-0  sm:px-5 pt-4 pb-2 sm:py-4 flex items-center justify-between">
+    <div className=" px-2 sm:px-0  sm:px-5 pt-4 pb-2 sm:py-1 flex items-center justify-between">
       <div className="flex items-center gap-2 min-w-0">
         <SidebarTrigger className="md:hidden h-9 w-9 rounded-lg bg-[#166534] text-white border-0 shadow-xs shrink-0 [&_svg]:text-white [&_svg]:h-[18px] [&_svg]:w-[18px]" />
         <div className="min-w-0">
@@ -62,11 +62,7 @@ export function Navbar({
       <div className="flex items-center gap-1">
         <button
           className="relative mr-2 flex h-9 w-9 items-center justify-center"
-          onClick={() =>
-            navigate(
-              ROUTES.SUPER_ADMIN_NOTIFICATIONS,
-            )
-          }
+          onClick={() => navigate(ROUTES.SUPER_ADMIN_NOTIFICATIONS)}
         >
           <Bell className="h-[18px] w-[18px]  text-[#6b7280]" />
           <span className="absolute -right-0.5 -top-0.5 flex h-2.5 w-2.5 rounded-full bg-[#166534]" />

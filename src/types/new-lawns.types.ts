@@ -1,131 +1,81 @@
 export interface NewLawnService {
   _id: string;
-  slug: string;
   title: string;
   description: string;
-  price: string;
-  category: 'installation' | 'maintenance' | 'design';
-  status: 'active' | 'inactive';
-  features: string[];
   image?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface NewLawnLead {
-  _id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  address: string;
-  city: string;
-  service: string;
-  propertySize?: string;
-  preferredDate?: string;
-  message?: string;
-  status: 'new' | 'contacted' | 'quoted' | 'won' | 'lost';
-  notes?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface NewLawnReview {
-  _id: string;
-  customerName: string;
-  rating: number;
-  text: string;
-  service: string;
-  status: 'approved' | 'pending' | 'rejected';
-  image?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface NewLawnFAQ {
-  _id: string;
-  question: string;
-  answer: string;
-  category: string;
-  order: number;
-  status: 'active' | 'inactive';
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface NewLawnArea {
-  _id: string;
-  name: string;
-  region: string;
-  description: string;
-  status: 'active' | 'inactive';
-  image?: string;
+  isActive: boolean;
+  isDeleted: boolean;
+  deletedAt: string | null;
   createdAt: string;
   updatedAt: string;
 }
 
 export interface NewLawnGalleryItem {
   _id: string;
-  title: string;
   image: string;
-  category: 'artificial' | 'natural' | 'before-after' | 'design' | 'other';
-  status: 'active' | 'inactive';
+  beforeImage?: string;
+  afterImage?: string;
+  category: string;
+  isBeforeAfter: boolean;
+  isActive: boolean;
   createdAt: string;
   updatedAt: string;
 }
 
-export interface NewLawnPageContent {
+export interface NewLawnReview {
   _id: string;
-  page: 'home' | 'services' | 'about' | 'gallery' | 'reviews' | 'areas' | 'contact';
-  section: string;
-  title: string;
-  subtitle?: string;
-  content?: string;
-  image?: string;
-  seoTitle?: string;
-  seoDescription?: string;
-  status: 'active' | 'inactive';
+  reviewerName: string;
+  location: string;
+  rating: number;
+  comment: string;
+  isActive: boolean;
   createdAt: string;
   updatedAt: string;
 }
 
-export interface NewLawnContactInfo {
-  _id: string;
-  type: 'phone' | 'email' | 'address' | 'social' | 'hours';
-  label: string;
-  value: string;
-  icon?: string;
-  order: number;
-  status: 'active' | 'inactive';
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface NewLawnTeamMember {
-  _id: string;
-  name: string;
-  role: string;
-  bio: string;
-  image?: string;
-  email: string;
-  phone?: string;
-  order: number;
-  status: 'active' | 'inactive';
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface NewLawnPromotion {
-  _id: string;
+export interface WebsiteConfigBanner {
+  image: string;
   title: string;
   description: string;
-  code: string;
-  discountType: 'percentage' | 'fixed';
-  discountValue: number;
-  minOrder?: number;
-  startDate: string;
-  endDate: string;
-  status: 'active' | 'inactive';
+}
+
+export interface WebsiteConfigFeature {
+  title: string;
+  description: string;
+}
+
+export interface WebsiteConfigStat {
+  value: string;
+  label: string;
+}
+
+export interface WebsiteContactDetails {
+  email: string;
+  phone: string;
+  businessHours: string;
+  city: string;
+  address: string;
+  provinces: string;
+  country: string;
+  countryCode: string;
+}
+
+export interface WebsiteAboutUs {
+  title: string;
+  description: string;
+  image: string;
+  features: WebsiteConfigFeature[];
+  stats: WebsiteConfigStat[];
+}
+
+export interface WebsiteConfig {
+  _id: string;
+  websiteName: string;
+  websiteLogo: string;
+  websiteBannerList: WebsiteConfigBanner[];
+  websiteContactDetails: WebsiteContactDetails;
+  websiteAboutUs: WebsiteAboutUs;
+  footerElement: any[];
   createdAt: string;
   updatedAt: string;
 }

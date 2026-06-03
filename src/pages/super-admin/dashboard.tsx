@@ -14,7 +14,7 @@ const SuperAdminDashboardPage = () => {
             superAccess
           />
 
-          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+          <div className=" pt-4 grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
             <div className="bg-white rounded-[20px] border border-border p-5 shadow-sm">
               <div className="flex items-center justify-between">
                 <div>

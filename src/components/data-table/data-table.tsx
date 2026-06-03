@@ -63,6 +63,7 @@ interface DataTableProps<T extends DataTableData> {
   filterValue?: string;
   onFilterChange?: (value: string) => void;
   serverSideFiltering?: boolean;
+  showSearch?: boolean;
   // Server-side sorting
   sortValue?: string;
   onSortChange?: (sort: string) => void;
@@ -239,6 +240,7 @@ export default function DataTable<T extends DataTableData>({
   filterValue: filterValueProp,
   onFilterChange,
   serverSideFiltering = false,
+  showSearch = true,
   // Sorting props (unused - kept for future use)
   // sortValue,
   // onSortChange,
@@ -423,26 +425,28 @@ export default function DataTable<T extends DataTableData>({
       <CardContent className="px-6 flex-1 flex flex-col  ">
         {/* Filter Row */}
         <div className="flex items-center justify-between gap-3 mb-3 flex-wrap">
-          <div className="relative flex-1 max-w-md max-sm:max-w-none min-w-[260px]">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              placeholder={searchPlaceholder}
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-8 sm:pl-10 pr-6 sm:pr-12 text-xs sm:text-sm rounded-xl border-border bg-background h-10"
-            />
-            {search && (
-              <button
-                type="button"
-                onClick={() => setSearch('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 flex items-center justify-center rounded-full text-muted-foreground hover:text-muted-foreground hover:bg-muted transition-colors"
-              >
-                <X className="h-3.5 w-3.5" />
-              </button>
-            )}
-          </div>
+          {(showSearch ?? true) && (
+            <div className="relative flex-1 max-w-md max-sm:max-w-none min-w-[260px]">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                placeholder={searchPlaceholder}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="pl-8 sm:pl-10 pr-6 sm:pr-12 text-xs sm:text-sm rounded-xl border-border bg-background h-10"
+              />
+              {search && (
+                <button
+                  type="button"
+                  onClick={() => setSearch('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 flex items-center justify-center rounded-full text-muted-foreground hover:text-muted-foreground hover:bg-muted transition-colors"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              )}
+            </div>
+          )}
 
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-2 shrink-0 ml-auto">
             {filterField && filterOptions && (
               <Select
                 value={filterValue}
