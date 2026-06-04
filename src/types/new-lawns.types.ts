@@ -88,10 +88,33 @@ export type NewLawnListResponse<T> = {
   totalPages: number;
 };
 
+export interface ContactInquiryReply {
+  _id: string;
+  subject: string;
+  message: string;
+  createdAt: string;
+}
+
+export interface ContactInquiry {
+  _id: string;
+  name: string;
+  email: string;
+  phone: string;
+  message: string;
+  isRead: boolean;
+  isDeleted: boolean;
+  deletedAt: string | null;
+  replies: ContactInquiryReply[];
+  createdAt: string;
+  updatedAt: string;
+}
+
 export type NewLawnListParams = {
   page?: number;
   limit?: number;
   search?: string;
   status?: string;
   sort?: string;
+  startDate?: string;
+  endDate?: string;
 };

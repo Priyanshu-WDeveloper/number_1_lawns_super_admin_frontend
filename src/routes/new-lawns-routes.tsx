@@ -14,6 +14,9 @@ const NLCreateReviewPage = React.lazy(() => import('../pages/new-lawns/reviews/c
 const NLGalleryPage = React.lazy(() => import('../pages/new-lawns/gallery'));
 const NLCreateGalleryPage = React.lazy(() => import('../pages/new-lawns/gallery/create'));
 
+const NLContactUsPage = React.lazy(() => import('../pages/new-lawns/contact-us'));
+const NLContactUsViewPage = React.lazy(() => import('../pages/new-lawns/contact-us/view'));
+
 const NLWebsiteConfigPage = React.lazy(() => import('../pages/new-lawns/website-config'));
 
 const NewLawnsRoutes = () => (
@@ -30,6 +33,9 @@ const NewLawnsRoutes = () => (
 
       <Route path="gallery" element={<SuperAdminRoute><NLGalleryPage /></SuperAdminRoute>} />
       <Route path="gallery/create" element={<SuperAdminRoute><NLCreateGalleryPage /></SuperAdminRoute>} />
+
+      <Route path="contacts" element={<SuperAdminRoute><NLContactUsPage /></SuperAdminRoute>} />
+      <Route path="contacts/:id" element={<SuperAdminRoute><NLContactUsViewPage /></SuperAdminRoute>} />
 
       <Route path="website-config" element={<SuperAdminRoute><NLWebsiteConfigPage /></SuperAdminRoute>} />
     </Routes>

@@ -10,5 +10,8 @@ export const NEW_LAWNS_ROUTES = {
   GALLERY: '/super-admin/new-lawns/gallery',
   GALLERY_CREATE: '/super-admin/new-lawns/gallery/create',
 
+  CONTACTS: '/super-admin/new-lawns/contacts',
+  CONTACTS_VIEW: '/super-admin/new-lawns/contacts/:id',
+
   WEBSITE_CONFIG: '/super-admin/new-lawns/website-config',
 };

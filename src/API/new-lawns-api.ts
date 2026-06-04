@@ -6,19 +6,29 @@ import type {
   NewLawnService,
   NewLawnGalleryItem,
   NewLawnReview,
+  ContactInquiry,
+  ContactInquiryReply,
   WebsiteConfig,
   NewLawnListResponse,
   NewLawnListParams,
 } from '@/types/new-lawns.types';
+import { getToken } from '@/lib/auth';
 
 const baseQuery = fetchBaseQuery({
   baseUrl: import.meta.env.VITE_API_URL + '/websites',
+  prepareHeaders: (headers) => {
+    const token = getToken();
+    if (token) {
+      headers.set('authorization', `Bearer ${token}`);
+    }
+    return headers;
+  },
 });
 
 export const newLawnsApi = createApi({
   reducerPath: 'newLawnsApi',
   baseQuery,
-  tagTypes: ['NL_Services', 'NL_Gallery', 'NL_Reviews', 'NL_WebsiteConfig'],
+  tagTypes: ['NL_Services', 'NL_Gallery', 'NL_Reviews', 'NL_Contacts', 'NL_WebsiteConfig'],
   endpoints: (builder) => ({
     getNLServices: builder.query<NewLawnListResponse<NewLawnService>, NewLawnListParams>({
       query: (params) => ({ url: '/services', params }),
@@ -88,6 +98,34 @@ export const newLawnsApi = createApi({
       invalidatesTags: ['NL_Reviews'],
     }),
 
+    getNLContacts: builder.query<NewLawnListResponse<ContactInquiry>, NewLawnListParams>({
+      query: (params) => ({ url: '/contact-us', params }),
+      transformResponse: (response: any) => ({
+        items: response.contactUs,
+        total: response.total,
+        page: response.page,
+        limit: response.limit,
+        totalPages: response.totalPages,
+      }),
+      providesTags: ['NL_Contacts'],
+    }),
+    getNLContactById: builder.query<ContactInquiry, string>({
+      query: (id) => ({ url: `/contact-us/${id}` }),
+      providesTags: (_result, _error, id) => [{ type: 'NL_Contacts', id }],
+    }),
+    deleteNLContact: builder.mutation<void, string>({
+      query: (id) => ({ url: `/contact-us/${id}`, method: 'DELETE' }),
+      invalidatesTags: ['NL_Contacts'],
+    }),
+    markNLContactAsRead: builder.mutation<void, string>({
+      query: (id) => ({ url: `/contact-us/${id}/read`, method: 'PUT' }),
+      invalidatesTags: (_result, _error, id) => ['NL_Contacts', { type: 'NL_Contacts', id }],
+    }),
+    replyToNLContact: builder.mutation<ContactInquiryReply, { id: string; subject: string; message: string }>({
+      query: ({ id, ...body }) => ({ url: `/contact-us/${id}/reply`, method: 'POST', body }),
+      invalidatesTags: (_result, _error, { id }) => ['NL_Contacts', { type: 'NL_Contacts', id }],
+    }),
+
     getNLWebsiteConfig: builder.query<WebsiteConfig, void>({
       query: () => ({ url: '/config' }),
       transformResponse: (response: any) => response.config,
@@ -114,6 +152,12 @@ export const {
   useGetNLReviewsQuery,
   useCreateNLReviewMutation,
   useDeleteNLReviewMutation,
+
+  useGetNLContactsQuery,
+  useGetNLContactByIdQuery,
+  useDeleteNLContactMutation,
+  useMarkNLContactAsReadMutation,
+  useReplyToNLContactMutation,
 
   useGetNLWebsiteConfigQuery,
   useUpdateNLWebsiteConfigMutation,

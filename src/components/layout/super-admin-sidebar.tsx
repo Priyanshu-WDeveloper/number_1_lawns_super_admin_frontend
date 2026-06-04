@@ -5,13 +5,15 @@ import {
   LayoutDashboard,
   Users,
   CreditCard,
-  Shield,
-  KeyRound,
-  LogOutIcon,
   TreePine,
   Star,
   Image,
   Settings,
+  MessageSquareText,
+  Shield,
+  KeyRound,
+  LogOutIcon,
+  PanelLeftIcon,
 } from 'lucide-react';
 
 import {
@@ -25,7 +27,6 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar';
-import { PanelLeftIcon } from 'lucide-react';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import toast from 'react-hot-toast';
 import { ROUTES } from '@/constants';
@@ -66,6 +67,11 @@ const items = [
     title: 'Gallery',
     icon: Image,
     url: '/super-admin/new-lawns/gallery',
+  },
+  {
+    title: 'Contact Inquiries',
+    icon: MessageSquareText,
+    url: '/super-admin/new-lawns/contacts',
   },
   {
     title: 'Website Config',
