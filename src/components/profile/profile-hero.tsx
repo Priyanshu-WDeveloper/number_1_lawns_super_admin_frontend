@@ -1,6 +1,7 @@
+import defaultAvatar from '@/assets/avatar.png';
 import { ArrowLeft, Pencil } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
 interface ProfileHeroProps {
   profileImage?: string;
@@ -46,17 +47,15 @@ export default function ProfileHero({
         <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-5">
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5">
             <Avatar className="h-20 w-20 ring-4 ring-white/30 shadow-xl">
-              {profileImage ? (
-                <img
-                  src={profileImage}
-                  alt={fullName}
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                <AvatarFallback className="text-2xl font-bold bg-white/20 text-white">
-                  {initials}
-                </AvatarFallback>
-              )}
+              <AvatarImage
+                src={profileImage || defaultAvatar}
+                alt={fullName}
+                className="h-full w-full object-cover"
+                onError={(e) => { e.currentTarget.src = defaultAvatar; }}
+              />
+              <AvatarFallback className="text-2xl font-bold bg-white/20 text-white">
+                {initials}
+              </AvatarFallback>
             </Avatar>
             <div className="text-center sm:text-left">
               <h1 className="text-2xl font-bold text-white">

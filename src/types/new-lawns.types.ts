@@ -109,6 +109,27 @@ export interface ContactInquiry {
   updatedAt: string;
 }
 
+export type QuoteStatus = 'Pending' | 'In Progress' | 'Completed' | 'Rejected';
+
+export interface QuoteRequest {
+  _id: string;
+  fullName: string;
+  email: string;
+  phone: string;
+  serviceRequired: string;
+  propertyAddress: string;
+  propertySize: string;
+  preferredDate: string;
+  additionalDetails?: string;
+  attachments?: string[];
+  status: QuoteStatus;
+  isRead: boolean;
+  isDeleted: boolean;
+  deletedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export type NewLawnListParams = {
   page?: number;
   limit?: number;

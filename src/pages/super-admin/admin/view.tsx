@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   useParams,
   useNavigate,
@@ -11,10 +12,14 @@ import {
   User,
   Pencil,
   Ellipsis,
+  LogIn,
+  Building2,
+  ToggleLeft,
+  Lock,
 } from 'lucide-react';
 import { SuperAdminLayout } from '@/components/layout/super-layout';
 import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { ActionButton } from '@/components/data-table/data-table';
 import {
@@ -33,6 +38,7 @@ import type { IAdmins } from '@/types/admins.types';
 import toast from 'react-hot-toast';
 
 import { getErrorMessage } from '@/lib/get-error-message';
+import { StaticMap } from '@/components/google-maps/static-map';
 
 export default function AdminViewPage() {
   const { id } = useParams<{ id: string }>();
@@ -40,6 +46,7 @@ export default function AdminViewPage() {
   const location = useLocation();
   const passedAdmin = location.state?.admin as IAdmins | undefined;
   const [updateAdminUser] = useUpdateAdminUserMutation();
+  const [profileImgState, setProfileImgState] = useState<'loading' | 'loaded' | 'error'>('loading');
 
   const { data, isLoading, refetch } = useGetAdminUserByIdQuery(id!, {
     skip: !!passedAdmin,
@@ -111,10 +118,20 @@ export default function AdminViewPage() {
           <div className="mb-6 rounded-xl border border-[#ececec] bg-white p-6 shadow-sm">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <Avatar className="h-16 w-16 bg-primary text-white">
-                  <AvatarFallback className="text-xl font-bold">
-                    {getInitials(admin.firstName, admin.lastName)}
-                  </AvatarFallback>
+                <Avatar className="h-16 w-16">
+                  {admin.profileImage && profileImgState !== 'error' && (
+                    <AvatarImage
+                      src={admin.profileImage}
+                      alt={admin.firstName}
+                      onLoad={() => setProfileImgState('loaded')}
+                      onError={() => setProfileImgState('error')}
+                    />
+                  )}
+                  {profileImgState !== 'loaded' && (
+                    <AvatarFallback className="text-xl font-bold">
+                      {getInitials(admin.firstName, admin.lastName)}
+                    </AvatarFallback>
+                  )}
                 </Avatar>
                 <div>
                   <div className="flex items-center gap-3">
@@ -160,13 +177,19 @@ export default function AdminViewPage() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem
-                      onClick={() => {
-                        toast.success(
-                          'Login as Admin — frontend only',
-                        );
-                      }}
+                    onClick={() => {
+                      navigator.clipboard.writeText(admin.email);
+                      window.open(
+                        `${import.meta.env.VITE_ADMIN_PANEL_URL}?email=${encodeURIComponent(admin.email)}`,
+                        '_blank',
+                      );
+                      toast.success(
+                        'Admin email copied. Login page opened.',
+                      );
+                    }}
                       className="truncate"
                     >
+                      <LogIn className="mr-2 h-4 w-4" />
                       Login as Admin
                     </DropdownMenuItem>
                     {admin.status === 'active' ? (
@@ -176,7 +199,8 @@ export default function AdminViewPage() {
                           handleStatusChange(admin._id, 'inactive')
                         }
                       >
-                        Set Inactive
+                        <ToggleLeft className="mr-2 h-4 w-4" />
+                      Set Inactive
                       </DropdownMenuItem>
                     ) : (
                       <DropdownMenuItem
@@ -185,7 +209,8 @@ export default function AdminViewPage() {
                           handleStatusChange(admin._id, 'active')
                         }
                       >
-                        Set Active
+                        <ToggleLeft className="mr-2 h-4 w-4" />
+                      Set Active
                       </DropdownMenuItem>
                     )}
                     <DropdownMenuItem
@@ -196,6 +221,7 @@ export default function AdminViewPage() {
                       }}
                       className="truncate"
                     >
+                      <Lock className="mr-2 h-4 w-4" />
                       Change Password
                     </DropdownMenuItem>
                   </DropdownMenuContent>
@@ -284,7 +310,7 @@ export default function AdminViewPage() {
               </div>
             </div>
 
-            <div className="rounded-xl border border-[#ececec] bg-white p-6 shadow-sm md:col-span-2">
+            <div className="rounded-xl border border-[#ececec] bg-white p-6 shadow-sm">
               <div className="mb-4 flex items-center gap-2">
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
                   <MapPin className="h-4 w-4 text-primary" />
@@ -327,6 +353,42 @@ export default function AdminViewPage() {
                   </div>
                 </div>
               </div>
+            </div>
+
+            <div className="rounded-xl border border-[#ececec] bg-white p-6 shadow-sm">
+              <div className="mb-4 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
+                    <Building2 className="h-4 w-4 text-primary" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-foreground">Company Details</h3>
+                </div>
+                {admin.invoiceLogo && (
+                  <img src={admin.invoiceLogo} alt="Invoice Logo" className="h-10 w-10 rounded object-cover" />
+                )}
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <p className="text-sm text-muted-foreground">Company Name</p>
+                  <p className="text-foreground font-medium mt-1">{admin.companyName || '-'}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">GST Number</p>
+                  <p className="text-foreground font-medium mt-1">{admin.gstNumber || '-'}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Bank Account</p>
+                  <p className="text-foreground font-medium mt-1">{admin.bankAccountNumber || '-'}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-xl border border-[#ececec] bg-white p-6 shadow-sm md:col-span-2">
+              <StaticMap
+                lat={admin.location?.coordinates?.[1] ?? 0}
+                lng={admin.location?.coordinates?.[0] ?? 0}
+                height={280}
+              />
             </div>
           </div>
         </div>

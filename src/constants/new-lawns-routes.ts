@@ -1,4 +1,5 @@
 export const NEW_LAWNS_ROUTES = {
+  HUB: '/super-admin/new-lawns',
   SERVICES: '/super-admin/new-lawns/services',
   SERVICES_CREATE: '/super-admin/new-lawns/services/create',
   SERVICES_VIEW: '/super-admin/new-lawns/services/:id',
@@ -12,6 +13,9 @@ export const NEW_LAWNS_ROUTES = {
 
   CONTACTS: '/super-admin/new-lawns/contacts',
   CONTACTS_VIEW: '/super-admin/new-lawns/contacts/:id',
+
+  QUOTES: '/super-admin/new-lawns/quotes',
+  QUOTES_VIEW: '/super-admin/new-lawns/quotes/:id',
 
   WEBSITE_CONFIG: '/super-admin/new-lawns/website-config',
 };

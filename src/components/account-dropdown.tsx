@@ -1,6 +1,7 @@
 import {
   ChevronDown,
   CircleDot,
+  KeyRound,
   LogOut,
   Mail,
   User,
@@ -26,6 +27,7 @@ import { useDispatch } from 'react-redux';
 import { clearAuth } from '@/store/auth-slice';
 import { api } from '@/API/api';
 import { format } from 'date-fns';
+import { ChangeSuperAdminPasswordDialog } from '@/pages/super-admin/change-password';
 
 
 export default function AccountDropdown({
@@ -38,10 +40,11 @@ export default function AccountDropdown({
   const navigate = useNavigate();
   const user = useSelector((state: RootState) => state.auth.user);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+  const [showChangePassword, setShowChangePassword] = useState(false);
   const dispatch = useDispatch();
   const daysLeft = user?.validity
     ? Math.ceil(
-        (new Date(user.validity).getTime() - Date.now()) /
+        (new Date(user.validity as string).getTime() - Date.now()) /
           (1000 * 60 * 60 * 24),
       )
     : null;
@@ -182,7 +185,7 @@ export default function AccountDropdown({
                     }`}
                   >
                     Expires{' '}
-                    {format(new Date(user!.validity), 'MMM dd, yyyy')}
+                    {user?.validity && format(new Date(user.validity), 'MMM dd, yyyy')}
                   </p>
                 </div>
               </div>
@@ -204,14 +207,22 @@ export default function AccountDropdown({
             Profile
           </DropdownMenuItem>
 
-        </div>
+          <DropdownMenuItem
+            onClick={() => setShowChangePassword(true)}
+            className="flex cursor-pointer items-center gap-3 px-4 py-3 text-sm"
+          >
+            <KeyRound className="h-4 w-4 text-slate-700" />
+            Change Password
+          </DropdownMenuItem>
 
-        <DropdownMenuItem className="flex cursor-pointer items-center gap-3 px-4 py-3 text-sm">
+          <DropdownMenuItem className="flex cursor-pointer items-center gap-3 px-4 py-3 text-sm">
           <Mail className="h-4 w-4 text-slate-700" />
           Support
-        </DropdownMenuItem>
+          </DropdownMenuItem>
 
-        <DropdownMenuItem
+          </div>
+
+          <DropdownMenuItem
           onClick={() => setShowLogoutDialog(true)}
           className="flex cursor-pointer items-center gap-3 px-4 py-3 text-sm text-red-500 focus:text-red-500"
         >
@@ -225,6 +236,10 @@ export default function AccountDropdown({
           description="Are you sure you want to logout? You will need to login again to access your account."
           confirmText="Logout"
           onConfirm={handleLogout}
+        />
+        <ChangeSuperAdminPasswordDialog
+          open={showChangePassword}
+          onOpenChange={setShowChangePassword}
         />
 
       </DropdownMenuContent>

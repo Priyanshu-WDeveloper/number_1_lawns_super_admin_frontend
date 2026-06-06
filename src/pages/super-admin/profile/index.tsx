@@ -1,25 +1,15 @@
 import { useNavigate } from 'react-router-dom';
 import { SuperAdminLayout } from '@/components/layout/super-layout';
 import { ROUTES } from '@/constants';
-import Loader from '@/components/loader';
-import { useGetAdminDetailsQuery } from '@/API/api';
 import ProfileContent from '@/components/profile/profile-content';
+import { useSelector } from 'react-redux';
+import { type RootState } from '@/store';
 
 export default function SuperAdminProfilePage() {
   const navigate = useNavigate();
-  const { data, isLoading, isError } = useGetAdminDetailsQuery();
+  const admin = useSelector((state: RootState) => state.auth.user);
 
-  if (isLoading) {
-    return (
-      <SuperAdminLayout>
-        <div className="flex h-full items-center justify-center">
-          <Loader />
-        </div>
-      </SuperAdminLayout>
-    );
-  }
-
-  if (isError || !data) {
+  if (!admin) {
     return (
       <SuperAdminLayout>
         <div className="flex h-full items-center justify-center">
@@ -33,7 +23,7 @@ export default function SuperAdminProfilePage() {
     <SuperAdminLayout>
       <div className="flex h-full flex-col">
         <div className="flex-1 w-full overflow-y-auto">
-          <ProfileContent admin={data.admin} onBack={() => navigate(ROUTES.SUPER_ADMIN_DASHBOARD)} />
+          <ProfileContent admin={admin} onBack={() => navigate(ROUTES.SUPER_ADMIN_DASHBOARD)} />
         </div>
       </div>
     </SuperAdminLayout>

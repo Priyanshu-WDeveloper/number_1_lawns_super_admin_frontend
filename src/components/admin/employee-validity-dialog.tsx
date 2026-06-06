@@ -1,5 +1,10 @@
 import { useState } from 'react';
-import { Calendar as CalendarIcon, Mail, Phone, User } from 'lucide-react';
+import {
+  Calendar as CalendarIcon,
+  Mail,
+  Phone,
+  User,
+} from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -25,7 +30,8 @@ export function EmployeeValidityDialog({
   open,
   onOpenChange,
 }: EmployeeValidityDialogProps) {
-  const [setValidity, { isLoading }] = useSetEmployeeValidityMutation();
+  const [setValidity, { isLoading }] =
+    useSetEmployeeValidityMutation();
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
     employee.validity ? new Date(employee.validity) : undefined,
   );
@@ -47,7 +53,9 @@ export function EmployeeValidityDialog({
       toast.success('Validity updated');
       onOpenChange(false);
     } catch (error) {
-      toast.error(getErrorMessage(error, 'Failed to update validity'));
+      toast.error(
+        getErrorMessage(error, 'Failed to update validity'),
+      );
     }
   };
 
@@ -57,7 +65,9 @@ export function EmployeeValidityDialog({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <CalendarIcon className="h-5 w-5" />
-            {employee.validity ? 'Change Employee Validity' : 'Set Employee Validity'}
+            {employee.validity
+              ? 'Change Employee Validity'
+              : 'Set Employee Validity'}
           </DialogTitle>
         </DialogHeader>
 
@@ -89,11 +99,18 @@ export function EmployeeValidityDialog({
           </div>
 
           <div className="flex justify-end gap-2">
-            <Button variant="outline" onClick={() => onOpenChange(false)}>
+            <Button
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+            >
               Cancel
             </Button>
             <Button onClick={handleSubmit} disabled={isLoading}>
-              {isLoading ? 'Saving...' : employee.validity ? 'Update Validity' : 'Set Validity'}
+              {isLoading
+                ? 'Saving...'
+                : employee.validity
+                  ? 'Update Validity'
+                  : 'Set Validity'}
             </Button>
           </div>
         </div>

@@ -13,6 +13,7 @@ import { getErrorMessage } from '@/lib/get-error-message';
 import {
   ArrowLeft,
   Upload,
+  Link2,
   User,
   Mail,
   Phone,
@@ -31,11 +32,14 @@ import { ROUTES } from '@/constants';
 import {
   useGetAdminUserByIdQuery,
   useUpdateAdminUserMutation,
+  useUploadDocumentMutation,
 } from '@/API/api';
 import { AdminFormStepper } from '@/components/admin/admin-form-stepper';
 import { AdminFormStep } from '@/components/admin/admin-form-step';
 import { ReviewCard } from '@/components/admin/review-card';
 import Loader from '@/components/loader';
+import defaultAvatar from '@/assets/avatar.png';
+// import { IMAGE_PLACEHOLDER } from '@/lib/image-placeholder';
 import type { IAdmins } from '@/types/admins.types';
 import { validatePhone } from '@/lib/phone-validation';
 import {
@@ -146,6 +150,7 @@ export default function AdminEditPage() {
   const [currentStep, setCurrentStep] = useState(1);
   const [updateAdmin, { isLoading: isUpdating }] =
     useUpdateAdminUserMutation();
+  const [uploadDocument] = useUploadDocumentMutation();
   const formRef = useRef<HTMLFormElement>(null);
 
   const { data, isLoading: isLoadingAdmin } =
@@ -164,7 +169,7 @@ export default function AdminEditPage() {
   } = useForm<EditAdminFormData>({
     mode: 'onTouched',
     resolver: zodResolver(editAdminSchema),
-    values: admin
+    defaultValues: admin
       ? {
           firstName: admin.firstName,
           lastName: admin.lastName,
@@ -206,6 +211,12 @@ export default function AdminEditPage() {
     useState<string>('');
   const [invoiceLogoPreview, setInvoiceLogoPreview] =
     useState<string>('');
+  const [profileImageMode, setProfileImageMode] = useState<
+    'upload' | 'url'
+  >('upload');
+  const [invoiceLogoMode, setInvoiceLogoMode] = useState<
+    'upload' | 'url'
+  >('upload');
 
   const handleProfileImageChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -229,6 +240,20 @@ export default function AdminEditPage() {
         setInvoiceLogoPreview(preview);
         setValue('invoiceLogo', preview);
       }
+    },
+    [setValue],
+  );
+
+  const handleProfileImageUrlChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setValue('profileImage', e.target.value, { shouldDirty: true });
+    },
+    [setValue],
+  );
+
+  const handleInvoiceLogoUrlChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setValue('invoiceLogo', e.target.value, { shouldDirty: true });
     },
     [setValue],
   );
@@ -286,29 +311,34 @@ export default function AdminEditPage() {
 
   const onSubmit = async (data: EditAdminFormData) => {
     try {
-      const profileImageUrl = admin?.profileImage || '';
-      const invoiceLogoUrl = admin?.invoiceLogo || '';
-      void profileImageUrl;
-      void invoiceLogoUrl;
+      let profileImageUrl = data.profileImage;
 
-      // if (profileImageFile) {
-      //   const fd = new FormData();
-      //   fd.append('files', profileImageFile);
-      //   const res = await uploadDocument(fd).unwrap();
-      //   profileImageUrl = res.urls[0];
-      // }
+      if (profileImageFile) {
+        const fd = new FormData();
+        fd.append('files', profileImageFile);
+        const res = await uploadDocument(fd).unwrap();
+        profileImageUrl = res.urls[0];
+      }
 
-      // if (invoiceLogoFile) {
-      //   const fd = new FormData();
-      //   fd.append('files', invoiceLogoFile);
-      //   const res = await uploadDocument(fd).unwrap();
-      //   invoiceLogoUrl = res.urls[0];
-      // }
+      let invoiceLogoUrl = data.invoiceLogo;
+
+      if (invoiceLogoFile) {
+        const fd = new FormData();
+        fd.append('files', invoiceLogoFile);
+        const res = await uploadDocument(fd).unwrap();
+        invoiceLogoUrl = res.urls[0];
+      }
+
       await updateAdmin({
         id: id!,
         firstName: data.firstName,
         lastName: data.lastName,
+        email: data.email,
         phoneNumber: data.phoneNumber,
+        countryCode: data.countryCode,
+        country: data.country,
+        profileImage: profileImageUrl,
+        invoiceLogo: invoiceLogoUrl,
         city: data.city,
         address: data.address,
         state: data.state,
@@ -316,8 +346,6 @@ export default function AdminEditPage() {
         companyName: data.companyName,
         gstNumber: data.gstNumber,
         bankAccountNumber: data.bankAccountNumber,
-        // profileImage: profileImageUrl,
-        // invoiceLogo: invoiceLogoUrl,
         location: {
           type: 'Point',
           coordinates: [data.longitude, data.latitude],
@@ -356,6 +384,162 @@ export default function AdminEditPage() {
           <h4 className="mb-4 text-sm font-medium uppercase tracking-wide text-muted-foreground">
             Company Details
           </h4>
+
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <label className="text-sm font-medium text-foreground">
+                  Profile Image
+                </label>
+                <div className="inline-flex rounded-lg border border-border bg-muted p-0.5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setProfileImageMode('upload');
+                      setProfileImageFile(null);
+                      setProfileImagePreview('');
+                    }}
+                    className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+                      profileImageMode === 'upload'
+                        ? 'bg-white text-foreground shadow-sm'
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    <Upload className="h-3.5 w-3.5" />
+                    Upload
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setProfileImageMode('url');
+                      setProfileImageFile(null);
+                      setProfileImagePreview('');
+                    }}
+                    className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+                      profileImageMode === 'url'
+                        ? 'bg-white text-foreground shadow-sm'
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    <Link2 className="h-3.5 w-3.5" />
+                    URL
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4">
+                <img
+                  src={
+                    profileImagePreview ||
+                    formValues.profileImage ||
+                    admin?.profileImage ||
+                    defaultAvatar
+                  }
+                  alt="Profile"
+                  className="h-16 w-16 shrink-0 rounded-full object-cover border"
+                  onError={(e) => {
+                    e.currentTarget.src = defaultAvatar;
+                  }}
+                />
+                {profileImageMode === 'upload' ? (
+                  <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-border bg-background text-sm text-foreground hover:bg-primary/10">
+                    <Upload className="h-4 w-4" />
+                    {profileImageFile ? 'Change' : 'Choose File'}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleProfileImageChange}
+                    />
+                  </label>
+                ) : (
+                  <Input
+                    placeholder="Paste image URL..."
+                    value={formValues.profileImage || ''}
+                    onChange={handleProfileImageUrlChange}
+                    className="h-12 rounded-xl border-border bg-background flex-1"
+                  />
+                )}
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <label className="text-sm font-medium text-foreground">
+                  Invoice Logo
+                </label>
+                <div className="inline-flex rounded-lg border border-border bg-muted p-0.5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setInvoiceLogoMode('upload');
+                      setInvoiceLogoFile(null);
+                      setInvoiceLogoPreview('');
+                    }}
+                    className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+                      invoiceLogoMode === 'upload'
+                        ? 'bg-white text-foreground shadow-sm'
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    <Upload className="h-3.5 w-3.5" />
+                    Upload
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setInvoiceLogoMode('url');
+                      setInvoiceLogoFile(null);
+                      setInvoiceLogoPreview('');
+                    }}
+                    className={`flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors ${
+                      invoiceLogoMode === 'url'
+                        ? 'bg-white text-foreground shadow-sm'
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    <Link2 className="h-3.5 w-3.5" />
+                    URL
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-4">
+                <img
+                  src={
+                    invoiceLogoPreview ||
+                    formValues.invoiceLogo ||
+                    admin?.invoiceLogo ||
+                    defaultAvatar
+                  }
+                  alt="Invoice Logo"
+                  className="h-16 w-16 shrink-0 rounded object-cover "
+                  onError={(e) => {
+                    e.currentTarget.src = defaultAvatar;
+                  }}
+                />
+                {invoiceLogoMode === 'upload' ? (
+                  <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-border bg-background text-sm text-foreground hover:bg-primary/10">
+                    <Upload className="h-4 w-4" />
+                    {invoiceLogoFile ? 'Change' : 'Choose File'}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleInvoiceLogoChange}
+                    />
+                  </label>
+                ) : (
+                  <Input
+                    placeholder="Paste image URL..."
+                    value={formValues.invoiceLogo || ''}
+                    onChange={handleInvoiceLogoUrlChange}
+                    className="h-12 rounded-xl border-border bg-background flex-1"
+                  />
+                )}
+              </div>
+            </div>
+          </div>
 
           <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
             <div className="space-y-2">
@@ -409,68 +593,6 @@ export default function AdminEditPage() {
               )}
             </div>
           </div>
-
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground">
-                Profile Image
-                <span className="text-primary"> *</span>
-              </label>
-              <div className="flex items-center gap-4">
-                {(profileImagePreview || admin?.profileImage) && (
-                  <img
-                    src={
-                      profileImagePreview ||
-                      formValues.profileImage ||
-                      admin?.profileImage
-                    }
-                    alt="Profile"
-                    className="h-16 w-16 rounded-full object-cover border"
-                  />
-                )}
-                <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-border bg-background text-sm text-foreground hover:bg-primary/10">
-                  <Upload className="h-4 w-4" />
-                  {profileImageFile ? 'Change' : 'Choose File'}
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleProfileImageChange}
-                  />
-                </label>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground">
-                Invoice Logo
-                <span className="text-primary"> *</span>
-              </label>
-              <div className="flex items-center gap-4">
-                {(invoiceLogoPreview || admin?.invoiceLogo) && (
-                  <img
-                    src={
-                      invoiceLogoPreview ||
-                      formValues.invoiceLogo ||
-                      admin?.invoiceLogo
-                    }
-                    alt="Invoice Logo"
-                    className="h-16 w-16 rounded object-cover border"
-                  />
-                )}
-                <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-border bg-background text-sm text-foreground hover:bg-primary/10">
-                  <Upload className="h-4 w-4" />
-                  {invoiceLogoFile ? 'Change' : 'Choose File'}
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleInvoiceLogoChange}
-                  />
-                </label>
-              </div>
-            </div>
-          </div>
         </div>
       );
     }
@@ -479,7 +601,8 @@ export default function AdminEditPage() {
       const profileImg =
         profileImagePreview ||
         formValues.profileImage ||
-        admin?.profileImage;
+        admin?.profileImage ||
+        defaultAvatar;
       const invoiceImg =
         invoiceLogoPreview ||
         formValues.invoiceLogo ||
@@ -493,6 +616,7 @@ export default function AdminEditPage() {
                 icon: <User className="h-5 w-5 text-white" />,
                 title: 'Admin Information',
                 subtitle: 'Please verify the admin information below',
+
                 image: profileImg
                   ? {
                       src: profileImg,
@@ -520,6 +644,12 @@ export default function AdminEditPage() {
                     label: 'Phone Number',
                     value: `${formValues.countryCode} ${formValues.phoneNumber}`,
                   },
+                  // {
+                  //   icon: <User className="h-3 w-3" />,
+                  //   label: 'Profile Image',
+                  //   value: '',
+                  //   imageUrl: profileImg,
+                  // },
                   {
                     icon: <MapPin className="h-3 w-3" />,
                     label: 'Address',
@@ -575,6 +705,7 @@ export default function AdminEditPage() {
                         <Building2 className="h-5 w-5 text-white" />
                       ),
                       title: 'Company Details',
+
                       image: invoiceImg
                         ? { src: invoiceImg, alt: 'Invoice Logo' }
                         : undefined,
@@ -594,6 +725,12 @@ export default function AdminEditPage() {
                           label: 'Bank Account',
                           value: formValues.bankAccountNumber ?? '-',
                         },
+                        // {
+                        //   icon: <Building2 className="h-3 w-3" />,
+                        //   label: 'Invoice Logo',
+                        //   value: '',
+                        //   imageUrl: invoiceImg,
+                        // },
                       ],
                     },
                   ]

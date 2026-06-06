@@ -2,63 +2,56 @@ import {
   useParams,
   useNavigate,
   useLocation,
-} from 'react-router-dom';
-import { ArrowLeft, Trash2, Mail, Phone, User, Calendar, MessageSquare, CheckCheck, Send, Reply } from 'lucide-react';
-import { format } from 'date-fns';
-import toast from 'react-hot-toast';
-import { useState } from 'react';
+} from "react-router-dom";
+import { ArrowLeft, Trash2, CheckCheck, Send, Reply } from "lucide-react";
+import { format } from "date-fns";
+import toast from "react-hot-toast";
+import { useState } from "react";
 
-import { SuperAdminLayout } from '@/components/layout/super-layout';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-
-import { Textarea } from '@/components/ui/textarea';
-import { ActionButton } from '@/components/data-table/data-table';
+import { SuperAdminLayout } from "@/components/layout/super-layout";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { ActionButton } from "@/components/data-table/data-table";
 import {
   useGetNLContactByIdQuery,
   useDeleteNLContactMutation,
   useMarkNLContactAsReadMutation,
   useReplyToNLContactMutation,
-} from '@/API/new-lawns-api';
-import { NEW_LAWNS_ROUTES } from '@/constants/new-lawns-routes';
-import { getErrorMessage } from '@/lib/get-error-message';
-import Loader from '@/components/loader';
-import { ConfirmDialog } from '@/components/ui/confirm-dialog';
-import type {
-  ContactInquiry,
-  ContactInquiryReply,
-} from '@/types/new-lawns.types';
+} from "@/API/new-lawns-api";
+import { NEW_LAWNS_ROUTES } from "@/constants/new-lawns-routes";
+import { getErrorMessage } from "@/lib/get-error-message";
+import Loader from "@/components/loader";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import type { ContactInquiry, ContactInquiryReply } from "@/types/new-lawns.types";
 
 export default function ViewContactPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const location = useLocation();
-  const passedInquiry = location.state?.inquiry as
-    | ContactInquiry
-    | undefined;
+  const passedInquiry = location.state?.inquiry as ContactInquiry | undefined;
 
   const [deleteNLContact] = useDeleteNLContactMutation();
   const [markNLContactAsRead] = useMarkNLContactAsReadMutation();
   const [replyToNLContact] = useReplyToNLContactMutation();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [replySubject, setReplySubject] = useState('');
-  const [replyMessage, setReplyMessage] = useState('');
+  const [replySubject, setReplySubject] = useState("");
+  const [replyMessage, setReplyMessage] = useState("");
   const [sendingReply, setSendingReply] = useState(false);
 
-  const { data: fetchedInquiry, isLoading } = useGetNLContactByIdQuery(
-    id!,
-    { skip: !!passedInquiry },
-  );
+  const { data: fetchedInquiry, isLoading } = useGetNLContactByIdQuery(id!, {
+    skip: !!passedInquiry,
+  });
   const inquiry = passedInquiry ?? fetchedInquiry;
 
   const handleDelete = async () => {
     if (!inquiry) return;
     try {
       await deleteNLContact(inquiry._id).unwrap();
-      toast.success('Inquiry deleted');
+      toast.success("Inquiry deleted");
       navigate(NEW_LAWNS_ROUTES.CONTACTS);
     } catch (error) {
-      toast.error(getErrorMessage(error, 'Failed to delete inquiry'));
+      toast.error(getErrorMessage(error, "Failed to delete inquiry"));
     }
   };
 
@@ -66,9 +59,9 @@ export default function ViewContactPage() {
     if (!inquiry) return;
     try {
       await markNLContactAsRead(inquiry._id).unwrap();
-      toast.success('Marked as read');
+      toast.success("Marked as read");
     } catch (error) {
-      toast.error(getErrorMessage(error, 'Failed to mark as read'));
+      toast.error(getErrorMessage(error, "Failed to mark as read"));
     }
   };
 
@@ -81,11 +74,11 @@ export default function ViewContactPage() {
         subject: replySubject.trim(),
         message: replyMessage.trim(),
       }).unwrap();
-      toast.success('Reply sent');
-      setReplySubject('');
-      setReplyMessage('');
+      toast.success("Reply sent");
+      setReplySubject("");
+      setReplyMessage("");
     } catch (error) {
-      toast.error(getErrorMessage(error, 'Failed to send reply'));
+      toast.error(getErrorMessage(error, "Failed to send reply"));
     } finally {
       setSendingReply(false);
     }
@@ -122,196 +115,185 @@ export default function ViewContactPage() {
             Back to Inquiries
           </Button>
 
-          <div className="mb-6 rounded-xl border border-[#ececec] bg-white p-6 shadow-sm">
-            <div className="flex items-start justify-between">
-              <div>
-                <div className="flex items-center gap-3">
-                  <h1 className="text-2xl font-bold text-foreground">
-                    {inquiry.name}
-                  </h1>
-                  {inquiry.isRead ? (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-green-50 px-3 py-0.5 text-xs font-medium text-green-700 border border-green-200">
-                      <CheckCheck className="h-3 w-3" />
-                      Read
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-3 py-0.5 text-xs font-medium text-blue-700 border border-blue-200">
-                      New
-                    </span>
-                  )}
-                </div>
-                <p className="text-muted-foreground text-sm mt-1">
-                  {inquiry.email} {inquiry.phone ? `· ${inquiry.phone}` : ''}
-                </p>
-              </div>
-              <div className="flex items-center gap-2">
-                {!inquiry.isRead && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleMarkAsRead}
-                    className="gap-1"
-                  >
-                    <CheckCheck className="h-3.5 w-3.5" />
-                    Mark as Read
-                  </Button>
-                )}
-                <ActionButton
-                  icon={<Trash2 className="h-3.5 w-3.5" />}
-                  intent="delete"
-                  onClick={() => setShowDeleteConfirm(true)}
-                />
-              </div>
+          {/* Header: Name + Actions */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+            <div>
+              <h1 className="text-3xl font-bold text-foreground mb-1">
+                {inquiry.name}
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                {`${inquiry.isRead ? "Read" : "Unread"} • ${
+                  inquiry.replies?.length ?? 0
+                } Replies`}
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button variant="default" size="sm" className="gap-2">
+                <Reply className="h-4 w-4" />
+                Reply
+              </Button>
+              {!inquiry.isRead && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleMarkAsRead}
+                  className="gap-2"
+                >
+                  <CheckCheck className="h-4 w-4" />
+                  Mark as Read
+                </Button>
+              )}
+              <ActionButton
+                icon={<Trash2 className="h-4 w-4" />}
+                intent="delete"
+                onClick={() => setShowDeleteConfirm(true)}
+              />
             </div>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-2">
-            <div className="rounded-xl border border-[#ececec] bg-white p-6 shadow-sm md:col-span-2">
-              <div className="mb-4 flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
-                  <MessageSquare className="h-4 w-4 text-primary" />
-                </div>
-                <h3 className="text-lg font-semibold text-foreground">
-                  Message
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="md:col-span-2 space-y-6">
+              {/* Customer Information Card */}
+              <div className="rounded-xl border border-[#ececec] bg-white p-6 shadow-sm">
+                <h3 className="text-lg font-semibold text-foreground mb-4">
+                  Customer Information
                 </h3>
-              </div>
-              <p className="text-foreground leading-relaxed whitespace-pre-wrap">
-                {inquiry.message}
-              </p>
-            </div>
-
-            {(inquiry.replies?.length ?? 0) > 0 && (
-              <div className="rounded-xl border border-[#ececec] bg-white p-6 shadow-sm md:col-span-2">
-                <div className="mb-4 flex items-center gap-2">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
-                    <Reply className="h-4 w-4 text-primary" />
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Email</p>
+                    <p className="font-medium text-foreground mt-1">
+                      {inquiry.email}
+                    </p>
                   </div>
-                  <h3 className="text-lg font-semibold text-foreground">
-                    Replies ({inquiry.replies.length})
-                  </h3>
+                  <div>
+                    <p className="text-sm text-muted-foreground">Phone</p>
+                    <p className="font-medium text-foreground mt-1">
+                      {inquiry.phone || "N/A"}
+                    </p>
+                  </div>
                 </div>
-                <div className="space-y-4">
-                  {inquiry.replies.map((reply: ContactInquiryReply) => (
-                    <div key={reply._id} className="rounded-lg border border-[#ececec] bg-gray-50 p-4">
-                      <div className="mb-2 flex items-center justify-between">
-                        <span className="text-sm font-medium text-foreground">
-                          {reply.subject}
+              </div>
+
+              {/* Conversation History */}
+              <div className="rounded-xl border border-[#ececec] bg-white p-6 shadow-sm">
+                <h3 className="text-lg font-semibold text-foreground mb-4">
+                  Conversation History
+                </h3>
+                <div className="space-y-6">
+                  {/* Original Inquiry */}
+                  <div className="relative pl-4 border-l-4 border-green-500">
+                    <div className="absolute -left-[6px] top-1.5 w-3 h-3 rounded-full bg-green-500" />
+                    <div className="mb-2 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <span className="text-md font-bold text-foreground">
+                          Original Inquiry
                         </span>
-                        <span className="text-xs text-muted-foreground">
-                          {format(new Date(reply.createdAt), 'MMM d, yyyy h:mm a')}
+                        <span className="px-1.5 py-0.5 rounded-md bg-green-100 text-green-700 text-[10px] font-bold uppercase">
+                          Customer
                         </span>
                       </div>
-                      <p className="text-sm text-foreground whitespace-pre-wrap">
+                      <span className="text-xs text-muted-foreground font-normal">
+                        {format(new Date(inquiry.createdAt), "MMM d, h:mm a")}
+                      </span>
+                    </div>
+                    <p className="text-sm text-foreground bg-white p-3 rounded-lg border border-border mt-2">
+                      {inquiry.message}
+                    </p>
+                  </div>
+
+                  {/* Replies */}
+                  {inquiry.replies?.map((reply: ContactInquiryReply) => (
+                    <div
+                      key={reply._id}
+                      className="relative pl-4 border-l-4 border-blue-500"
+                    >
+                      <div className="absolute -left-[6px] top-1.5 w-3 h-3 rounded-full bg-blue-500" />
+                      <div className="mb-2 flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="text-md font-bold text-foreground">
+                            {reply.subject}
+                          </span>
+                          <span className="px-1.5 py-0.5 rounded-md bg-blue-100 text-blue-700 text-[10px] font-bold uppercase">
+                            Super Admin
+                          </span>
+                        </div>
+                        <span className="text-xs text-muted-foreground font-normal">
+                          {format(new Date(reply.createdAt), "MMM d, h:mm a")}
+                        </span>
+                      </div>
+                      <p className="text-sm text-foreground bg-green-50 p-3 rounded-lg mt-2">
                         {reply.message}
                       </p>
                     </div>
                   ))}
                 </div>
               </div>
-            )}
+            </div>
 
-            <div className="rounded-xl border border-[#ececec] bg-white p-6 shadow-sm">
-              <div className="mb-4 flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
-                  <User className="h-4 w-4 text-primary" />
-                </div>
-                <h3 className="text-lg font-semibold text-foreground">
-                  Sender Info
+            {/* Sidebar: Details + Reply */}
+            <div className="md:col-span-1 space-y-6">
+              {/* Compact Details Card */}
+              <div className="rounded-xl border border-[#ececec] bg-white p-6 shadow-sm">
+                <h3 className="text-lg font-semibold text-foreground mb-4">
+                  Details
                 </h3>
-              </div>
-              <div className="space-y-4">
-                <div>
-                  <p className="text-sm text-muted-foreground">Name</p>
-                  <p className="text-foreground font-medium">{inquiry.name}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Email</p>
-                  <a
-                    href={`mailto:${inquiry.email}`}
-                    className="text-foreground font-medium hover:text-primary transition-colors flex items-center gap-1"
-                  >
-                    <Mail className="h-3.5 w-3.5" />
-                    {inquiry.email}
-                  </a>
-                </div>
-                {inquiry.phone && (
-                  <div>
-                    <p className="text-sm text-muted-foreground">Phone</p>
-                    <a
-                      href={`tel:${inquiry.phone}`}
-                      className="text-foreground font-medium hover:text-primary transition-colors flex items-center gap-1"
-                    >
-                      <Phone className="h-3.5 w-3.5" />
-                      {inquiry.phone}
-                    </a>
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Status</span>
+                    <span className="font-medium text-foreground text-sm">
+                      {inquiry.isRead ? "Read" : "Unread"}
+                    </span>
                   </div>
-                )}
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Replies</span>
+                    <span className="font-medium text-foreground text-sm">
+                      {inquiry.replies?.length ?? 0}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Submitted</span>
+                    <span className="font-medium text-foreground text-sm">
+                      {format(new Date(inquiry.createdAt), "MMM d, yyyy")}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-muted-foreground">Updated</span>
+                    <span className="font-medium text-foreground text-sm">
+                      {format(new Date(inquiry.updatedAt), "MMM d, yyyy")}
+                    </span>
+                  </div>
+                </div>
               </div>
-            </div>
 
-            <div className="rounded-xl border border-[#ececec] bg-white p-6 shadow-sm">
-              <div className="mb-4 flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
-                  <Calendar className="h-4 w-4 text-primary" />
-                </div>
-                <h3 className="text-lg font-semibold text-foreground">
-                  Timestamps
-                </h3>
-              </div>
-              <div className="space-y-4">
-                <div>
-                  <p className="text-sm text-muted-foreground">Submitted</p>
-                  <p className="text-foreground font-medium">
-                    {format(new Date(inquiry.createdAt), 'MMM d, yyyy h:mm a')}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Last Updated</p>
-                  <p className="text-foreground font-medium">
-                    {format(new Date(inquiry.updatedAt), 'MMM d, yyyy h:mm a')}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="rounded-xl border border-[#ececec] bg-white p-6 shadow-sm md:col-span-2">
-              <div className="mb-4 flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
-                  <Send className="h-4 w-4 text-primary" />
-                </div>
-                <h3 className="text-lg font-semibold text-foreground">
+              {/* Reply Form */}
+              <div className="rounded-xl border border-[#ececec] bg-white p-6 shadow-sm">
+                <h3 className="text-lg font-semibold text-foreground mb-4">
                   Send Reply
                 </h3>
-              </div>
-              <div className="space-y-4">
-                <div>
-                  <label htmlFor="replySubject" className="text-sm font-medium">Subject</label>
+                <div className="space-y-4">
                   <Input
-                    id="replySubject"
                     value={replySubject}
                     onChange={(e) => setReplySubject(e.target.value)}
-                    placeholder="Re: Customer inquiry"
-                    className="mt-1"
+                    placeholder="Subject"
+                    className="h-10 text-sm"
                   />
-                </div>
-                <div>
-                  <label htmlFor="replyMessage" className="text-sm font-medium">Message</label>
                   <Textarea
-                    id="replyMessage"
                     value={replyMessage}
                     onChange={(e) => setReplyMessage(e.target.value)}
                     placeholder="Type your reply..."
-                    className="mt-1 min-h-[120px]"
+                    className="min-h-[120px] text-sm"
                   />
+                  <Button
+                    onClick={handleReply}
+                    disabled={
+                      !replySubject.trim() || !replyMessage.trim() || sendingReply
+                    }
+                    className="w-full gap-2 h-10 text-sm"
+                  >
+                    <Send className="h-4 w-4" />
+                    {sendingReply ? "Sending..." : "Send Reply"}
+                  </Button>
                 </div>
-                <Button
-                  onClick={handleReply}
-                  disabled={!replySubject.trim() || !replyMessage.trim() || sendingReply}
-                  className="gap-1"
-                >
-                  <Send className="h-4 w-4" />
-                  {sendingReply ? 'Sending...' : 'Send Reply'}
-                </Button>
               </div>
             </div>
           </div>

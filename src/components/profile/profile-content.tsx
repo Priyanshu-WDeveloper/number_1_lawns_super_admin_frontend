@@ -44,7 +44,7 @@ export default function ProfileContent({
         phoneNumber: admin.phoneNumber || '',
         address: admin.address || '',
         city: admin.city || '',
-        state: admin.state || '',
+        state: admin.state || admin.city || '',
         postalCode: admin.postalCode || '',
         country: admin.country || '',
       });
@@ -156,12 +156,12 @@ export default function ProfileContent({
               editing={isEditing}
               onChange={(v) => handleChange('city', v)}
             />
-            <ProfileField
-              label="State"
-              value={isEditing ? formData.state : admin.state || '-'}
-              editing={isEditing}
-              onChange={(v) => handleChange('state', v)}
-            />
+             <ProfileField
+               label="State"
+               value={isEditing ? formData.state : admin.state || admin.city || '-'}
+               editing={isEditing}
+               onChange={(v) => handleChange('state', v)}
+             />
             <ProfileField
               label="Postal Code"
               value={

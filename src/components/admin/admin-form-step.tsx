@@ -150,60 +150,21 @@ export function AdminFormStep({
                 Phone Number
                 <span className="text-primary"> *</span>
               </label>
-              {/* <PhoneInput
-                value={formValues.phoneNumber ?? ''}
-                onChange={(val) =>
-                  setValue('phoneNumber', val, {
-                    shouldValidate: true,
-                    shouldDirty: true,
-                  })
-                }
-                countryCode={formValues.countryCode}
-                onCountryCodeChange={(code) =>
-                  setValue('countryCode', code, {
-                    shouldValidate: true,
-                  })
-                }
-                error={errors.phoneNumber?.message}
-                onValidate={(err) => {
-                  if (err) {
-                    setValue('phoneNumber', formValues.phoneNumber, {
-                      shouldValidate: true,
-                    });
-                    const result = validatePhone(
-                      formValues.phoneNumber,
-                      formValues.countryCode,
-                    );
-                    // if (!result.valid && result.error) {
-                    //   setValue('phoneNumber', undefined, {
-                    //     shouldValidate: true,
-                    //   });
-                    // }
-                    // if (!result.valid && result.error) {
-                    //   setValue('phoneNumber', '', {
-                    //     shouldValidate: true,
-                    //     shouldDirty: true,
-                    //   });
-                    // }
-                  }
-                  trigger?.('phoneNumber');
-                }}
-              /> */}
-              <PhoneInput
-                value={formValues.phoneNumber ?? ''}
-                onChange={(val) =>
-                  setValue('phoneNumber', val ?? '', {
-                    shouldDirty: true,
-                  })
-                }
-                countryCode={formValues.countryCode ?? '+64'}
-                onCountryCodeChange={(code) =>
-                  setValue('countryCode', code, {
-                    shouldDirty: true,
-                  })
-                }
-                error={errors.phoneNumber?.message}
-              />
+        <PhoneInput
+          value={formValues.phoneNumber ?? ''}
+          onChange={(val) =>
+            setValue('phoneNumber', val ?? '', {
+              shouldDirty: true,
+            })
+          }
+          countryCode={formValues.countryCode ?? '+64'}
+          onCountryCodeChange={(code) =>
+            setValue('countryCode', code, {
+              shouldDirty: true,
+            })
+          }
+          error={errors.phoneNumber?.message}
+        />
             </div>
           </div>
         </div>

@@ -8,20 +8,20 @@ import {
 import { getDeviceToken, getDeviceType } from '@/lib/device';
 import { getToken, localLogout } from '@/lib/auth';
 import type {
-  CustomersResponse,
   CustomerMutationResponse,
+  CustomersResponse,
   EmployeeMutationResponse,
   GetAdminsParams,
   GetAdminsResponse,
   GetCustomersParams,
+  JobMutationResponse,
+  ListQueryParams,
   EmployeesResponse,
   JobsResponse,
-  JobMutationResponse,
   InvoicesResponse,
   NotificationsResponse,
-  ListQueryParams,
-  UpdateEmployeePayload,
   ParentJobsResponse,
+  UpdateEmployeePayload,
   ChildJobsResponse,
 } from '@/types/api.types';
 import type { CreateEmployeePayload } from '@/types/employees.types';
@@ -35,6 +35,7 @@ import type {
   IAdminUser,
   IAdminStats,
 } from '@/types';
+// import type { CreateEmployeePayload, UpdateEmployeePayload } from '@/types/employees.types';
 
 const rawBaseQuery = fetchBaseQuery({
   baseUrl: import.meta.env.VITE_API_URL,
@@ -83,7 +84,6 @@ export const api = createApi({
     'Notifications',
   ],
   endpoints: (builder) => ({
-   
     superLogin: builder.mutation({
       query: (credentials) => ({
         url: API_ROUTES.AUTH.SUPER_LOGIN,
@@ -384,16 +384,22 @@ export const api = createApi({
     }),
 
     // Parent Job endpoints
-    getParentJobs: builder.query<
-      ParentJobsResponse,
-      ListQueryParams
-    >({
-      query: ({ page = 1, limit = 10, search, status, sort, jobType }) => ({
-        url: API_ROUTES.PARENT_JOBS.LIST,
-        params: { page, limit, search, status, sort, jobType },
-      }),
-      providesTags: ['ParentJobs'],
-    }),
+    getParentJobs: builder.query<ParentJobsResponse, ListQueryParams>(
+      {
+        query: ({
+          page = 1,
+          limit = 10,
+          search,
+          status,
+          sort,
+          jobType,
+        }) => ({
+          url: API_ROUTES.PARENT_JOBS.LIST,
+          params: { page, limit, search, status, sort, jobType },
+        }),
+        providesTags: ['ParentJobs'],
+      },
+    ),
     cancelParentJob: builder.mutation<void, string>({
       query: (id) => ({
         url: API_ROUTES.PARENT_JOBS.CANCEL(id),
@@ -403,10 +409,7 @@ export const api = createApi({
     }),
 
     // Child Job endpoints
-    getChildJobs: builder.query<
-      ChildJobsResponse,
-      ListQueryParams
-    >({
+    getChildJobs: builder.query<ChildJobsResponse, ListQueryParams>({
       query: ({ page = 1, limit = 10, search, status, sort }) => ({
         url: API_ROUTES.CHILD_JOBS.LIST,
         params: { page, limit, search, status, sort },
@@ -550,6 +553,17 @@ export const api = createApi({
       }),
       invalidatesTags: ['Admins'],
     }),
+    resetAdminPassword: builder.mutation<
+      { message: string },
+      { id: string; password: string }
+    >({
+      query: ({ id, password }) => ({
+        url: API_ROUTES.SUPER_ADMINS.ADMINS.RESET_PASSWORD(id),
+        method: 'PATCH',
+        body: { password },
+      }),
+      invalidatesTags: ['Admins'],
+    }),
 
     // Admin self-service endpoints
     getAdminDetails: builder.query<
@@ -598,7 +612,7 @@ export const {
   useSuperLoginMutation,
   useLogoutMutation,
 
-   useGetCustomersQuery,
+  useGetCustomersQuery,
   useGetCustomerByIdQuery,
   useCreateCustomerMutation,
   useUpdateCustomerMutation,
@@ -648,6 +662,7 @@ export const {
   useDeleteAdminUserMutation,
   useSetAdminValidityMutation,
   useDeleteAdminValidityMutation,
+  useResetAdminPasswordMutation,
 
   useSuperAdminChangePasswordMutation,
 

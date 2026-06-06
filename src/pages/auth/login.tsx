@@ -25,7 +25,6 @@ const loginSchema = z.object({
     .string()
     .min(1, { message: 'Email is required' })
     .email({ message: 'Invalid email address' }),
-
   password: z
     .string()
     .min(1, { message: 'Password is required' })
@@ -90,7 +89,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen sm:bg-[#eef5df] lg:bg-[#eef5df] flex flex-col px-0 sm:px-6 pt-0 sm:pt-6 relative overflow-hidden">
+    <div className="h-dvh sm:bg-[#eef5df] lg:bg-[#eef5df] flex flex-col px-0 sm:px-6 pt-0 sm:pt-6 relative overflow-hidden">
       {/* Mobile Background Effects */}
       <div className="absolute inset-0 lg:hidden overflow-hidden pointer-events-none">
         <div className="absolute -top-16 -left-16 h-48 w-48 rounded-full bg-primary/5" />
@@ -101,9 +100,9 @@ const Login = () => {
       </div>
 
       {/* Main Container */}
-      <div className="relative z-10 flex items-start lg:items-center justify-center">
-        <div className="w-full bg-transparent lg:bg-[#f8f8f4] lg:rounded-[28px] lg:shadow-xl overflow-hidden">
-          <div className="grid lg:grid-cols-2 min-h-full">
+      <div className="relative z-10 flex items-start lg:items-start justify-center flex-1 overflow-y-auto">
+        <div className="w-full h-full bg-transparent lg:bg-[#f8f8f4] lg:rounded-[28px] lg:shadow-xl overflow-hidden">
+          <div className="grid lg:grid-cols-2 h-full">
             {/* Left Section */}
             <div className="relative overflow-hidden hidden lg:block">
               <img
@@ -169,253 +168,228 @@ const Login = () => {
             </div>
 
             {/* Right Section */}
-            <div className="relative z-10 mt-0 sm:mt-13 lg:bg-[#f8f8f4] flex items-stretch justify-center px-0 py-0 sm:p-8 lg:px-12 lg:py-4">
-              <div className="w-full flex flex-col">
-                {/* Login Card */}
-                <div className="w-full lg:max-w-2xl lg:mx-auto bg-white rounded-t-[36px] lg:rounded-[28px] shadow-none lg:shadow-xl border-t border-gray-100 px-6 py-8 sm:p-8 flex flex-col">
-                  {/* Mobile branding */}
-                  <div className="lg:hidden flex flex-col items-center justify-center pt-10 mb-10">
-                    <div className="w-28 h-28 rounded-full bg-white shadow-lg border-4 border-white flex items-center justify-center p-3">
-                      <img
-                        src="/image.png"
-                        alt="Logo"
-                        className="w-full h-full object-contain"
-                      />
-                    </div>
-
-                    <h1 className="mt-6 text-4xl font-bold tracking-wide text-black">
-                      NO. 1 LAWNS
-                    </h1>
-
-                    <div className="mt-3 flex items-center gap-3">
-                      <div className="h-[2px] w-12 bg-primary/40" />
-
-                      <span className="text-sm font-semibold tracking-wide text-primary">
-                        GARDEN MAINTENANCE
-                      </span>
-
-                      <div className="h-[2px] w-12 bg-primary/40" />
-                    </div>
+            <div className="relative z-10 mt-0 sm:mt-13 lg:bg-[#f8f8f4] w-full flex flex-col px-0 py-0 lg:px-12">
+              <div className="w-full my-auto bg-white rounded-t-[36px] lg:rounded-[28px] shadow-none lg:shadow-xl border-t border-gray-100 px-6 py-8 sm:p-8 flex flex-col max-sm:h-dvh max-sm:overflow-y-auto sm:min-h-[520px] lg:min-h-[520px] lg:overflow-y-auto">
+                {/* Mobile branding */}
+                <div className="lg:hidden flex flex-col items-center justify-center pt-10 mb-10">
+                  <div className="w-28 h-28 rounded-full bg-white shadow-lg border-4 border-white flex items-center justify-center p-3">
+                    <img
+                      src="/image.png"
+                      alt="Logo"
+                      className="w-full h-full object-contain"
+                    />
                   </div>
 
-                  {/* Desktop heading */}
-                  <div className="hidden lg:block text-center">
-                    <h2 className="text-[2rem] sm:text-[2.5rem] font-bold text-primary leading-tight">
-                      Super Admin Access
-                    </h2>
+                  <h1 className="mt-6 text-4xl font-bold tracking-wide text-black">
+                    NO. 1 LAWNS
+                  </h1>
 
-                    <p className="mt-4 text-base sm:text-xl leading-7 sm:leading-9 text-gray-500">
-                      Enter your credentials to access your account
-                    </p>
-                  </div>
+                  <div className="mt-3 flex items-center gap-3">
+                    <div className="h-[2px] w-12 bg-primary/40" />
 
-                  {/* Mobile welcome section */}
-                  <div className="lg:hidden mb-8">
-                    <div className="flex items-start gap-4">
-                      <div className="w-1.5 h-14 rounded-full bg-primary mt-1" />
-
-                      <div>
-                        <h2 className="text-3xl font-bold text-gray-900">
-                          Welcome Super Admin!
-                        </h2>
-
-                        <p className="mt-2 text-lg text-gray-500">
-                          Sign in to manage your lawn
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Form */}
-                  <form
-                    onSubmit={handleSubmit(onSubmit)}
-                    className="space-y-6"
-                  >
-                    {/* Email */}
-                    <div>
-                      <label className="text-sm lg:text-base uppercase lg:normal-case tracking-wide lg:tracking-normal text-primary lg:text-gray-700 font-semibold lg:font-medium">
-                        Email address
-                      </label>
-
-                      <div className="mt-3 relative">
-                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary" />
-                        <Input
-                          placeholder="you@example.com"
-                          className="h-16 rounded-2xl bg-[#f6fff4] border-primary/20 pl-12"
-                          {...register('email')}
-                        />
-                        {errors.email && (
-                          <p className="mt-1 text-sm text-red-500">
-                            {errors.email.message}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Password */}
-                    <div>
-                      <label className="text-sm lg:text-base uppercase lg:normal-case tracking-wide lg:tracking-normal text-primary lg:text-gray-700 font-semibold lg:font-medium">
-                        Password
-                      </label>
-
-                      <div className="mt-3 relative">
-                        <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary" />
-                        <Input
-                          type={showPassword ? 'text' : 'password'}
-                          placeholder="••••••••"
-                          autoComplete="off"
-                          className="h-16 rounded-2xl bg-[#f6fff4] border-primary/20 pl-12 pr-12"
-                          {...register('password')}
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-4 top-1/2 -translate-y-1/2 focus:outline-none"
-                        >
-                          {showPassword ? (
-                            <EyeOff className="size-6 text-primary" />
-                          ) : (
-                            <Eye className="size-6 text-primary" />
-                          )}
-                        </button>
-                        {errors.password && (
-                          <p className="mt-1 text-sm text-red-500">
-                            {errors.password.message}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Remember */}
-                    <div className="flex items-center justify-between gap-3 text-sm">
-                      <label className="flex items-center gap-2 text-gray-600">
-                        <input
-                          type="checkbox"
-                          checked={rememberMe}
-                          onChange={(e) =>
-                            setRememberMe(e.target.checked)
-                          }
-                          className="accent-primary w-4 h-4"
-                        />
-                        Remember me
-                      </label>
-
-                      <button
-                        type="button"
-                        className="text-primary font-semibold"
-                        onClick={() =>
-                          navigate(ROUTES.FORGOT_PASSWORD)
-                        }
-                      >
-                        Forgot Password?
-                      </button>
-                    </div>
-
-                    {/* Login Button */}
-                    <Button
-                      type="submit"
-                      disabled={isLoading}
-                      className="w-full h-16 text-xl rounded-2xl bg-gradient-to-r from-[#11b53c] to-[#008a14] hover:opacity-95"
-                    >
-                      {isLoading ? 'Signing In...' : 'SIGN IN →'}
-                    </Button>
-                  </form>
-                </div>
-
-                {/* Mobile Footer */}
-                {/* <div className="w-full px-6 pb-6 lg:hidden bg-white">
-                  <div className="flex flex-col items-start gap-2 text-left text-[13px] text-[#6d6d6d]">
-                    <span>
-                      © 2026 No. 1 Lawns. All rights reserved.
+                    <span className="text-sm font-semibold tracking-wide text-primary">
+                      GARDEN MAINTENANCE
                     </span>
 
-                    <div className="flex items-center gap-3">
-                      <button className="hover:text-primary transition">
+                    <div className="h-[2px] w-12 bg-primary/40" />
+                  </div>
+                </div>
+
+                {/* Desktop heading */}
+                <div className="hidden lg:block text-center">
+                  <h2 className="text-[2rem] sm:text-[2.5rem] font-bold text-primary leading-tight">
+                    Super Admin Access
+                  </h2>
+
+                  <p className="mt-4 text-base sm:text-xl leading-7 sm:leading-9 text-gray-500">
+                    Enter your credentials to access your account
+                  </p>
+                </div>
+
+                {/* Mobile welcome section */}
+                <div className="lg:hidden mb-8">
+                  <div className="flex items-start gap-4">
+                    <div className="w-1.5 h-14 rounded-full bg-primary mt-1" />
+
+                    <div>
+                      <h2 className="text-3xl font-bold text-gray-900">
+                        Welcome Super Admin!
+                      </h2>
+
+                      <p className="mt-2 text-lg text-gray-500">
+                        Sign in to manage your lawn
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Form */}
+                <form
+                  onSubmit={handleSubmit(onSubmit)}
+                  className="space-y-6"
+                >
+                  {/* Email */}
+                  <div>
+                    <label className="text-sm lg:text-base uppercase lg:normal-case tracking-wide lg:tracking-normal text-primary lg:text-gray-700 font-semibold lg:font-medium">
+                      Email address
+                    </label>
+
+                    <div className="mt-3 relative">
+                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary" />
+                      <Input
+                        placeholder="you@example.com"
+                        className="h-16 rounded-2xl bg-[#f6fff4] border-primary/20 pl-12"
+                        {...register('email')}
+                      />
+                      {errors.email && (
+                        <p className="mt-1 text-sm text-red-500">
+                          {errors.email.message}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Password */}
+                  <div>
+                    <label className="text-sm lg:text-base uppercase lg:normal-case tracking-wide lg:tracking-normal text-primary lg:text-gray-700 font-semibold lg:font-medium">
+                      Password
+                    </label>
+
+                    <div className="mt-3 relative">
+                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary" />
+                      <Input
+                        type={showPassword ? 'text' : 'password'}
+                        placeholder="••••••••"
+                        autoComplete="off"
+                        className="h-16 rounded-2xl bg-[#f6fff4] border-primary/20 pl-12 pr-12"
+                        {...register('password')}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 focus:outline-none"
+                      >
+                        {showPassword ? (
+                          <EyeOff className="size-6 text-primary" />
+                        ) : (
+                          <Eye className="size-6 text-primary" />
+                        )}
+                      </button>
+                      {errors.password && (
+                        <p className="mt-1 text-sm text-red-500">
+                          {errors.password.message}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Remember */}
+                  <div className="flex items-center justify-between gap-3 text-sm">
+                    <label className="flex items-center gap-2 text-gray-600">
+                      <input
+                        type="checkbox"
+                        checked={rememberMe}
+                        onChange={(e) =>
+                          setRememberMe(e.target.checked)
+                        }
+                        className="accent-primary w-4 h-4"
+                      />
+                      Remember me
+                    </label>
+
+                    <button
+                      type="button"
+                      className="text-primary font-semibold"
+                      onClick={() =>
+                        navigate(ROUTES.FORGOT_PASSWORD)
+                      }
+                    >
+                      Forgot Password?
+                    </button>
+                  </div>
+
+                  {/* Login Button */}
+                  <Button
+                    type="submit"
+                    disabled={isLoading}
+                    className="w-full h-16 text-xl rounded-2xl bg-gradient-to-r from-[#11b53c] to-[#008a14] hover:opacity-95"
+                  >
+                    {isLoading ? 'Signing In...' : 'SIGN IN →'}
+                  </Button>
+                </form>
+
+                <div className="mt-auto border-t border-gray-100 pt-4 pb-2 lg:hidden">
+                  <div className="flex flex-col items-center gap-3 text-center">
+                    <p className="text-[12px] leading-5 text-gray-500">
+                      © 2026 No. 1 Lawns. All rights reserved.
+                    </p>
+
+                    <div className="flex items-center justify-center gap-3 text-[13px] font-medium">
+                      <button className="text-gray-600 transition hover:text-primary">
                         Privacy Policy
                       </button>
 
-                      <span className="text-[#bdbdbd]">|</span>
+                      <div className="h-3 w-px bg-gray-300" />
 
-                      <button className="hover:text-primary transition">
+                      <button className="text-gray-600 transition hover:text-primary">
                         Terms of Service
                       </button>
                     </div>
                   </div>
-                </div> */}
-                {/* Mobile Footer */}
-                <div className="w-full bg-white px-6 pb-8  lg:hidden">
-                  <div className="border-t border-gray-100 ">
-                    <div className="flex flex-col items-center gap-3 text-center">
-                      <p className="text-[12px] leading-5 text-gray-500">
-                        © 2026 No. 1 Lawns. All rights reserved.
+                </div>
+              </div>
+
+              {/* Desktop Bottom Info */}
+              <div className="border-gray-200 pt-6 hidden sm:block">
+                <div className="grid w-full grid-cols-1 gap-3 lg:grid-cols-3">
+                  {/* Card 1 */}
+                  <div className="flex w-full items-center gap-3 rounded-2xl bg-[#f7faf2] p-4 text-left">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
+                      <Leaf className="h-5 w-5 text-primary" />
+                    </div>
+
+                    <div>
+                      <h4 className="text-sm font-semibold text-gray-800">
+                        Eco Friendly
+                      </h4>
+
+                      <p className="text-xs text-gray-500">
+                        Sustainable solutions
                       </p>
-
-                      <div className="flex items-center justify-center gap-3 text-[13px] font-medium">
-                        <button className="text-gray-600 transition hover:text-primary">
-                          Privacy Policy
-                        </button>
-
-                        <div className="h-3 w-px bg-gray-300" />
-
-                        <button className="text-gray-600 transition hover:text-primary">
-                          Terms of Service
-                        </button>
-                      </div>
                     </div>
                   </div>
-                </div>
-                {/* Desktop Bottom Info */}
-                <div className="border-gray-200 pt-6 hidden sm:block">
-                  <div className="grid w-full grid-cols-1 gap-3 lg:grid-cols-3">
-                    {/* Card 1 */}
-                    <div className="flex w-full items-center gap-3 rounded-2xl bg-[#f7faf2] p-4 text-left">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
-                        <Leaf className="h-5 w-5 text-primary" />
-                      </div>
 
-                      <div>
-                        <h4 className="text-sm font-semibold text-gray-800">
-                          Eco Friendly
-                        </h4>
-
-                        <p className="text-xs text-gray-500">
-                          Sustainable solutions
-                        </p>
-                      </div>
+                  {/* Card 2 */}
+                  <div className="flex w-full items-center gap-3 rounded-2xl bg-[#f7faf2] p-4 text-left">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
+                      <Leaf className="h-5 w-5 text-primary" />
                     </div>
 
-                    {/* Card 2 */}
-                    <div className="flex w-full items-center gap-3 rounded-2xl bg-[#f7faf2] p-4 text-left">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
-                        <Leaf className="h-5 w-5 text-primary" />
-                      </div>
+                    <div>
+                      <h4 className="text-sm font-semibold text-gray-800">
+                        Grow Together
+                      </h4>
 
-                      <div>
-                        <h4 className="text-sm font-semibold text-gray-800">
-                          Grow Together
-                        </h4>
+                      <p className="text-xs text-gray-500">
+                        Community & support
+                      </p>
+                    </div>
+                  </div>
 
-                        <p className="text-xs text-gray-500">
-                          Community & support
-                        </p>
-                      </div>
+                  {/* Card 3 */}
+                  <div className="flex w-full items-center gap-3 rounded-2xl bg-[#f7faf2] p-4 text-left">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
+                      <Globe className="h-5 w-5 text-primary" />
                     </div>
 
-                    {/* Card 3 */}
-                    <div className="flex w-full items-center gap-3 rounded-2xl bg-[#f7faf2] p-4 text-left">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
-                        <Globe className="h-5 w-5 text-primary" />
-                      </div>
+                    <div>
+                      <h4 className="text-sm font-semibold text-gray-800">
+                        Better Future
+                      </h4>
 
-                      <div>
-                        <h4 className="text-sm font-semibold text-gray-800">
-                          Better Future
-                        </h4>
-
-                        <p className="text-xs text-gray-500">
-                          For a greener planet
-                        </p>
-                      </div>
+                      <p className="text-xs text-gray-500">
+                        For a greener planet
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -426,7 +400,7 @@ const Login = () => {
       </div>
 
       {/* Desktop Footer */}
-      <div className="hidden sm:block w-full px-4 sm:px-10 pt-4.5">
+      <div className="hidden sm:block w-full px-4 sm:px-10 pt-[18px]">
         <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-center text-[15px] text-[#6d6d6d]">
           <span>© 2026 No. 1 Lawns. All rights reserved.</span>
 

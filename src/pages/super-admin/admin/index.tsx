@@ -1,6 +1,16 @@
 import { SuperAdminLayout } from '@/components/layout/super-layout';
 import { Navbar } from '@/components/layout/navbar';
-import { Calendar, Eye, Pencil, Ellipsis, Trash2 } from 'lucide-react';
+import {
+  Calendar,
+  Eye,
+  Pencil,
+  Ellipsis,
+  Trash2,
+  LogIn,
+  CheckCircle,
+  XCircle,
+  Key,
+} from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import DataTable, {
   ActionButton,
@@ -29,6 +39,7 @@ import { AvatarCell } from '@/components/data-table/avatar-cell';
 import { format } from 'date-fns';
 import { useState } from 'react';
 import { AdminValidityDialog } from '@/components/admin/admin-validity-dialog';
+import { ResetPasswordDialog } from '@/components/admin/reset-password-dialog';
 
 const statusConfig: Record<string, { color: string; label: string }> =
   {
@@ -75,6 +86,8 @@ const SuperAdminAdminsPage = () => {
   const [validityAdmin, setValidityAdmin] = useState<IAdmins | null>(
     null,
   );
+  const [resetPasswordAdmin, setResetPasswordAdmin] =
+    useState<IAdmins | null>(null);
 
   const {
     page,
@@ -127,7 +140,7 @@ const SuperAdminAdminsPage = () => {
       header: 'Name',
       sortable: true,
       cell: (row: IAdmins) => (
-        <AvatarCell name={row.fullName} email={row.email} />
+        <AvatarCell name={row.fullName} email={row.email} profileImage={row.profileImage} />
       ),
     },
     {
@@ -214,10 +227,18 @@ const SuperAdminAdminsPage = () => {
             <DropdownMenuContent align="end">
               <DropdownMenuItem
                 onClick={() => {
-                  toast.success('Login as Admin — frontend only');
+                  navigator.clipboard.writeText(row.email);
+                  window.open(
+                    `${import.meta.env.VITE_ADMIN_PANEL_URL}?email=${encodeURIComponent(row.email)}`,
+                    '_blank',
+                  );
+                  toast.success(
+                    'Admin email copied. Login page opened.',
+                  );
                 }}
                 className="truncate"
               >
+                <LogIn className="mr-2 h-4 w-4" />
                 Login as Admin
               </DropdownMenuItem>
               {row.status === 'active' ? (
@@ -227,6 +248,7 @@ const SuperAdminAdminsPage = () => {
                     handleStatusChange(row._id, 'inactive')
                   }
                 >
+                  <XCircle className="mr-2 h-4 w-4" />
                   Set Inactive
                 </DropdownMenuItem>
               ) : (
@@ -236,6 +258,7 @@ const SuperAdminAdminsPage = () => {
                     handleStatusChange(row._id, 'active')
                   }
                 >
+                  <CheckCircle className="mr-2 h-4 w-4" />
                   Set Active
                 </DropdownMenuItem>
               )}
@@ -249,7 +272,9 @@ const SuperAdminAdminsPage = () => {
               {row.validity && (
                 <DropdownMenuItem
                   onClick={async () => {
-                    await deleteAdminValidity({ id: row._id }).unwrap();
+                    await deleteAdminValidity({
+                      id: row._id,
+                    }).unwrap();
                     toast.success('Validity removed');
                   }}
                   className="text-red-500 focus:text-red-500 truncate"
@@ -259,11 +284,10 @@ const SuperAdminAdminsPage = () => {
                 </DropdownMenuItem>
               )}
               <DropdownMenuItem
-                onClick={() => {
-                  toast.success('Change Password — frontend only');
-                }}
+                onClick={() => setResetPasswordAdmin(row)}
                 className="truncate"
               >
+                <Key className="mr-2 h-4 w-4" />
                 Change Password
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -329,6 +353,15 @@ const SuperAdminAdminsPage = () => {
           open={!!validityAdmin}
           onOpenChange={(open) => {
             if (!open) setValidityAdmin(null);
+          }}
+        />
+      )}
+      {resetPasswordAdmin && (
+        <ResetPasswordDialog
+          admin={resetPasswordAdmin}
+          open={!!resetPasswordAdmin}
+          onOpenChange={(open) => {
+            if (!open) setResetPasswordAdmin(null);
           }}
         />
       )}

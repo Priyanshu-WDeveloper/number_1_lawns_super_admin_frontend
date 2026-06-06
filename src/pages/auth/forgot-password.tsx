@@ -63,9 +63,9 @@ const ForgotPassword = () => {
       </div>
 
       {/* Main Container */}
-      <div className="relative z-10 flex items-start lg:items-center justify-center flex-1 overflow-y-auto">
-        <div className="w-full bg-transparent lg:bg-[#f8f8f4] lg:rounded-[28px] lg:shadow-xl overflow-hidden">
-          <div className="grid lg:grid-cols-2 min-h-full">
+      <div className="relative z-10 flex items-start lg:items-start justify-center flex-1 overflow-y-auto">
+        <div className="w-full h-full bg-transparent lg:bg-[#f8f8f4] lg:rounded-[28px] lg:shadow-xl overflow-hidden">
+          <div className="grid lg:grid-cols-2 h-full">
             {/* Left Section */}
             <div className="relative overflow-hidden hidden lg:block">
               <img
@@ -131,172 +131,169 @@ const ForgotPassword = () => {
             </div>
 
             {/* Right Section */}
-            <div className="relative z-10 mt-0 sm:mt-13 lg:bg-[#f8f8f4] flex items-stretch justify-center px-0 py-0 sm:p-8 lg:px-12 lg:py-4">
-              <div className="w-full flex flex-col">
-                {/* Form Card */}
-                <div className="w-full lg:max-w-2xl lg:mx-auto bg-white rounded-t-[36px] lg:rounded-[28px] shadow-none lg:shadow-xl border-t border-gray-100 px-6 py-8 sm:p-8 flex flex-col">
-                  {/* Mobile branding */}
-                  <div className="lg:hidden flex flex-col items-center justify-center pt-10 mb-10">
-                    <div className="w-28 h-28 rounded-full bg-white shadow-lg border-4 border-white flex items-center justify-center p-3">
-                      <img
-                        src="/image.png"
-                        alt="Logo"
-                        className="w-full h-full object-contain"
-                      />
-                    </div>
-
-                    <h1 className="mt-6 text-4xl font-bold tracking-wide text-black">
-                      NO. 1 LAWNS
-                    </h1>
-
-                    <div className="mt-3 flex items-center gap-3">
-                      <div className="h-[2px] w-12 bg-primary/40" />
-
-                      <span className="text-sm font-semibold tracking-wide text-primary">
-                        GARDEN MAINTENANCE
-                      </span>
-
-                      <div className="h-[2px] w-12 bg-primary/40" />
-                    </div>
+            <div className="relative z-10 mt-0 sm:mt-13 lg:bg-[#f8f8f4] w-full flex flex-col px-0 py-0 lg:px-12">
+              <div className="w-full my-auto bg-white rounded-t-[36px] lg:rounded-[28px] shadow-none lg:shadow-xl border-t border-gray-100 px-6 py-8 sm:p-8 flex flex-col max-sm:h-dvh max-sm:overflow-y-auto sm:min-h-[520px] lg:min-h-[520px] lg:overflow-y-auto">
+                {/* Mobile branding */}
+                <div className="lg:hidden flex flex-col items-center justify-center pt-10 mb-10">
+                  <div className="w-28 h-28 rounded-full bg-white shadow-lg border-4 border-white flex items-center justify-center p-3">
+                    <img
+                      src="/image.png"
+                      alt="Logo"
+                      className="w-full h-full object-contain"
+                    />
                   </div>
 
-                  {/* Desktop heading */}
-                  <div className="hidden lg:block">
-                    <button
-                      onClick={() => navigate(ROUTES.LOGIN)}
-                      className="flex items-center gap-2 text-primary hover:text-primary mb-6 transition-colors"
-                    >
-                      <ArrowLeft className="h-5 w-5" />
-                      <span className="font-medium">
-                        Back to Login
-                      </span>
-                    </button>
+                  <h1 className="mt-6 text-4xl font-bold tracking-wide text-black">
+                    NO. 1 LAWNS
+                  </h1>
 
-                    <h2 className="text-[2rem] sm:text-[2.5rem] font-bold text-primary leading-tight">
-                      Forgot Password
-                    </h2>
+                  <div className="mt-3 flex items-center gap-3">
+                    <div className="h-[2px] w-12 bg-primary/40" />
 
-                    <p className="mt-4 text-base sm:text-xl leading-7 sm:leading-9 text-gray-500">
-                      Enter your email to receive a reset link
-                    </p>
+                    <span className="text-sm font-semibold tracking-wide text-primary">
+                      GARDEN MAINTENANCE
+                    </span>
+
+                    <div className="h-[2px] w-12 bg-primary/40" />
                   </div>
-
-                  {/* Mobile welcome section */}
-                  <div className="lg:hidden mb-8">
-                    <button
-                      onClick={() => navigate(ROUTES.LOGIN)}
-                      className="flex items-center gap-2 text-primary hover:text-primary mb-6 transition-colors"
-                    >
-                      <ArrowLeft className="h-5 w-5" />
-                      <span className="font-medium">
-                        Back to Login
-                      </span>
-                    </button>
-
-                    <div className="flex items-start gap-4">
-                      <div className="w-1.5 h-14 rounded-full bg-primary mt-1" />
-
-                      <div>
-                        <h2 className="text-3xl font-bold text-gray-900">
-                          Forgot Password
-                        </h2>
-
-                        <p className="mt-2 text-lg text-gray-500">
-                          Enter your email to receive a reset link
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Form */}
-                  <form
-                    onSubmit={handleSubmit(onSubmit)}
-                    className="space-y-6"
-                  >
-                    {/* Email */}
-                    <div>
-                      <label className="text-sm lg:text-base uppercase lg:normal-case tracking-wide lg:tracking-normal text-primary lg:text-gray-700 font-semibold lg:font-medium">
-                        Email address
-                      </label>
-
-                      <div className="mt-3 relative">
-                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary" />
-                        <Input
-                          placeholder="example@mail.com"
-                          className="h-16 rounded-2xl bg-[#f6fff4] border-primary/20 pl-12"
-                          {...register('email')}
-                        />
-                        {errors.email && (
-                          <p className="mt-1 text-sm text-red-500">
-                            {errors.email.message}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Button */}
-                    <Button
-                      type="submit"
-                      disabled={isLoading}
-                      className="w-full h-16 text-xl rounded-2xl bg-gradient-to-r from-[#11b53c] to-[#008a14] hover:opacity-95"
-                    >
-                      {isLoading ? 'Sending...' : 'Send Reset Link'}
-                    </Button>
-                  </form>
                 </div>
 
-                {/* Desktop Bottom Info */}
-                <div className="border-gray-200 pt-6 hidden sm:block">
-                  <div className="grid w-full grid-cols-1 gap-3 lg:grid-cols-3">
-                    {/* Card 1 */}
-                    <div className="flex w-full items-center gap-3 rounded-2xl bg-[#f7faf2] p-4 text-left">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
-                        <Leaf className="h-5 w-5 text-primary" />
-                      </div>
+                {/* Desktop heading */}
+                <div className="hidden lg:block">
+                  <button
+                    onClick={() => navigate(ROUTES.LOGIN)}
+                    className="flex items-center gap-2 text-primary hover:text-primary mb-6 transition-colors"
+                  >
+                    <ArrowLeft className="h-5 w-5" />
+                    <span className="font-medium">
+                      Back to Login
+                    </span>
+                  </button>
 
-                      <div>
-                        <h4 className="text-sm font-semibold text-gray-800">
-                          Eco Friendly
-                        </h4>
+                  <h2 className="text-[2rem] sm:text-[2.5rem] font-bold text-primary leading-tight">
+                    Forgot Password
+                  </h2>
 
-                        <p className="text-xs text-gray-500">
-                          Sustainable solutions
+                  <p className="mt-4 text-base sm:text-xl leading-7 sm:leading-9 text-gray-500">
+                    Enter your email to receive a reset link
+                  </p>
+                </div>
+
+                {/* Mobile welcome section */}
+                <div className="lg:hidden mb-8">
+                  <button
+                    onClick={() => navigate(ROUTES.LOGIN)}
+                    className="flex items-center gap-2 text-primary hover:text-primary mb-6 transition-colors"
+                  >
+                    <ArrowLeft className="h-5 w-5" />
+                    <span className="font-medium">
+                      Back to Login
+                    </span>
+                  </button>
+
+                  <div className="flex items-start gap-4">
+                    <div className="w-1.5 h-14 rounded-full bg-primary mt-1" />
+
+                    <div>
+                      <h2 className="text-3xl font-bold text-gray-900">
+                        Forgot Password
+                      </h2>
+
+                      <p className="mt-2 text-lg text-gray-500">
+                        Enter your email to receive a reset link
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Form */}
+                <form
+                  onSubmit={handleSubmit(onSubmit)}
+                  className="space-y-6"
+                >
+                  {/* Email */}
+                  <div>
+                    <label className="text-sm lg:text-base uppercase lg:normal-case tracking-wide lg:tracking-normal text-primary lg:text-gray-700 font-semibold lg:font-medium">
+                      Email address
+                    </label>
+
+                    <div className="mt-3 relative">
+                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary" />
+                      <Input
+                        placeholder="example@mail.com"
+                        className="h-16 rounded-2xl bg-[#f6fff4] border-primary/20 pl-12"
+                        {...register('email')}
+                      />
+                      {errors.email && (
+                        <p className="mt-1 text-sm text-red-500">
+                          {errors.email.message}
                         </p>
-                      </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Button */}
+                  <Button
+                    type="submit"
+                    disabled={isLoading}
+                    className="w-full h-16 text-xl rounded-2xl bg-gradient-to-r from-[#11b53c] to-[#008a14] hover:opacity-95"
+                  >
+                    {isLoading ? 'Sending...' : 'Send Reset Link'}
+                  </Button>
+                </form>
+              </div>
+
+              {/* Desktop Bottom Info */}
+              <div className="border-gray-200 pt-6 hidden sm:block">
+                <div className="grid w-full grid-cols-1 gap-3 lg:grid-cols-3">
+                  {/* Card 1 */}
+                  <div className="flex w-full items-center gap-3 rounded-2xl bg-[#f7faf2] p-4 text-left">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
+                      <Leaf className="h-5 w-5 text-primary" />
                     </div>
 
-                    {/* Card 2 */}
-                    <div className="flex w-full items-center gap-3 rounded-2xl bg-[#f7faf2] p-4 text-left">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
-                        <Leaf className="h-5 w-5 text-primary" />
-                      </div>
+                    <div>
+                      <h4 className="text-sm font-semibold text-gray-800">
+                        Eco Friendly
+                      </h4>
 
-                      <div>
-                        <h4 className="text-sm font-semibold text-gray-800">
-                          Grow Together
-                        </h4>
+                      <p className="text-xs text-gray-500">
+                        Sustainable solutions
+                      </p>
+                    </div>
+                  </div>
 
-                        <p className="text-xs text-gray-500">
-                          Community & support
-                        </p>
-                      </div>
+                  {/* Card 2 */}
+                  <div className="flex w-full items-center gap-3 rounded-2xl bg-[#f7faf2] p-4 text-left">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
+                      <Leaf className="h-5 w-5 text-primary" />
                     </div>
 
-                    {/* Card 3 */}
-                    <div className="flex w-full items-center gap-3 rounded-2xl bg-[#f7faf2] p-4 text-left">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
-                        <Leaf className="h-5 w-5 text-primary" />
-                      </div>
+                    <div>
+                      <h4 className="text-sm font-semibold text-gray-800">
+                        Grow Together
+                      </h4>
 
-                      <div>
-                        <h4 className="text-sm font-semibold text-gray-800">
-                          Better Future
-                        </h4>
+                      <p className="text-xs text-gray-500">
+                        Community & support
+                      </p>
+                    </div>
+                  </div>
 
-                        <p className="text-xs text-gray-500">
-                          For a greener planet
-                        </p>
-                      </div>
+                  {/* Card 3 */}
+                  <div className="flex w-full items-center gap-3 rounded-2xl bg-[#f7faf2] p-4 text-left">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
+                      <Leaf className="h-5 w-5 text-primary" />
+                    </div>
+
+                    <div>
+                      <h4 className="text-sm font-semibold text-gray-800">
+                        Better Future
+                      </h4>
+
+                      <p className="text-xs text-gray-500">
+                        For a greener planet
+                      </p>
                     </div>
                   </div>
                 </div>

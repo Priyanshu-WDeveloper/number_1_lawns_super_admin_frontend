@@ -11,6 +11,8 @@ import type {
   WebsiteConfig,
   NewLawnListResponse,
   NewLawnListParams,
+  QuoteRequest,
+  QuoteStatus,
 } from '@/types/new-lawns.types';
 import { getToken } from '@/lib/auth';
 
@@ -28,7 +30,7 @@ const baseQuery = fetchBaseQuery({
 export const newLawnsApi = createApi({
   reducerPath: 'newLawnsApi',
   baseQuery,
-  tagTypes: ['NL_Services', 'NL_Gallery', 'NL_Reviews', 'NL_Contacts', 'NL_WebsiteConfig'],
+  tagTypes: ['NL_Services', 'NL_Gallery', 'NL_Reviews', 'NL_Contacts', 'NL_Quotes', 'NL_WebsiteConfig'],
   endpoints: (builder) => ({
     getNLServices: builder.query<NewLawnListResponse<NewLawnService>, NewLawnListParams>({
       query: (params) => ({ url: '/services', params }),
@@ -126,6 +128,30 @@ export const newLawnsApi = createApi({
       invalidatesTags: (_result, _error, { id }) => ['NL_Contacts', { type: 'NL_Contacts', id }],
     }),
 
+    getNLQuotes: builder.query<NewLawnListResponse<QuoteRequest>, NewLawnListParams>({
+      query: (params) => ({ url: '/quotes', params }),
+      transformResponse: (response: any) => ({
+        items: response.quotes,
+        total: response.total,
+        page: response.page,
+        limit: response.limit,
+        totalPages: response.totalPages,
+      }),
+      providesTags: ['NL_Quotes'],
+    }),
+    getNLQuoteById: builder.query<QuoteRequest, string>({
+      query: (id) => ({ url: `/quotes/${id}` }),
+      providesTags: (_result, _error, id) => [{ type: 'NL_Quotes', id }],
+    }),
+    updateNLQuoteStatus: builder.mutation<QuoteRequest, { id: string; status: QuoteStatus }>({
+      query: ({ id, ...body }) => ({ url: `/quotes/${id}/status`, method: 'PUT', body }),
+      invalidatesTags: (_result, _error, { id }) => ['NL_Quotes', { type: 'NL_Quotes', id }],
+    }),
+    deleteNLQuote: builder.mutation<void, string>({
+      query: (id) => ({ url: `/quotes/${id}`, method: 'DELETE' }),
+      invalidatesTags: ['NL_Quotes'],
+    }),
+
     getNLWebsiteConfig: builder.query<WebsiteConfig, void>({
       query: () => ({ url: '/config' }),
       transformResponse: (response: any) => response.config,
@@ -158,6 +184,11 @@ export const {
   useDeleteNLContactMutation,
   useMarkNLContactAsReadMutation,
   useReplyToNLContactMutation,
+
+  useGetNLQuotesQuery,
+  useGetNLQuoteByIdQuery,
+  useUpdateNLQuoteStatusMutation,
+  useDeleteNLQuoteMutation,
 
   useGetNLWebsiteConfigQuery,
   useUpdateNLWebsiteConfigMutation,

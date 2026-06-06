@@ -8,6 +8,7 @@ interface ReviewFieldDef {
   icon: ReactNode;
   label: string;
   value: string | number;
+  imageUrl?: string;
 }
 
 interface ReviewSection {
@@ -43,9 +44,17 @@ export function ReviewCard({ sections }: ReviewCardProps) {
           >
             <div className="flex items-center justify-between px-6 py-4 border-b border-[#e5e7eb]">
               <div className="flex items-center gap-3.5">
-                <div className="w-[42px] h-[42px] rounded-xl bg-[#2d6a4f] flex items-center justify-center shrink-0">
-                  {section.icon}
-                </div>
+                {(section.image && (
+                  <img
+                    src={section.image.src}
+                    alt={section.image.alt}
+                    className="h-10 w-10 rounded-full object-cover"
+                  />
+                )) || (
+                  <div className="w-[42px] h-[42px] rounded-xl bg-[#2d6a4f] flex items-center justify-center shrink-0">
+                    {section.icon}
+                  </div>
+                )}
                 <div>
                   <div className="text-sm font-semibold text-[#111827]">
                     {section.title}
@@ -57,15 +66,7 @@ export function ReviewCard({ sections }: ReviewCardProps) {
                   )}
                 </div>
               </div>
-              {section.image && (
-                <img
-                  src={section.image.src}
-                  alt={section.image.alt}
-                  className="h-10 w-10 rounded-full object-cover"
-                />
-              )}
             </div>
-
             {section.fields && section.fields.length > 0 && (
               <div className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -75,16 +76,16 @@ export function ReviewCard({ sections }: ReviewCardProps) {
                       icon={field.icon}
                       label={field.label}
                       value={field.value}
+                      imageUrl={field.imageUrl}
                     />
                   ))}
                 </div>
               </div>
             )}
-
             {hasDocs && (
               <div className="px-6 pb-6 space-y-3">
-                {section.documents!
-                  .filter((d) => d.file)
+                {section
+                  .documents!.filter((d) => d.file)
                   .map((doc, di) => (
                     <DocumentRow
                       key={di}
@@ -97,7 +98,6 @@ export function ReviewCard({ sections }: ReviewCardProps) {
           </div>
         );
       })}
-
       <DocumentPreviewModal
         file={previewFile}
         isOpen={!!previewFile}

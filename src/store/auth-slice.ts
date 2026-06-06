@@ -1,14 +1,8 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-
-interface AuthUser {
-  fullName: string;
-  email: string;
-  role: number;
-  validity: Date;
-}
+import { type IAdmins } from '@/types/admins.types';
 
 interface AuthState {
-  user: AuthUser | null;
+  user: IAdmins | null;
   token: string | null;
   rememberMe: boolean;
 }
@@ -56,7 +50,7 @@ const authSlice = createSlice({
     setAuth(
       state,
       action: PayloadAction<{
-        user: AuthUser;
+        user: IAdmins;
         token: string;
         rememberMe?: boolean;
       }>,
@@ -74,6 +68,7 @@ const authSlice = createSlice({
     },
   },
 });
+
 
 export const { setAuth, clearAuth } = authSlice.actions;
 export { loadFromStorage };
