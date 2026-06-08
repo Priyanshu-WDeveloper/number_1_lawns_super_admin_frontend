@@ -1,5 +1,5 @@
-import defaultAvatar from '@/assets/avatar.png';
-import { ArrowLeft, Pencil } from 'lucide-react';
+import { useState } from 'react';
+import { ArrowLeft, Pencil, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 
@@ -14,6 +14,8 @@ interface ProfileHeroProps {
   onBack: () => void;
   isEditing?: boolean;
   onEditClick?: () => void;
+  onProfileImageChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  profileImagePreview?: string;
 }
 
 export default function ProfileHero({
@@ -26,7 +28,11 @@ export default function ProfileHero({
   onBack,
   isEditing,
   onEditClick,
+  onProfileImageChange,
+  profileImagePreview,
 }: ProfileHeroProps) {
+  const [profileImgState, setProfileImgState] = useState<'loading' | 'loaded' | 'error'>('loading');
+  const hasImage = !!(profileImagePreview || profileImage);
   return (
     <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary via-primary/80 to-primary/60 pb-10 shadow-lg">
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.12)_0%,transparent_60%)]" />
@@ -46,17 +52,35 @@ export default function ProfileHero({
 
         <div className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-5">
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5">
-            <Avatar className="h-20 w-20 ring-4 ring-white/30 shadow-xl">
-              <AvatarImage
-                src={profileImage || defaultAvatar}
-                alt={fullName}
-                className="h-full w-full object-cover"
-                onError={(e) => { e.currentTarget.src = defaultAvatar; }}
-              />
-              <AvatarFallback className="text-2xl font-bold bg-white/20 text-white">
-                {initials}
-              </AvatarFallback>
-            </Avatar>
+            <div className="relative">
+              <Avatar className="h-20 w-20 ring-4 ring-white/30 shadow-xl">
+                {hasImage && profileImgState !== 'error' && (
+                  <AvatarImage
+                    src={profileImagePreview || profileImage!}
+                    alt={fullName}
+                    className="h-full w-full object-cover"
+                    onLoad={() => setProfileImgState('loaded')}
+                    onError={() => setProfileImgState('error')}
+                  />
+                )}
+                {profileImgState !== 'loaded' && (
+                  <AvatarFallback className="text-2xl font-bold bg-white/20 text-white">
+                    {initials}
+                  </AvatarFallback>
+                )}
+              </Avatar>
+              {isEditing && onProfileImageChange && (
+                <label className="absolute -bottom-1 -right-1 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full bg-white text-[#16610E] shadow-md transition-all hover:bg-gray-100 hover:scale-105">
+                  <Upload className="h-3.5 w-3.5" />
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={onProfileImageChange}
+                  />
+                </label>
+              )}
+            </div>
             <div className="text-center sm:text-left">
               <h1 className="text-2xl font-bold text-white">
                 {fullName}

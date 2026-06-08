@@ -553,6 +553,12 @@ export const api = createApi({
       }),
       invalidatesTags: ['Admins'],
     }),
+    impersonateAdmin: builder.mutation<{ redirectUrl: string }, string>({
+      query: (id) => ({
+        url: API_ROUTES.SUPER_ADMINS.ADMINS.IMPERSONATE(id),
+        method: 'POST',
+      }),
+    }),
     resetAdminPassword: builder.mutation<
       { message: string },
       { id: string; password: string }
@@ -663,6 +669,7 @@ export const {
   useSetAdminValidityMutation,
   useDeleteAdminValidityMutation,
   useResetAdminPasswordMutation,
+  useImpersonateAdminMutation,
 
   useSuperAdminChangePasswordMutation,
 

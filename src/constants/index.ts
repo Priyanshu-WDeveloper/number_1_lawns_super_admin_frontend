@@ -98,6 +98,7 @@ export const API_ROUTES = {
       SET_VALIDITY: (id: string) => `/superadmins/validity/${id}`,
       REMOVE_VALIDITY: (id: string) => `/superadmins/validity/${id}`,
       RESET_PASSWORD: (id: string) => `/superadmins/admins/${id}/password`,
+      IMPERSONATE: (id: string) => `/superadmins/impersonate/${id}`,
     },
     CHANGE_PASSWORD: '/superadmins/change-password',
     BILLING: {

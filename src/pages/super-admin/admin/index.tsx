@@ -31,6 +31,7 @@ import {
   useGetAdminUsersQuery,
   useUpdateAdminUserMutation,
   useDeleteAdminValidityMutation,
+  useImpersonateAdminMutation,
 } from '@/API/api';
 import type { GetAdminsParams } from '@/types/api.types';
 import { useDataTableState } from '@/hooks/use-data-table-state';
@@ -83,6 +84,7 @@ const SuperAdminAdminsPage = () => {
   const navigate = useNavigate();
   const [updateAdminUser] = useUpdateAdminUserMutation();
   const [deleteAdminValidity] = useDeleteAdminValidityMutation();
+  const [impersonateAdmin] = useImpersonateAdminMutation();
   const [validityAdmin, setValidityAdmin] = useState<IAdmins | null>(
     null,
   );
@@ -140,7 +142,11 @@ const SuperAdminAdminsPage = () => {
       header: 'Name',
       sortable: true,
       cell: (row: IAdmins) => (
-        <AvatarCell name={row.fullName} email={row.email} profileImage={row.profileImage} />
+        <AvatarCell
+          name={row.fullName}
+          email={row.email}
+          profileImage={row.profileImage}
+        />
       ),
     },
     {
@@ -226,15 +232,32 @@ const SuperAdminAdminsPage = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem
-                onClick={() => {
-                  navigator.clipboard.writeText(row.email);
-                  window.open(
-                    `${import.meta.env.VITE_ADMIN_PANEL_URL}?email=${encodeURIComponent(row.email)}`,
-                    '_blank',
-                  );
-                  toast.success(
-                    'Admin email copied. Login page opened.',
-                  );
+                onClick={async () => {
+                  try {
+                    const res = await impersonateAdmin(
+                      row._id,
+                    ).unwrap();
+                    const token = new URL(
+                      res.redirectUrl,
+                    ).searchParams.get('token');
+                    const baseUrl =
+                      import.meta.env.VITE_ADMIN_PANEL_URL.replace(
+                        /\/login\/?$/,
+                        '',
+                      );
+                    window.open(
+                      `${baseUrl}/impersonate?token=${token}`,
+                      '_blank',
+                    );
+                    toast.success('Logging in as admin...');
+                  } catch (error) {
+                    toast.error(
+                      getErrorMessage(
+                        error,
+                        'Failed to impersonate admin',
+                      ),
+                    );
+                  }
                 }}
                 className="truncate"
               >

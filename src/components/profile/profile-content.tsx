@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import {
   User,
   Mail,
@@ -9,7 +9,10 @@ import {
   X,
 } from 'lucide-react';
 import type { IAdminUser } from '@/types';
-import { useUpdateAdminUserMutation } from '@/API/api';
+import {
+  useUpdateAdminUserMutation,
+  useUploadDocumentMutation,
+} from '@/API/api';
 import ProfileHero from './profile-hero';
 import ProfileSectionCard from './profile-section-card';
 import ProfileField from './profile-field';
@@ -29,6 +32,9 @@ export default function ProfileContent({
   );
   const [updateAdmin, { isLoading: isSaving }] =
     useUpdateAdminUserMutation();
+  const [uploadDocument] = useUploadDocumentMutation();
+  const [profileImageFile, setProfileImageFile] = useState<File | null>(null);
+  const [profileImagePreview, setProfileImagePreview] = useState<string>('');
 
   const fullName =
     admin.fullName || `${admin.firstName} ${admin.lastName}`;
@@ -58,17 +64,51 @@ export default function ProfileContent({
 
   const handleSave = useCallback(async () => {
     try {
-      await updateAdmin({ id: admin._id, ...formData }).unwrap();
+      let profileImage = admin.profileImage;
+
+      if (profileImageFile) {
+        const fd = new FormData();
+        fd.append('files', profileImageFile);
+        const res = await uploadDocument(fd).unwrap();
+        profileImage = res.urls[0];
+      }
+
+      await updateAdmin({
+        id: admin._id,
+        ...formData,
+        profileImage,
+      }).unwrap();
       setIsEditing(false);
+      setProfileImageFile(null);
+      setProfileImagePreview('');
     } catch {
       // error handled by RTK
     }
-  }, [updateAdmin, admin._id, formData]);
+  }, [updateAdmin, uploadDocument, admin._id, admin.profileImage, formData, profileImageFile]);
 
   const handleCancel = useCallback(() => {
     setIsEditing(false);
     setFormData({});
+    setProfileImageFile(null);
+    setProfileImagePreview('');
   }, []);
+
+  const handleProfileImageChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (file) {
+        setProfileImageFile(file);
+        setProfileImagePreview(URL.createObjectURL(file));
+      }
+    },
+    [],
+  );
+
+  useEffect(() => {
+    return () => {
+      if (profileImagePreview) URL.revokeObjectURL(profileImagePreview);
+    };
+  }, [profileImagePreview]);
 
   return (
     <div className="w-full px-5 sm:px-8 py-5 sm:py-8 space-y-6">
@@ -83,6 +123,8 @@ export default function ProfileContent({
         onBack={onBack}
         isEditing={isEditing}
         onEditClick={handleEditClick}
+        onProfileImageChange={handleProfileImageChange}
+        profileImagePreview={profileImagePreview}
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
